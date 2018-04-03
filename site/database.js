@@ -18,6 +18,4 @@ function dbCon(err) {
     con.query("CREATE DATABASE mydb", onDbCon);
 }
 
-con.connect(dbCon);
-
-
+module.exports = con;

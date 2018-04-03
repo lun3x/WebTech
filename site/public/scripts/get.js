@@ -1,6 +1,8 @@
 $(document).ready(function(){
-    $.ajax({url: "/ajax", async: false, data: { name: "John", location: "Boston" }, success: function(result) {
+    $.ajax({url: "/ajax", async: false, data: { item: "food" }, success: function(result) {
         //alert(JSON.stringify(result));
-        $("#namep").html(JSON.stringify(result));
+        $.each(result, function(key, value) {
+            $("#foodlist").append("<br />", value.name, " x ", value.quantity, "<br />");
+        });
     }});
 });

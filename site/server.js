@@ -2,11 +2,19 @@
 // and demonstrates a big potential security loophole in express.
 
 var express = require("express");
-var database = require("./database.js");
 var app = express();
 var fs = require("fs");
 var banned = [];
 banUpperCase("./public/", "");
+
+var mysql = require('mysql');
+
+var con = mysql.createConnection({
+  host: "localhost",
+  user: "root",
+  password: "321mowgli123",
+  database: "mydb"
+});
 
 // Define the sequence of functions to be called for each request.  Make URLs
 // lower case, ban upper case filenames, require authorisation for admin.html,
@@ -29,15 +37,27 @@ app.get("/ajax", ajax);
 app.listen(8080, "localhost");
 console.log("Visit http://localhost:8080/");
 
+//=== Database functions ===//
+
+// Gets all food from db and returns result to page as JSON
+function returnFood(res) {
+    con.connect();
+    con.query("SELECT * FROM food;", function(err, dbResult) {
+        if (err) throw err;
+        console.log(JSON.stringify(dbResult));
+        res.json(dbResult);
+    });
+}
+
 //=== URL handlers ===//
 
-// Example AJAX handler to send data back to client
+// Ajax handler to check what data is requested
 function ajax(req, res) {
-    var val = req.query.name;
+    var val = req.query.item;
     console.log(val);
-    res.json({
-        name: val + " Loaded from server"
-    })
+    if (val == 'food') {
+        returnFood(res);
+    }
 }
 
 // Example URL handler, just displays chance attribute of request (inserted by middleware)
