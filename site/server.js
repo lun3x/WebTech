@@ -2,6 +2,7 @@
 // and demonstrates a big potential security loophole in express.
 
 var express = require("express");
+var database = require("./database.js");
 var app = express();
 var fs = require("fs");
 var banned = [];
