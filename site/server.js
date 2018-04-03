@@ -41,7 +41,7 @@ console.log("Visit http://localhost:8080/");
 
 // Gets all food from db and returns result to page as JSON
 function returnFood(res) {
-    con.connect();
+    con.connect(); //TODO: Add error callback here
     con.query("SELECT * FROM food;", function(err, dbResult) {
         if (err) throw err;
         console.log(JSON.stringify(dbResult));
@@ -49,14 +49,28 @@ function returnFood(res) {
     });
 }
 
+function addFood(req, res) {
+    con.connect(); //TODO: Add error callback here
+    con.query("INSERT INTO food VALUES (5," + req.query.foodName + "," + req.query.foodQuantity + ");", function(err) {
+        if (err) throw err;
+        res.json({
+            name: req.query.foodName,
+            quantity: req.query.foodQuantity
+        });
+    });
+}
+
 //=== URL handlers ===//
 
 // Ajax handler to check what data is requested
 function ajax(req, res) {
-    var val = req.query.item;
+    var val = req.query.action;
     console.log(val);
-    if (val == 'food') {
+    if (val == 'getFood') {
         returnFood(res);
+    }
+    else if (val == 'addFood') {
+        addFood(req, res);
     }
 }
 
