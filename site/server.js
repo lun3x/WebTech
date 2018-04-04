@@ -59,6 +59,9 @@ function ajaxPost(req, res) {
     if (action == 'addFood') {
         db.addFood(req, res);
     }
+    else if (action == 'plusB' || action == 'minusB') {
+        db.incrDecrFood(req, res);
+    }
 }
 
 // Example URL handler, just displays chance attribute of request (inserted by middleware)

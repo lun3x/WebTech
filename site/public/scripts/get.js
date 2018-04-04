@@ -1,3 +1,9 @@
+function addItemToList(value) {
+    let plusB = "<button type='button' id='plusB' value='" + value.itemID + "'>+</button>";
+    let minusB = "<button type='button' id='minusB' value='" + value.itemID + "'>-</button>";
+    $("#foodlist").append("<br/>", value.name, " x ", value.quantity, plusB, minusB, "<br/>");
+}
+
 $(document).ready(function(){
     $.ajax({
         url: "/ajax", 
@@ -5,22 +11,9 @@ $(document).ready(function(){
         data: { action: "getFood" }, 
         success: function(result) {
             $.each(result, function(key, value) {
-                $("#foodlist").append("<br/>", value.name, " x ", value.quantity, "<br/>");
+                addItemToList(value);
         });
     }});
-    
-    $("#add").click(function() {
-        let name = $('#foodName').val();
-        let quan = $('#foodQuantity').val();
-        $.ajax({
-            url: "/ajax",
-            async: false,
-            data: { action: "addFood", foodName: name, foodQuantity: quan },
-            success: function(result) {
-                $("#foodlist").append("<br/>", result.name, " x ", result.quantity, "<br/>");
-            }
-        });
-    });
     
     $("form").submit(function(e) {
         $.ajax({
@@ -28,11 +21,24 @@ $(document).ready(function(){
             url: "/ajax",
             async: false,
             data: $(this).serialize(),
-            success: function(result) {
-                $("#foodlist").append("<br/>", result.name, " x ", result.quantity, "<br/>");
-            }
+            success: addItemToList
         });
         
         e.preventDefault(); // avoid to execute the actual submit of the form.
+    });
+    
+    $("button, input[type=button]").click(function() {
+        $.ajax({
+            type: "POST",
+            url: "/ajax",
+            async: false,
+            data: {
+                action: $(this).attr("id"),
+                itemID: $(this).attr("value"),
+            },
+            success: function() {
+                location.reload();
+            }
+        });
     });
 });
