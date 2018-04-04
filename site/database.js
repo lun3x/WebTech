@@ -3,7 +3,7 @@ var mysql = require('mysql');
 var con = mysql.createConnection({
   host: "localhost",
   user: "root",
-  password: "321mowgli123",
+  //password: "321mowgli123",
   database: "mydb"
 });
 
@@ -25,17 +25,17 @@ function returnFood(res) {
 
 function addFood(req, res) {
     maxItemID++;
-    
+
     con.connect(function(err) {
         if (err) console.log("Already connected!");
     });
-    
+
     let sql = "INSERT INTO food VALUES (?,?,?);";
     let inserts = [maxItemID, req.body.fname, req.body.fquantity];
     sql = mysql.format(sql, inserts); // Avoid SQL injection
-    
+
     console.log(sql);
-    
+
     con.query(sql, function(err) {
         if (err) throw err;
         res.json({
@@ -50,17 +50,17 @@ function incrDecrFood(req, res) {
     con.connect(function(err) {
         if (err) console.log("Already connected!");
     });
-    
+
     let sql;
-    
+
     if (req.body.action == 'plusB') sql = "UPDATE food SET quantity = quantity + 1 WHERE itemID = ?;";
     else                            sql = "UPDATE food SET quantity = quantity - 1 WHERE itemID = ?;";
-    
+
     let inserts = [req.body.itemID];
     sql = mysql.format(sql, inserts);
-    
+
     console.log(sql);
-    
+
     con.query(sql, function(err) {
         if (err) throw err;
         res.json({
