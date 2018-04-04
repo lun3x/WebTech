@@ -12,8 +12,9 @@ $(document).ready(function(){
         success: function(result) {
             $.each(result, function(key, value) {
                 addItemToList(value);
-        });
-    }});
+            });
+        }
+    });
     
     $("form").submit(function(e) {
         $.ajax({
@@ -21,7 +22,9 @@ $(document).ready(function(){
             url: "/ajax",
             async: false,
             data: $(this).serialize(),
-            success: addItemToList
+            success: function() {
+                location.reload();
+            }
         });
         
         e.preventDefault(); // avoid to execute the actual submit of the form.
