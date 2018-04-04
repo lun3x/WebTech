@@ -6,6 +6,12 @@
 <body>
     <h1>Foods in Cupboard</h1>
     <p id="foodlist"></p>
-    <button type="button" id="add">Add Food!</button>
+    
+    <form action="" id="foodForm">
+        <input type="hidden" name="action" value="addFood"/>
+        Food: <input type="text" name="fname"/><br/>
+        Quantity: <input type="number" name="fquantity"/><br/>
+        <input type="submit" value="Add Food!" />
+    </form>
 </body>
 </html>

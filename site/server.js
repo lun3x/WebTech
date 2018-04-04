@@ -2,19 +2,21 @@
 // and demonstrates a big potential security loophole in express.
 
 var express = require("express");
+var bodyParser = require('body-parser');
+var db = require("./database.js");
 var app = express();
 var fs = require("fs");
 var banned = [];
 banUpperCase("./public/", "");
 
-var mysql = require('mysql');
-
-var con = mysql.createConnection({
-  host: "localhost",
-  user: "root",
-  password: "321mowgli123",
-  database: "mydb"
-});
+//var mysql = require('mysql');
+//
+//var con = mysql.createConnection({
+//  host: "localhost",
+//  user: "root",
+//  password: "321mowgli123",
+//  database: "mydb"
+//});
 
 // Define the sequence of functions to be called for each request.  Make URLs
 // lower case, ban upper case filenames, require authorisation for admin.html,
@@ -26,51 +28,36 @@ app.use(ban);
 app.use("/admin.html", auth);
 var options = { setHeaders: deliverXHTML };
 app.use(express.static("public", options));
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
 app.use(chance);
 app.use(error);
 
 //=== URL routing setup ===//
 app.get("/test", test);
 app.get("/testerr", testerr);
-app.get("/ajax", ajax);
+app.get("/ajax", ajaxGet);
+app.post("/ajax", ajaxPost);
 
 app.listen(8080, "localhost");
 console.log("Visit http://localhost:8080/");
 
-//=== Database functions ===//
-
-// Gets all food from db and returns result to page as JSON
-function returnFood(res) {
-    con.connect(); //TODO: Add error callback here
-    con.query("SELECT * FROM food;", function(err, dbResult) {
-        if (err) throw err;
-        console.log(JSON.stringify(dbResult));
-        res.json(dbResult);
-    });
-}
-
-function addFood(req, res) {
-    con.connect(); //TODO: Add error callback here
-    con.query("INSERT INTO food VALUES (5," + req.query.foodName + "," + req.query.foodQuantity + ");", function(err) {
-        if (err) throw err;
-        res.json({
-            name: req.query.foodName,
-            quantity: req.query.foodQuantity
-        });
-    });
-}
-
 //=== URL handlers ===//
 
 // Ajax handler to check what data is requested
-function ajax(req, res) {
-    var val = req.query.action;
-    console.log(val);
-    if (val == 'getFood') {
-        returnFood(res);
+function ajaxGet(req, res) {
+    let action = req.query.action;
+    console.log(action);
+    if (action == 'getFood') {
+        db.returnFood(res);
     }
-    else if (val == 'addFood') {
-        addFood(req, res);
+}
+
+function ajaxPost(req, res) {
+    let action = req.body.action;
+    console.log(action);
+    if (action == 'addFood') {
+        db.addFood(req, res);
     }
 }
 
