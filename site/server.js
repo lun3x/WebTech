@@ -11,6 +11,13 @@ var fs = require("fs");
 var banned = [];
 banUpperCase("./public/", "");
 
+// set up express session manager
+app.use(session({
+    secret: "a_very_secret_password",
+    resave: false,
+    saveUninitialized: true
+}));
+
 //var mysql = require('mysql');
 //
 //var con = mysql.createConnection({
@@ -40,6 +47,10 @@ app.get("/test", test);
 app.get("/testerr", testerr);
 app.get("/ajax", ajaxGet);
 app.post("/ajax", ajaxPost);
+
+app.get("/login", loginGet);
+app.post("/login", loginPost);
+
 
 app.listen(8080, "localhost");
 console.log("Visit http://localhost:8080/");
@@ -75,6 +86,43 @@ function test(req, res) {
 function testerr(req, res) {
     throw new Error("oops");
 }
+
+//=== Login ==//
+
+function loginGet(req, res) {
+    console.log("someone went to GET login path");
+    res.redirect("/login.html");
+}
+
+function loginPost(req, res) {
+    console.log("someone wants to POST login path");
+
+    // parse username and email
+    let username = req.body.username;
+    let password = req.body.password;
+
+    if (!req.session.views) req.session.views = 0;
+    req.session.views += 1;
+
+
+    // validate
+    //req.checkBody('username', 'Username is required').notEmpty();
+    //req.checkBody('password', 'Password is required').notEmpty();
+
+    // response
+    // const errors = req.validationErrors();
+    // if (errors) {
+    //     req.session.errors = errors;
+    //     res.redirect("/login.html");
+    // }
+    // else {
+    //     req.session.success = true;
+    //     res.redirect("/index.html");
+    // }
+    console.log(username, password);
+    res.send("you have viewed " + req.session.views + " times");
+}
+
 
 //=== Middleware functions ===//
 
