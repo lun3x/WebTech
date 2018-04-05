@@ -16,3 +16,4 @@ rules:
   camelcase: "off"
   prefer-destructuring: "off"
   comma-dangle: "off"
+  array-bracket-spacing: ["always", singleValue: false]

@@ -36,10 +36,6 @@ let test = require('./routes/test');
 let ajax = require('./routes/ajax');
 
 
-//=== Run the app ===//
-app.listen(8080, 'localhost');
-console.log('Visit http://localhost:8080/');
-
 
 //=== Middleware functions ===//
 
@@ -146,3 +142,9 @@ app.use((req, res, next) => {
 
 // handle errors
 app.use(error);
+
+
+
+//=== Run the app ===//
+app.listen(8080, 'localhost');
+console.log('Visit http://localhost:8080/');
