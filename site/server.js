@@ -10,8 +10,17 @@ const path = require('path');
 const bcrypt = require('bcrypt');
 const session = require('express-session');
 const fs = require('fs');
+const mysql = require('mysql');
 
-//== Banned URLs ==//
+//=== Setup Db Connection ===//
+let con = mysql.createConnection({
+    host: 'localhost',
+    user: 'root',
+    //password: "321mowgli123",
+    database: 'mydb'
+});
+
+//=== Banned URLs ===//
 let banned = [];
 banUpperCase('./public/', ''); // eslint-disable-line no-use-before-define
 
@@ -30,46 +39,6 @@ let ajax = require('./routes/ajax');
 //=== Run the app ===//
 app.listen(8080, 'localhost');
 console.log('Visit http://localhost:8080/');
-
-
-// *****  TODO: OLD LOGIN STUFF HERE ******
-// ***** TODO: WRITE A NEW LOGIN
-//app.get("/login", loginGet);
-// app.post("/login", loginPost);
-//=== Login ==//
-// function loginGet(req, res) {
-//     console.log("someone went to GET login path");
-//     res.redirect("/login.html");
-// }
-
-// function loginPost(req, res) {
-//     console.log("someone wants to POST login path");
-
-//     // parse username and email
-//     let username = req.body.username;
-//     let password = req.body.password;
-
-//     if (!req.session.views) req.session.views = 0;
-//     req.session.views += 1;
-
-
-//     // validate
-//     //req.checkBody('username', 'Username is required').notEmpty();
-//     //req.checkBody('password', 'Password is required').notEmpty();
-
-//     // response
-//     // const errors = req.validationErrors();
-//     // if (errors) {
-//     //     req.session.errors = errors;
-//     //     res.redirect("/login.html");
-//     // }
-//     // else {
-//     //     req.session.success = true;
-//     //     res.redirect("/index.html");
-//     // }
-//     console.log(username, password);
-//     res.send("you have viewed " + req.session.views + " times");
-// }
 
 
 //=== Middleware functions ===//
@@ -141,7 +110,7 @@ function banUpperCase(root, folder) {
 }
 
 
-//=== Middleware setup ===//
+//=== Middleware Chain ===//
 
 // ensure everything is lowercase
 app.use(lower);
