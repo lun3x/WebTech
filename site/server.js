@@ -11,117 +11,102 @@ var fs = require("fs");
 var banned = [];
 banUpperCase("./public/", "");
 
-// set up express session manager
-app.use(session({
-    secret: "a_very_secret_password",
-    resave: false,
-    saveUninitialized: true
-}));
 
-//var mysql = require('mysql');
-//
-//var con = mysql.createConnection({
-//  host: "localhost",
-//  user: "root",
-//  password: "321mowgli123",
-//  database: "mydb"
-//});
-
-// Define the sequence of functions to be called for each request.  Make URLs
-// lower case, ban upper case filenames, require authorisation for admin.html,
-// and deliver static files from ./public.
+//== Routes ===//
+var auth = require('./routes/auth');
+var api  = require('./routes/api');
+var test = require('./routes/test');
+var ajax = require('./routes/ajax');
 
 //=== Middleware setup ===//
+
+// ensure everything is lowercase
 app.use(lower);
+
+// enforce banned urls
 app.use(ban);
-app.use("/admin.html", auth);
+
+// user login
+app.use('/auth', auth)
+
+// serve static pages
 var options = { setHeaders: deliverXHTML };
 app.use(express.static("public", options));
+
+// parse req body's
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
+
+// a middleware that doesn't do much (we made it for testing)
 app.use(chance);
+
+// other handlers
+app.use('/api', api);
+app.use('/test', test);
+app.use('/ajax', ajax);
+
+// catch 404 and forward to error handler
+app.use(function(req, res, next) {
+    var err = new Error('Not Found');
+    err.status = 404;
+    next(err);
+});
+
+// handle errors
 app.use(error);
 
-//=== URL routing setup ===//
-app.get("/test", test);
-app.get("/testerr", testerr);
-app.get("/ajax", ajaxGet);
-app.post("/ajax", ajaxPost);
-
-app.get("/login", loginGet);
-app.post("/login", loginPost);
 
 
+
+
+
+
+
+//=== Run the app ===//
 app.listen(8080, "localhost");
 console.log("Visit http://localhost:8080/");
 
-//=== URL handlers ===//
 
-// Ajax handler to check what data is requested
-function ajaxGet(req, res) {
-    let action = req.query.action;
-    console.log(action);
-    if (action == 'getFood') {
-        db.returnFood(res);
-    }
-}
 
-function ajaxPost(req, res) {
-    let action = req.body.action;
-    console.log(action);
-    if (action == 'addFood') {
-        db.addFood(req, res);
-    }
-    else if (action == 'plusB' || action == 'minusB') {
-        db.incrDecrFood(req, res);
-    }
-}
 
-// Example URL handler, just displays chance attribute of request (inserted by middleware)
-function test(req, res) {
-    res.redirect("/test.html");
-}
-
-// Example page throwing error
-function testerr(req, res) {
-    throw new Error("oops");
-}
-
+// *****  TODO: OLD LOGIN STUFF HERE ******
+// ***** TODO: WRITE A NEW LOGIN
+//app.get("/login", loginGet);
+// app.post("/login", loginPost);
 //=== Login ==//
+// function loginGet(req, res) {
+//     console.log("someone went to GET login path");
+//     res.redirect("/login.html");
+// }
 
-function loginGet(req, res) {
-    console.log("someone went to GET login path");
-    res.redirect("/login.html");
-}
+// function loginPost(req, res) {
+//     console.log("someone wants to POST login path");
 
-function loginPost(req, res) {
-    console.log("someone wants to POST login path");
+//     // parse username and email
+//     let username = req.body.username;
+//     let password = req.body.password;
 
-    // parse username and email
-    let username = req.body.username;
-    let password = req.body.password;
-
-    if (!req.session.views) req.session.views = 0;
-    req.session.views += 1;
+//     if (!req.session.views) req.session.views = 0;
+//     req.session.views += 1;
 
 
-    // validate
-    //req.checkBody('username', 'Username is required').notEmpty();
-    //req.checkBody('password', 'Password is required').notEmpty();
+//     // validate
+//     //req.checkBody('username', 'Username is required').notEmpty();
+//     //req.checkBody('password', 'Password is required').notEmpty();
 
-    // response
-    // const errors = req.validationErrors();
-    // if (errors) {
-    //     req.session.errors = errors;
-    //     res.redirect("/login.html");
-    // }
-    // else {
-    //     req.session.success = true;
-    //     res.redirect("/index.html");
-    // }
-    console.log(username, password);
-    res.send("you have viewed " + req.session.views + " times");
-}
+//     // response
+//     // const errors = req.validationErrors();
+//     // if (errors) {
+//     //     req.session.errors = errors;
+//     //     res.redirect("/login.html");
+//     // }
+//     // else {
+//     //     req.session.success = true;
+//     //     res.redirect("/index.html");
+//     // }
+//     console.log(username, password);
+//     res.send("you have viewed " + req.session.views + " times");
+// }
 
 
 //=== Middleware functions ===//
@@ -157,9 +142,9 @@ function ban(req, res, next) {
 }
 
 // Redirect the browser to the login page.
-function auth(req, res, next) {
-    res.redirect("/login.html");
-}
+// function auth(req, res, next) {
+//     res.redirect("/login.html");
+// }
 
 // Called by express.static.  Deliver response as XHTML.
 function deliverXHTML(res, path, stat) {
