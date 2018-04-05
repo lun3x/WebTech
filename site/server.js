@@ -3,7 +3,7 @@
 
 var express = require("express");
 var bodyParser = require('body-parser');
-var db = require("./database.js");
+var path = require('path');
 var app = express();
 var bcrypt = require("bcrypt");
 var session = require("express-session")
@@ -11,8 +11,12 @@ var fs = require("fs");
 var banned = [];
 banUpperCase("./public/", "");
 
+//=== db ===//
+var db = require("./database.js");
 
-//== Routes ===//
+
+
+//=== Routes ===//
 var auth = require('./routes/auth');
 var api  = require('./routes/api');
 var test = require('./routes/test');
@@ -31,7 +35,7 @@ app.use('/auth', auth)
 
 // serve static pages
 var options = { setHeaders: deliverXHTML };
-app.use(express.static("public", options));
+app.use(express.static(path.join(__dirname, 'public'), options));
 
 // parse req body's
 app.use(bodyParser.json());
