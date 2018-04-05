@@ -1,0 +1,4 @@
+# for now, only lint the backend
+
+public/scripts/*
+

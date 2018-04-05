@@ -1,19 +1,17 @@
 // login.js
 
-$(document).ready(function() {
-
+$(document).ready(() => {
     // on pressing login button, send request { username: louis, password: ahmer }
-    $("#login_button").click(function() {
+    $('#login_button').click(() => {
         $.ajax({
-            type: "POST",
-            url: "/login",
+            type: 'POST',
+            url: '/login',
             async: false,
             data: {
-                username: "louis",
-                password: "ahmer"
-            }
+                username: 'louis',
+                password: 'ahmer',
+            },
         });
     });
-
 });
 

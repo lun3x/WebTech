@@ -1,0 +1,12 @@
+extends: airbnb
+
+rules:
+  indent: ["warn", 4]
+  no-console: "off"
+  spaced-comment: "off"
+  prefer-const: "off"
+  no-plusplus: "off"
+  no-bitwise: "off"
+  no-continue: "warn"
+  prefer-template: "off"
+  no-unused-vars: "warn"
