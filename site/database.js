@@ -3,7 +3,7 @@ const mysql = require('mysql');
 let con = mysql.createConnection({
     host: 'localhost',
     user: 'root',
-    //password: "321mowgli123",
+    password: "pass",
     database: 'mydb',
 });
 
@@ -12,15 +12,39 @@ let maxItemID = 0;
 //=== Database functions ===//
 
 // Gets all food from db and returns result to page as JSON
-function returnFood(res) {
+function returnIngredients(res) {
     con.connect((err) => {
         if (err) console.log('Already connected!');
     });
-    con.query('SELECT * FROM food;', (err, dbResult) => {
+    con.query('SELECT * FROM Ingredients;', (err, dbResult) => {
         if (err) throw err;
         console.log(JSON.stringify(dbResult));
         res.json(dbResult);
     });
+}
+
+function returnCupboard(user_id, res) {
+  con.connect((err) => {
+      if (err) console.log('Already connected!');
+  });
+  let sql = 'SELECT Ingredients.name FROM IngredientCupboards\
+             INNER JOIN Ingredients ON IngredientCupboards.ingredient_id = Ingredients.id\
+             INNER JOIN Cupboards ON IngredientCupboards.cupboard_id = Cupboards.id\
+             WHERE Cupboards.user_id = ?;';
+
+  let inserts = [user_id];
+
+  sql = mysql.format(sql, inserts); // Avoid SQL injection
+
+  con.query(sql, (err, dbResult) => {
+    if (err) throw err;
+    res.json({
+        user_id: user_id,
+        food: {
+          dbResult
+        }
+    });
+  });
 }
 
 function addFood(req, res) {
@@ -70,5 +94,6 @@ function incrDecrFood(req, res) {
 }
 
 module.exports.addFood = addFood;
-module.exports.returnFood = returnFood;
+module.exports.returnIngredients = returnIngredients;
+module.exports.returnCupboard = returnCupboard;
 module.exports.incrDecrFood = incrDecrFood;

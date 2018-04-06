@@ -116,6 +116,7 @@ app.use(ban);
 
 // user login
 app.use('/auth', auth);
+app.use('/api', api);
 
 // serve static pages
 let options = { setHeaders: deliverXHTML };
