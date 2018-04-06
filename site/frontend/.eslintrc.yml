@@ -14,7 +14,10 @@ env:
 rules:
   indent: ["warn", 4]
   react/jsx-indent: ["warn", 4]
+  react/jsx-indent-props: ["warn", 4]
   react/jsx-filename-extension: "off"
+  react/prefer-stateless-function: "off"
+  arrow-parens: "off"
   no-console: "off"
   spaced-comment: "off"
   prefer-const: "off"
@@ -32,3 +35,4 @@ rules:
   array-bracket-spacing: ["warn", "always", { singleValue: false }]
   quotes: ["error", "single", { allowTemplateLiterals: true }]
   arrow-body-style: "off"
+  no-nested-ternary: "off"

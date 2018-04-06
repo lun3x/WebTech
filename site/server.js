@@ -118,12 +118,8 @@ app.use(ban);
 app.use('/auth', auth);
 
 // serve static pages
-let options = { setHeaders: deliverXHTML };
+let options = {}; //{ setHeaders: deliverXHTML };
 app.use(express.static(path.join(__dirname, 'frontend/dist'), options));
-
-app.use('/frontend', (req, res) => {
-    res.sendFile(path.resolve(__dirname, 'frontend/dist/index.html'));
-});
 
 // parse req body's
 app.use(bodyParser.json());
@@ -136,6 +132,11 @@ app.use(chance);
 app.use('/api', api);
 app.use('/test', test);
 app.use('/ajax', ajax);
+
+// home page
+app.use('/', (req, res) => {
+    res.sendFile(path.resolve(__dirname, 'frontend/dist/index.html'));
+});
 
 // catch 404 and forward to error handler
 app.use((req, res, next) => {
