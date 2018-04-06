@@ -1,18 +1,27 @@
-extends: airbnb
+parser: "babel-eslint"
+
+plugins:
+  - react
+
+extends:
+  - airbnb
+  - plugin:react/recommended
 
 env:
-  node: true
+  browser: true
   es6: true
 
 rules:
   indent: ["warn", 4]
+  react/jsx-indent: ["warn", 4]
+  react/jsx-filename-extension: "off"
   no-console: "off"
   spaced-comment: "off"
   prefer-const: "off"
   no-plusplus: "off"
   no-bitwise: "off"
   no-continue: "warn"
-  prefer-template: "off"
+  #prefer-template: "off"
   no-unused-vars: "off"
   no-trailing-spaces: "off"
   no-multiple-empty-lines: "off"
@@ -21,4 +30,5 @@ rules:
   prefer-destructuring: "off"
   comma-dangle: "off"
   array-bracket-spacing: ["warn", "always", { singleValue: false }]
-  
+  quotes: ["error", "single", { allowTemplateLiterals: true }]
+  arrow-body-style: "off"

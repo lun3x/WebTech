@@ -121,7 +121,7 @@ app.use('/auth', auth);
 let options = { setHeaders: deliverXHTML };
 app.use(express.static(path.join(__dirname, 'frontend/dist'), options));
 
-app.use('/', (req, res) => {
+app.use('/frontend', (req, res) => {
     res.sendFile(path.resolve(__dirname, 'frontend/dist/index.html'));
 });
 
