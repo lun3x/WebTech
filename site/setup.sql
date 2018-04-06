@@ -21,7 +21,8 @@ CREATE TABLE IngredientCupboards(id           int NOT NULL AUTO_INCREMENT,
                                 cupboard_id   int NOT NULL,
                                 PRIMARY KEY (id),
                                 CONSTRAINT FK_IngredientCupboard FOREIGN KEY (ingredient_id) REFERENCES Ingredients(id),
-                                CONSTRAINT FK_CupboardIngredient FOREIGN KEY (cupboard_id)   REFERENCES Cupboards(id)
+                                CONSTRAINT FK_CupboardIngredient FOREIGN KEY (cupboard_id)   REFERENCES Cupboards(id),
+                                CONSTRAINT UQ_Food UNIQUE(ingredient_id, cupboard_id)
 );
 
 INSERT INTO Ingredients (name) VALUES ('Tomato');

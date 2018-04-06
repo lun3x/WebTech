@@ -134,7 +134,6 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(chance);
 
 // other handlers
-app.use('/api', api);
 app.use('/test', test);
 app.use('/ajax', ajax);
 
@@ -147,8 +146,6 @@ app.use((req, res, next) => {
 
 // handle errors
 app.use(error);
-
-
 
 //=== Run the app ===//
 app.listen(8080, 'localhost');
