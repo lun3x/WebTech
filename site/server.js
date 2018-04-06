@@ -119,7 +119,11 @@ app.use('/auth', auth);
 
 // serve static pages
 let options = { setHeaders: deliverXHTML };
-app.use(express.static(path.join(__dirname, 'public'), options));
+app.use(express.static(path.join(__dirname, 'frontend/dist'), options));
+
+app.use('/', (req, res) => {
+    res.sendFile(path.resolve(__dirname, 'frontend/dist/index.html'));
+});
 
 // parse req body's
 app.use(bodyParser.json());

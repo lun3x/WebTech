@@ -27,8 +27,14 @@ module.exports = {
   },
   plugins: [
     new HtmlWebPackPlugin({
+      xhtml: true,
       template: "./src/index.html",
-      filename: "./index.html"
+      filename: "./index.html",
+      minify: {
+        removeAttributeQuotes: false,
+        keepClosingSlash: true
+      }
+      //minify: false
     }),
     new MiniCssExtractPlugin({
       filename: "[name].css",
