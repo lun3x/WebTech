@@ -10,7 +10,7 @@ let con = mysql.createConnection({
 //=== Database functions ===//
 
 // Gets all food from db and returns result to page as JSON
-function returnIngredients(res) {
+exports.returnIngredients = (res) => {
     con.connect((err) => {
         if (err) console.log('Already connected!');
     });
@@ -21,7 +21,7 @@ function returnIngredients(res) {
     });
 }
 
-function returnCupboard(user_id, res) {
+exports.returnCupboard = (user_id, res) => {
     con.connect((err) => {
         if (err) console.log('Already connected!');
     });
@@ -48,7 +48,7 @@ function returnCupboard(user_id, res) {
     });
 }
 
-function addFood(ingredient_id, cupboard_id, res) {
+exports.addFood = (ingredient_id, cupboard_id, res) => {
     con.connect((err) => {
         if (err) console.log('Already connected!');
     });
@@ -66,7 +66,7 @@ function addFood(ingredient_id, cupboard_id, res) {
     });
 }
 
-function removeFood(ingredientCupboard_id, res) {
+exports.removeFood = (ingredientCupboard_id, res) => {
     con.connect((err) => {
         if (err) console.log('Already connected!');
     });
@@ -84,7 +84,7 @@ function removeFood(ingredientCupboard_id, res) {
     })
 }
 
-function authenticate(username, password, req, res) {
+exports.authenticate = (username, password, req, res) => {
     con.connect((err) => {
         if (err) console.log('Already connected!');
     });
@@ -97,19 +97,15 @@ function authenticate(username, password, req, res) {
         if (dbResult.length == 1) {
             console.log("AUTHENTICATED");
             req.session.authenticated = true;
-            res.redirect('/');
+            res.json({
+                success: true
+            });
         }
         else {
             console.log("NOT AUTHENTICATED");
-            res.send("Not authenticated");
+            res.json({
+                success: false
+            });
         }
     });
 }
-
-module.exports.returnIngredients = returnIngredients;
-module.exports.returnCupboard = returnCupboard;
-
-module.exports.addFood = addFood;
-module.exports.removeFood = removeFood;
-
-module.exports.authenticate = authenticate;

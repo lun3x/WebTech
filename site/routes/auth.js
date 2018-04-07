@@ -3,16 +3,16 @@ const router = express.Router();
 
 const db = require('../database.js');
 
-// GET login page
-router.get('/', (req, res) => {
+router.get('/isAuthenticated', (req, res) => {
     if (!req.session || !req.session.authenticated) {
-		res.redirect('/login');
-		return;
-	}
-});
-
-router.get('/login', (req, res) => {
-	res.send('/login.html');
+        res.json({
+            authenticated: false
+        });
+    } else {
+        res.json({
+            authenticated: true
+        });
+    }
 });
 
 router.post('/login', (req, res) => {
