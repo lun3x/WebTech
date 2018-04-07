@@ -1,12 +1,28 @@
 // cupboardsController.js
 
-exports.get_user_cupboard = (req, res) => {
+const db = require('../database.js');
+
+exports.getUserCupboard = (req, res) => {
     let user_id = req.params.user_id;
 
     res.setHeader('Content-Type', 'application/json');
 
-    let cupboard = { food: [ 'onion', 'cabbage' ] };
-    let data = { user_id, cupboard };
-
-    res.send(JSON.stringify({ data }));
+    db.returnCupboard(user_id, res);
 };
+
+exports.removeFood = (req, res) => {
+    let id = req.params.foodID;
+
+    res.setHeader('Content-Type', 'application/json');
+
+    db.removeFood(id, res);
+}
+
+exports.addFood = (req, res) => {
+    let foodID = req.params.foodID;
+    let cupboardID = req.params.cupboardID;
+
+    res.setHeader('Content-Type', 'application/json');
+
+    db.addFood(foodID, cupboardID, res);
+}
