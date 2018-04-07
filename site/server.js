@@ -114,6 +114,8 @@ app.use(lower);
 // enforce banned urls
 app.use(ban);
 
+app.use(session({ secret: 'example' }));
+
 // user login
 app.use('/auth', auth);
 app.use('/api', api);

@@ -84,6 +84,26 @@ function removeFood(ingredientCupboard_id, res) {
     })
 }
 
+function login(username, password, req, res) {
+    con.connect((err) => {
+        if (err) console.log('Already connected!');
+    });
+
+    let sql = 'SELECT * FROM Users WHERE username = ? AND password = ?';
+    let inserts = [username, password];
+    sql = mysql.format(sql, inserts);
+
+    con.query(sql, (err, dbResult) => {
+        if (dbResult.length == 1) {
+            req.session.authenticated = true;
+            res.redirect('/');
+        }
+        else {
+            res.send("Not authenticated");
+        }
+    });
+}
+
 module.exports.returnIngredients = returnIngredients;
 module.exports.returnCupboard = returnCupboard;
 
