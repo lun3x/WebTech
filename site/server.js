@@ -16,7 +16,7 @@ const mysql = require('mysql');
 let con = mysql.createConnection({
     host: 'localhost',
     user: 'root',
-    //password: "321mowgli123",
+    password: 'pass',
     database: 'mydb'
 });
 
@@ -38,15 +38,6 @@ let ajax = require('./routes/ajax');
 
 
 //=== Middleware functions ===//
-
-function checkAuth(req, res, next) {
-  if (req.session && req.session.authenticated) {
-    next();
-  } else {
-    res.status(401).send("Error, not authenticated!");
-    return;
-  }
-}
 
 // Error handler
 function error(err, req, res, next) {
@@ -130,10 +121,11 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(session({
     secret: 'example',
     resave: false,
-    saveUninitialized: false
+    saveUninitialized: false,
+    cookie: {
+        maxAge: 600000
+    }
 }));
-
-app.use(checkAuth);
 
 // user login
 app.use('/auth', auth);
