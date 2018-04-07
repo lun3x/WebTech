@@ -36,3 +36,4 @@ rules:
   quotes: ["error", "single", { allowTemplateLiterals: true }]
   arrow-body-style: "off"
   no-nested-ternary: "off"
+  no-multi-spaces: "off"

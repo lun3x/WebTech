@@ -3,14 +3,14 @@ const mysql = require('mysql');
 let con = mysql.createConnection({
     host: 'localhost',
     user: 'root',
-    password: "pass",
+    password: 'pass',
     database: 'mydb',
 });
 
 //=== Database functions ===//
 
 // Gets all food from db and returns result to page as JSON
-function returnIngredients(res) {
+exports.returnIngredients = (res) => {
     con.connect((err) => {
         if (err) console.log('Already connected!');
     });
@@ -19,9 +19,9 @@ function returnIngredients(res) {
         console.log(JSON.stringify(dbResult));
         res.json(dbResult);
     });
-}
+};
 
-function returnCupboard(user_id, res) {
+exports.returnCupboard = (user_id, res) => {
     con.connect((err) => {
         if (err) console.log('Already connected!');
     });
@@ -40,21 +40,23 @@ function returnCupboard(user_id, res) {
     con.query(sql, (err, dbResult) => {
         if (err) throw err;
         res.json({
-            user_id: user_id,
-            food: {
-              dbResult
+            user_id,
+            data: {
+                cupboard: {
+                    food: dbResult
+                }
             }
         });
     });
-}
+};
 
-function addFood(ingredient_id, cupboard_id, res) {
+exports.addFood = (ingredient_id, cupboard_id, res) => {
     con.connect((err) => {
         if (err) console.log('Already connected!');
     });
 
     let sql = 'INSERT INTO IngredientCupboards (ingredient_id, cupboard_id) VALUES (?,?);';
-    let inserts = [ingredient_id, cupboard_id];
+    let inserts = [ ingredient_id, cupboard_id ];
     sql = mysql.format(sql, inserts); // Avoid SQL injection
 
     console.log(sql);
@@ -64,9 +66,9 @@ function addFood(ingredient_id, cupboard_id, res) {
             success: !err
         });
     });
-}
+};
 
-function removeFood(ingredientCupboard_id, res) {
+exports.removeFood = (ingredientCupboard_id, res) => {
     con.connect((err) => {
         if (err) console.log('Already connected!');
     });
@@ -80,36 +82,27 @@ function removeFood(ingredientCupboard_id, res) {
     con.query(sql, (err) => {
         res.json({
             success: !err
-        })
-    })
-}
+        });
+    });
+};
 
-function authenticate(username, password, req, res) {
+exports.authenticate = (username, password, req, res) => {
     con.connect((err) => {
         if (err) console.log('Already connected!');
     });
 
     let sql = 'SELECT * FROM Users WHERE username = ? AND password = ?';
-    let inserts = [username, password];
+    let inserts = [ username, password ];
     sql = mysql.format(sql, inserts);
 
     con.query(sql, (err, dbResult) => {
-        if (dbResult.length == 1) {
-            console.log("AUTHENTICATED");
+        if (dbResult.length === 1) {
+            console.log('AUTHENTICATED');
             req.session.authenticated = true;
             res.redirect('/');
-        }
-        else {
-            console.log("NOT AUTHENTICATED");
-            res.send("Not authenticated");
+        } else {
+            console.log('NOT AUTHENTICATED');
+            res.send('Not authenticated');
         }
     });
-}
-
-module.exports.returnIngredients = returnIngredients;
-module.exports.returnCupboard = returnCupboard;
-
-module.exports.addFood = addFood;
-module.exports.removeFood = removeFood;
-
-module.exports.authenticate = authenticate;
+};

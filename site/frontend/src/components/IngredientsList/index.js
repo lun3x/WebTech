@@ -10,14 +10,14 @@ class IngredientList extends Component {
     };
 
     static propTypes = {
-        ingredients: PropTypes.arrayOf(PropTypes.string),
+        ingredients: PropTypes.arrayOf(PropTypes.shape({ name: PropTypes.string })),
     };
 
     render() {
         let i = 0;
         const ingredientList = this.props.ingredients.map((x) => {
             i++;
-            return <IngredientBox key={i} ingredientName={x} />;
+            return <IngredientBox key={i} ingredientName={x.name} />;
         });
 
         const outerStyles = {

@@ -19,7 +19,7 @@ class CupboardPage extends Component {
         this.setState({ ingredientsAreLoading: true });
 
         let userId = 1;
-        fetch(`/api/cupboards/${userId}`)
+        fetch(`/api/cupboards/user/${userId}`)
             .then((res) => {
                 this.setState({ ingredientsAreLoading: false });
                 if (res.status !== 200) {

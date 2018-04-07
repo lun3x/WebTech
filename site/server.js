@@ -120,13 +120,13 @@ app.use(bodyParser.urlencoded({ extended: true }));
 
 app.use(session({ secret: 'example' }));
 
-// user login
-app.use('/auth', auth);
-app.use('/api', api);
-
 // serve static pages
 let options = {}; //{ setHeaders: deliverXHTML };
 app.use(express.static(path.join(__dirname, 'frontend/dist'), options));
+
+// user login
+app.use('/auth', auth);
+app.use('/api', api);
 
 // a middleware that doesn't do much (we made it for testing)
 app.use(chance);
