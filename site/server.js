@@ -114,6 +114,10 @@ app.use(lower);
 // enforce banned urls
 app.use(ban);
 
+// parse req body's
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
+
 app.use(session({ secret: 'example' }));
 
 // user login
@@ -127,10 +131,6 @@ app.use(express.static(path.join(__dirname, 'frontend/dist'), options));
 app.use('/', (req, res) => {
     res.sendFile(path.resolve(__dirname, 'frontend/dist/index.html'));
 });
-
-// parse req body's
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: true }));
 
 // a middleware that doesn't do much (we made it for testing)
 app.use(chance);

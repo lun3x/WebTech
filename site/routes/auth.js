@@ -18,11 +18,13 @@ router.get('/login', (req, res) => {
 router.post('/login', (req, res) => {
     let username = req.body.username;
     let password = req.body.password;
+    console.log(username);
+    console.log(password);
 
     db.authenticate(username, password, req, res);
 });
 
-app.get('/logout', function (req, res) {
+router.get('/logout', function (req, res) {
 	delete req.session.authenticated;
 	res.redirect('/');
 });

@@ -84,7 +84,7 @@ function removeFood(ingredientCupboard_id, res) {
     })
 }
 
-function login(username, password, req, res) {
+function authenticate(username, password, req, res) {
     con.connect((err) => {
         if (err) console.log('Already connected!');
     });
@@ -95,10 +95,12 @@ function login(username, password, req, res) {
 
     con.query(sql, (err, dbResult) => {
         if (dbResult.length == 1) {
+            console.log("AUTHENTICATED");
             req.session.authenticated = true;
             res.redirect('/');
         }
         else {
+            console.log("NOT AUTHENTICATED");
             res.send("Not authenticated");
         }
     });
@@ -109,3 +111,5 @@ module.exports.returnCupboard = returnCupboard;
 
 module.exports.addFood = addFood;
 module.exports.removeFood = removeFood;
+
+module.exports.authenticate = authenticate;
