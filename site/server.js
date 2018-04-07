@@ -125,12 +125,8 @@ app.use('/auth', auth);
 app.use('/api', api);
 
 // serve static pages
-let options = { setHeaders: deliverXHTML };
+let options = {}; //{ setHeaders: deliverXHTML };
 app.use(express.static(path.join(__dirname, 'frontend/dist'), options));
-
-app.use('/', (req, res) => {
-    res.sendFile(path.resolve(__dirname, 'frontend/dist/index.html'));
-});
 
 // a middleware that doesn't do much (we made it for testing)
 app.use(chance);
@@ -138,6 +134,11 @@ app.use(chance);
 // other handlers
 app.use('/test', test);
 app.use('/ajax', ajax);
+
+// home page
+app.use('/', (req, res) => {
+    res.sendFile(path.resolve(__dirname, 'frontend/dist/index.html'));
+});
 
 // catch 404 and forward to error handler
 app.use((req, res, next) => {
