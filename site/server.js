@@ -114,22 +114,24 @@ app.use(lower);
 // enforce banned urls
 app.use(ban);
 
+// parse req body's
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
+
+app.use(session({ secret: 'example' }));
+
 // user login
 app.use('/auth', auth);
+app.use('/api', api);
 
 // serve static pages
 let options = {}; //{ setHeaders: deliverXHTML };
 app.use(express.static(path.join(__dirname, 'frontend/dist'), options));
 
-// parse req body's
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: true }));
-
 // a middleware that doesn't do much (we made it for testing)
 app.use(chance);
 
 // other handlers
-app.use('/api', api);
 app.use('/test', test);
 app.use('/ajax', ajax);
 
@@ -147,8 +149,6 @@ app.use((req, res, next) => {
 
 // handle errors
 app.use(error);
-
-
 
 //=== Run the app ===//
 app.listen(8080, 'localhost');
