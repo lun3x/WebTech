@@ -48,9 +48,7 @@ class LandingPage extends Component {
         };
 
         return (
-            <Paper style={style} zDepth={2} rounded={false}>
-                <p>Hello, app.</p>
-
+            <Paper style={style} zDepth={2} rounded={false} >
                 {
                     /* eslint-disable indent */
                     this.state.authenticationLoadingError

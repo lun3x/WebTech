@@ -1,4 +1,7 @@
 import React, { Component } from 'react';
+import RaisedButton from 'material-ui/RaisedButton';
+import TextField from 'material-ui/TextField';
+import AppBar from 'material-ui/AppBar';
 import { Paper } from 'material-ui';
 import fetch from 'cross-fetch';
 import PropTypes from 'prop-types';
@@ -66,29 +69,39 @@ class LoginForm extends Component {
     }
 
     render() {
+        const style = {
+            margin: 15,
+        };
+
         return (
-            <form onSubmit={this.handleSubmit}>
-                Username:
-                <input
+            <div>
+                <TextField
                     name="username"
-                    type="text"
+                    hintText="Enter your username"
+                    floatingLabelText="Username"
                     value={this.state.username}
                     onChange={this.handleChange}
                 />
                 <br />
-                Password:
-                <input
+                <TextField
                     name="password"
-                    type="text"
+                    type="password"
+                    hintText="Enter your password"
+                    floatingLabelText="Password"
                     value={this.state.password}
                     onChange={this.handleChange}
                 />
                 <br />
-                <input type="submit" value="Login" />
+                <RaisedButton
+                    label="Login"
+                    primary
+                    style={style}
+                    onClick={this.handleSubmit}
+                />
                 {this.state.loginLoading}
                 {this.state.loginError}
                 {this.state.loginFailed}
-            </form>
+            </div>
         );
     }
 }

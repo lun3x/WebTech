@@ -36,16 +36,8 @@ class CupboardPage extends Component {
     }
 
     render() {
-        const style = {
-            height: 500,
-            textAlign: 'centre',
-            padding: 10,
-        };
-
         return (
-            <Paper style={style} zDepth={2} rounded={false}>
-                <p>Hello, app.</p>
-
+            <div>
                 {
                     /* eslint-disable indent */
                     this.state.ingredientsLoadingError
@@ -59,7 +51,7 @@ class CupboardPage extends Component {
                 <FindRecipesButton />
 
                 <ApiErrorSnackbar open={this.state.ingredientsLoadingError} />
-            </Paper>
+            </div>
         );
     }
 }
