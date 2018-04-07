@@ -21,4 +21,6 @@ rules:
   prefer-destructuring: "off"
   comma-dangle: "off"
   array-bracket-spacing: ["warn", "always", { singleValue: false }]
+  no-multi-spaces: "off"
+  no-multi-str: "off"
   

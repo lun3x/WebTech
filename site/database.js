@@ -3,7 +3,7 @@ const mysql = require('mysql');
 let con = mysql.createConnection({
     host: 'localhost',
     user: 'root',
-    password: "pass",
+    password: 'pass',
     database: 'mydb',
 });
 
@@ -19,7 +19,7 @@ exports.returnIngredients = (res) => {
         console.log(JSON.stringify(dbResult));
         res.json(dbResult);
     });
-}
+};
 
 exports.returnCupboard = (user_id, res) => {
     con.connect((err) => {
@@ -40,13 +40,15 @@ exports.returnCupboard = (user_id, res) => {
     con.query(sql, (err, dbResult) => {
         if (err) throw err;
         res.json({
-            user_id: user_id,
-            food: {
-              dbResult
+            user_id,
+            data: {
+                cupboard: {
+                    food: dbResult
+                }
             }
         });
     });
-}
+};
 
 exports.addFood = (ingredient_id, cupboard_id, res) => {
     con.connect((err) => {
@@ -54,7 +56,7 @@ exports.addFood = (ingredient_id, cupboard_id, res) => {
     });
 
     let sql = 'INSERT INTO IngredientCupboards (ingredient_id, cupboard_id) VALUES (?,?);';
-    let inserts = [ingredient_id, cupboard_id];
+    let inserts = [ ingredient_id, cupboard_id ];
     sql = mysql.format(sql, inserts); // Avoid SQL injection
 
     console.log(sql);
@@ -64,7 +66,7 @@ exports.addFood = (ingredient_id, cupboard_id, res) => {
             success: !err
         });
     });
-}
+};
 
 exports.removeFood = (ingredientCupboard_id, res) => {
     con.connect((err) => {
@@ -80,9 +82,9 @@ exports.removeFood = (ingredientCupboard_id, res) => {
     con.query(sql, (err) => {
         res.json({
             success: !err
-        })
-    })
-}
+        });
+    });
+};
 
 exports.authenticate = (username, password, req, res) => {
     con.connect((err) => {
@@ -90,12 +92,12 @@ exports.authenticate = (username, password, req, res) => {
     });
 
     let sql = 'SELECT * FROM Users WHERE username = ? AND password = ?';
-    let inserts = [username, password];
+    let inserts = [ username, password ];
     sql = mysql.format(sql, inserts);
 
     con.query(sql, (err, dbResult) => {
-        if (dbResult.length == 1) {
-            console.log("AUTHENTICATED");
+        if (dbResult.length === 1) {
+            console.log('AUTHENTICATED');
             req.session.authenticated = true;
             res.json({
                 success: true

@@ -16,7 +16,7 @@ exports.removeFood = (req, res) => {
     res.setHeader('Content-Type', 'application/json');
 
     db.removeFood(id, res);
-}
+};
 
 exports.addFood = (req, res) => {
     let foodID = req.params.foodID;
@@ -25,4 +25,4 @@ exports.addFood = (req, res) => {
     res.setHeader('Content-Type', 'application/json');
 
     db.addFood(foodID, cupboardID, res);
-}
+};
