@@ -40,7 +40,7 @@ let ajax = require('./routes/ajax');
 //=== Middleware functions ===//
 
 function checkAuth(req, res, next) {
-  if (req.session && !req.session.authenticated) {
+  if (req.session && req.session.authenticated) {
     next();
   } else {
     res.status(401).send("Error, not authenticated!");
@@ -127,7 +127,11 @@ app.use(ban);
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
-app.use(session({ secret: 'example' }));
+app.use(session({
+    secret: 'example',
+    resave: false,
+    saveUninitialized: false
+}));
 
 app.use(checkAuth);
 
