@@ -1,28 +1,40 @@
 // cupboardsController.js
 
 const db = require('../database.js');
+const auth = require('../routes/auth.js');
 
 exports.getUserCupboard = (req, res) => {
-    let user_id = req.params.user_id;
+    if (!req.session || !req.session.authenticated) {
+        res.status(401).send("Error! Not logged in.");
+        return;
+    }
 
     res.setHeader('Content-Type', 'application/json');
 
-    db.returnCupboard(user_id, res);
+    db.returnCupboard(req.session.user_id, res);
 };
 
 exports.removeFood = (req, res) => {
-    let id = req.params.foodID;
+    if (!req.session || !req.session.authenticated) {
+        res.status(401).send("Error! Not logged in.");
+        return;
+    }
 
     res.setHeader('Content-Type', 'application/json');
 
-    db.removeFood(id, res);
+    db.removeFood(req, res);
 };
 
 exports.addFood = (req, res) => {
+    if (!req.session || !req.session.authenticated) {
+        res.status(401).send("Error! Not logged in.");
+        return;
+    }
+
     let foodID = req.params.foodID;
     let cupboardID = req.params.cupboardID;
 
     res.setHeader('Content-Type', 'application/json');
 
-    db.addFood(foodID, cupboardID, res);
+    db.addFood(req, res);
 };

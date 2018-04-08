@@ -8,6 +8,7 @@ import PropTypes from 'prop-types';
 import FindRecipesButton from '../FindRecipesButton';
 import IngredientList from '../IngredientsList';
 import ApiErrorSnackbar from '../ApiErrorSnackbar';
+import RegisterForm from '../RegisterForm';
 
 class LoginForm extends Component {
     static propTypes = {
@@ -21,7 +22,8 @@ class LoginForm extends Component {
             password: '',
             loginLoading: false,
             loginError: false,
-            loginFailed: false
+            loginFailed: false,
+            registration: false
         };
 
         this.handleChange = this.handleChange.bind(this);
@@ -64,7 +66,7 @@ class LoginForm extends Component {
         }).catch((err) => {
             this.setState({ loginError: true });
         });
-
+        
         event.preventDefault();
     }
 
@@ -75,31 +77,51 @@ class LoginForm extends Component {
 
         return (
             <div>
-                <TextField
-                    name="username"
-                    hintText="Enter your username"
-                    floatingLabelText="Username"
-                    value={this.state.username}
-                    onChange={this.handleChange}
-                />
-                <br />
-                <TextField
-                    name="password"
-                    type="password"
-                    hintText="Enter your password"
-                    floatingLabelText="Password"
-                    value={this.state.password}
-                    onChange={this.handleChange}
-                />
-                <br />
-                <RaisedButton
-                    label="Login"
-                    primary
-                    style={style}
-                    onClick={this.handleSubmit}
-                />
-                {this.state.loginLoading}
+                {
+                    this.state.registration ?
+                        <div>
+                            <RegisterForm
+                                username={this.state.username}
+                                password={this.state.password}
+                                doneRegister={(e) => { this.setState({ registration: false }); }}
+                                onUPChange={this.handleChange}
+                            />
+                        </div>
+                        :
+                        <div>
+                            <TextField
+                                name="username"
+                                hintText="Enter your username"
+                                floatingLabelText="Username"
+                                value={this.state.username}
+                                onChange={this.handleChange}
+                            />
+                            <br />
+                            <TextField
+                                name="password"
+                                type="password"
+                                hintText="Enter your password"
+                                floatingLabelText="Password"
+                                value={this.state.password}
+                                onChange={this.handleChange}
+                            />
+                            <br />
+                            <RaisedButton
+                                label="Login"
+                                primary
+                                style={style}
+                                onClick={this.handleSubmit}
+                            />
+                            <RaisedButton
+                                label="Register"
+                                primary
+                                style={style}
+                                onClick={(e) => { this.setState({ registration: true }); }}
+                            />
+                        </div>
+                }
                 {this.state.loginError}
+                {this.state.loginLoading}
                 {this.state.loginFailed}
             </div>
         );

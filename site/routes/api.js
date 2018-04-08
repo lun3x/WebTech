@@ -12,7 +12,7 @@ router.get('/ingredients', ingredientsController.allIngredients);
 /* GET the cupboard for user `user_id`. */
 router.get('/cupboards/add/:foodID/:cupboardID', cupboardsController.addFood);
 router.get('/cupboards/remove/:foodID', cupboardsController.removeFood);
-router.get('/cupboards/user/:user_id', cupboardsController.getUserCupboard);
+router.get('/cupboard', cupboardsController.getUserCupboard);
 
 
 module.exports = router;

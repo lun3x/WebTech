@@ -18,11 +18,11 @@ class CupboardPage extends Component {
     componentWillMount() {
         this.setState({ ingredientsAreLoading: true });
 
-        let userId = 1;
-        fetch(`/api/cupboards/user/${userId}`)
+        fetch(`/api/cupboard`)
             .then((res) => {
                 this.setState({ ingredientsAreLoading: false });
                 if (res.status !== 200) {
+                    alert(res.status);
                     throw new Error('Bad status from server');
                 }
                 return res.json();
@@ -31,6 +31,7 @@ class CupboardPage extends Component {
                 this.setState({ ingredients: json.data.cupboard.food });
             })
             .catch((err) => {
+                alert(err);
                 this.setState({ ingredientsLoadingError: true });
             });
     }

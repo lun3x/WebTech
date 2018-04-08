@@ -24,9 +24,30 @@ router.post('/login', (req, res) => {
     db.authenticate(username, password, req, res);
 });
 
-router.get('/logout', function (req, res) {
+router.get('/logout', (req, res) => {
 	delete req.session.authenticated;
 	res.redirect('/');
+});
+
+router.post('/register', (req, res) => {
+    // Check username is ASCII and password is extended ASCII
+    if (!/^[\x00-\x7F]*$/.test(req.body.username)) {
+        res.status(401).json({
+            fail: 'usernameChar'
+        });
+        return;
+    } 
+    else if (!/^[\x00-\xFF]*$/.test(req.body.password)) {
+        res.status(401).json({
+            fail: 'passwordChar'
+        });
+        return;
+    }
+
+    // Set username to lowercase
+    req.body.username = req.body.username.toLowerCase();
+
+    db.registerUser(req, res);
 });
 
 module.exports = router;
