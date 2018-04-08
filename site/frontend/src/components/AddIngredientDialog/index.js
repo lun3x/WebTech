@@ -65,7 +65,7 @@ class AddIngredientDialog extends Component {
                     actions={actions}
                     modal={false}
                     open={this.state.open}
-                    onRequestClose={this.handleCancel}
+                    onRequestClose={this.handleClose}
                     //ingredients={this.props.ingredients.map(x => x.name)}
                 >
                     Search for an ingredient below.
