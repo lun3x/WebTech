@@ -99,13 +99,13 @@ exports.removeFood = (req, res) => {
     console.log(sql);
 };
 
-exports.authenticate = (username, password, req, res) => {
+exports.authenticate = (req, res) => {
     con.connect((err) => {
         if (err) console.log('Already connected!');
     });
 
     let sql = 'SELECT * FROM Users WHERE username = ? AND password = ?';
-    let inserts = [username, password];
+    let inserts = [req.body.username, req.body.password];
     sql = mysql.format(sql, inserts);
 
     con.query(sql, (err, dbResult) => {
@@ -127,7 +127,7 @@ exports.authenticate = (username, password, req, res) => {
     });
 };
 
-exports.registerUser = (req, res) => {
+exports.createUser = (req, res) => {
     con.connect((err) => {
         if (err) console.log('Already connected!');
     });
