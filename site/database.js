@@ -16,8 +16,9 @@ exports.returnIngredients = (res) => {
     });
     con.query('SELECT * FROM Ingredients;', (err, dbResult) => {
         if (err) throw err;
+        console.log('/ingredients returns...');
         console.log(JSON.stringify(dbResult));
-        res.json(dbResult);
+        res.status(200).json({ data: { ingredients: dbResult } });
     });
 };
 
@@ -63,14 +64,14 @@ exports.addFood = (req, res) => {
 
     con.query(sql, (err, dbResult) => {
         if (err) throw err;
-        if (dbResult.length == 1 && dbResult[0].user_id == req.session.user_id) {
+        if (dbResult.length === 1 && dbResult[0].user_id === req.session.user_id) {
             sql = 'INSERT INTO IngredientCupboards (ingredient_id, cupboard_id) VALUES (?,?);';
-            inserts = [req.params.ingredient_id, req.params.cupboard_id];
+            inserts = [ req.params.ingredient_id, req.params.cupboard_id ];
             sql = mysql.format(sql, inserts);
 
-            con.query(sql, (err) => {
+            con.query(sql, (err2) => {
                 res.json({
-                    success: !err
+                    success: !err2
                 });
             });
         }
@@ -87,7 +88,7 @@ exports.removeFood = (req, res) => {
                WHERE IngredientCupboards.id = ?\
                AND Cupboards.user_id = ?';
 
-    let inserts = [req.params.foodID, req.session.user_id];
+    let inserts = [ req.params.foodID, req.session.user_id ];
     sql = mysql.format(sql, inserts);
 
     con.query(sql, (err) => {
@@ -105,7 +106,7 @@ exports.authenticate = (req, res) => {
     });
 
     let sql = 'SELECT * FROM Users WHERE username = ? AND password = ?';
-    let inserts = [req.body.username, req.body.password];
+    let inserts = [ req.body.username, req.body.password ];
     sql = mysql.format(sql, inserts);
 
     con.query(sql, (err, dbResult) => {
@@ -119,7 +120,7 @@ exports.authenticate = (req, res) => {
             });
         }
         else {
-            console.log("NOT AUTHENTICATED");
+            console.log('NOT AUTHENTICATED');
             res.status(401).json({
                 success: false
             });
@@ -133,7 +134,7 @@ exports.createUser = (req, res) => {
     });
 
     let sql = 'INSERT INTO Users (name, password, username) VALUES (?,?,?);';
-    let inserts = [req.body.name, req.body.password, req.body.username];
+    let inserts = [ req.body.name, req.body.password, req.body.username ];
     sql = mysql.format(sql, inserts);
 
     con.query(sql, (err) => {
@@ -141,7 +142,8 @@ exports.createUser = (req, res) => {
             res.status(403).json({
                 fail: 'usernameTaken'
             });
-        } else {
+        }
+        else {
             res.status(201).json({
                 fail: 'none'
             });

@@ -39,3 +39,8 @@ rules:
   no-multi-spaces: "off"
   no-alert: "off"
   no-control-regex: "off"
+  react/jsx-curly-brace-presence: "off"
+  function-paren-newline: "off"
+  key-spacing: "off"
+  brace-style: ["error", "stroustrup", { "allowSingleLine": true }]
+  max-len: ["warn", { "code": 120 }]

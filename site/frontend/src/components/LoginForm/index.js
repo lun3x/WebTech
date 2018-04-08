@@ -60,7 +60,8 @@ class LoginForm extends Component {
         }).then((json) => {
             if (json.success) {
                 this.props.onAuthChange(json.success);
-            } else {
+            }
+            else {
                 this.setState({ loginFailed: true });
             }
         }).catch((err) => {

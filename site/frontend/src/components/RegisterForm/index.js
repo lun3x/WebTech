@@ -68,16 +68,19 @@ class RegisterForm extends Component {
             if (res.status === 201) {
                 // Successful registration
                 this.props.doneRegister(false);
-            } else if (res.status !== 403) {
+            }
+            else if (res.status !== 403) {
                 throw new Error('Bad status from server.');
             }
             return res.json();
         }).then((json) => {
             if (json.fail === 'usernameTaken') {
                 this.setState({ usernameTaken: true });
-            } else if (json.fail === 'usernameChar') {
+            }
+            else if (json.fail === 'usernameChar') {
                 alert('Character(s) not allowed in username!');
-            } else if (json.fail === 'passwordChar') {
+            }
+            else if (json.fail === 'passwordChar') {
                 alert('Character(s) not allowed in password!');
             }
         }).catch((err) => {

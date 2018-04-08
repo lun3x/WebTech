@@ -2,31 +2,49 @@ import React, { Component } from 'react';
 import Paper from 'material-ui/Paper';
 import PropTypes from 'prop-types';
 import IngredientBox from '../IngredientBox';
+import AddIngredientDialog from '../AddIngredientDialog';
 
 class IngredientList extends Component {
 
     static defaultProps = {
-        ingredients: []
+        userIngredients: [],
+        allIngredients: []
     };
 
     static propTypes = {
-        ingredients: PropTypes.arrayOf(PropTypes.shape({ name: PropTypes.string })),
+        userIngredients: PropTypes.arrayOf(PropTypes.shape({ name: PropTypes.string })),
+        allIngredients:  PropTypes.arrayOf(PropTypes.shape({
+            id: PropTypes.number,
+            name: PropTypes.string
+        })),
+        reload: PropTypes.func.isRequired,
     };
 
     render() {
+        // create IngredientBox for each user ingredient
         let i = 0;
-        const ingredientList = this.props.ingredients.map((x) => {
+        const ingredientList = this.props.userIngredients.map((x) => {
             i++;
             return <IngredientBox key={i} ingredientName={x.name} />;
         });
 
-        const outerStyles = {
+        // add a IngredientPlusBox at the end
+        i++;
+        ingredientList.push(
+            <AddIngredientDialog
+                key={i}
+                ingredients={this.props.allIngredients}
+                triggerCupboardReload={this.props.reload}
+            />
+        );
+
+        const outerStyle = {
             display: 'flex',
             flexFlow: 'row wrap',
         };
 
         return (
-            <div style={outerStyles} >
+            <div style={outerStyle} >
                 { ingredientList }
             </div>
         );

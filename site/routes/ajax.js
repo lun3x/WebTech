@@ -1,28 +1,29 @@
 // DEPRECATED: this route is only here for compatability
 
-var express = require('express');
-var router = express.Router();
+let express = require('express');
 
-var db = require('../database');
+let router = express.Router();
+
+let db = require('../database');
 
 
 // GET 
-router.get('/', function(req, res, next) {
+router.get('/', (req, res, next) => {
     let action = req.query.action;
     console.log(action);
-    if (action == 'getFood') {
+    if (action === 'getFood') {
         db.returnFood(res);
     }
 });
 
 // POST
-router.post('/', function(req, res, next) {
+router.post('/', (req, res, next) => {
     let action = req.body.action;
     console.log(action);
-    if (action == 'addFood') {
+    if (action === 'addFood') {
         db.addFood(req, res);
     }
-    else if (action == 'plusB' || action == 'minusB') {
+    else if (action === 'plusB' || action === 'minusB') {
         db.incrDecrFood(req, res);
     }
 });

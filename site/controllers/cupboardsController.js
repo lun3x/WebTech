@@ -5,7 +5,7 @@ const auth = require('../routes/auth.js');
 
 exports.getUserCupboard = (req, res) => {
     if (!req.session || !req.session.authenticated) {
-        res.status(401).send("Error! Not logged in.");
+        res.status(401).send('Error! Not logged in.');
         return;
     }
 
@@ -16,7 +16,7 @@ exports.getUserCupboard = (req, res) => {
 
 exports.removeFood = (req, res) => {
     if (!req.session || !req.session.authenticated) {
-        res.status(401).send("Error! Not logged in.");
+        res.status(401).send('Error! Not logged in.');
         return;
     }
 
@@ -27,7 +27,7 @@ exports.removeFood = (req, res) => {
 
 exports.addFood = (req, res) => {
     if (!req.session || !req.session.authenticated) {
-        res.status(401).send("Error! Not logged in.");
+        res.status(401).send('Error! Not logged in.');
         return;
     }
 
