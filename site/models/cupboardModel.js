@@ -1,18 +1,17 @@
 const mysql = require('mysql');
 const db = require('../database.js');
 
-exports.returnCupboard = (user_id, controllerCallback) => {
+exports.getCupboardIngredients = (cupboard_id, controllerCallback) => {
     db.con.connect((err) => {
         if (err) console.log('Already connected!');
     });
 
-    let sql = 'SELECT Ingredients.name, IngredientCupboards.cupboard_id FROM IngredientCupboards\
+    let sql = 'SELECT Ingredients.name FROM IngredientCupboards\
              INNER JOIN Ingredients ON IngredientCupboards.ingredient_id = Ingredients.id\
              INNER JOIN Cupboards ON IngredientCupboards.cupboard_id = Cupboards.id\
-             WHERE Cupboards.user_id = ?;';
-
-    let inserts = [ user_id ];
-
+             WHERE Cupboards.id = ?;';
+             
+    let inserts = [ cupboard_id ];
     sql = mysql.format(sql, inserts); // Avoid SQL injection
 
     console.log(sql);

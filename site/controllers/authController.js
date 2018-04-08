@@ -20,6 +20,7 @@ exports.login = (req, res) => {
                     console.log('AUTHENTICATED');
                     req.session.authenticated = true;
                     req.session.user_id = dbResult[0].id;
+                    req.session.cupboard_id = dbResult[0].default_cupboard_id;
                     res.status(200).send('Authenticated');
                 } else {
                     console.log('NOT AUTHENTICATED - PASSWORD INCORRECT');
@@ -40,7 +41,7 @@ exports.logout = (req, res) => {
 };
 
 exports.register = (req, res) => {
-    // Check username is ASCII and password is extended ASCII
+    // check username is ASCII and password is extended ASCII
     if (!/^[\x00-\x7F]*$/.test(req.body.username)) {
         res.status(401).json({ fail: 'usernameChar' });
         return;
@@ -50,27 +51,37 @@ exports.register = (req, res) => {
         return;
     }
 
-    // Set username to lowercase
+    // set username to lowercase
     req.body.username = req.body.username.toLowerCase();
 
+    // hash plain text password
     bcrypt.hash(req.body.password, 10, function(err, hash) {
-        if (err) {
-            res.status(500).json({ fail: 'hashFail' });
-            return;
+        if (err) res.status(500).json({ fail: 'hashFail' });
+        else {
+            // create user with hashed password
+            db.createUser(req.body.name, hash, req.body.username, (err, result) => {
+                if (err) res.status(409).json({ fail: 'usernameTaken' }); 
+                else {
+                    // get id of newly created user
+                    let user_id = result.insertId;
+                    // create cupboard linked to new user
+                    cupboardModel.createCupboard(user_id, (err, result) => {
+                        if (err) res.status(500).json({ fail: 'cannotCreateCupboard' });
+                        else {
+                            // get id of newly created cupboard
+                            let cupboard_id = result.insertId;
+                            // update default cupboard of new user
+                            db.updateDefaultCupboard(cupboard_id, user_id, (err) => {
+                                if (err) res.status(500).json({ fail: 'cannotUpdateDefaultCupboard' });
+                                else {
+                                    res.status(201).json({ fail: 'none' });
+                                    return;
+                                }
+                            });
+                        }
+                    });
+                }
+            });
         }
-        db.createUser(req.body.name, hash, req.body.username, (err, result) => {
-            if (err) res.status(409).json({ fail: 'usernameTaken' }); 
-            else {
-
-                // now create a cupboard for this user
-                cupboardModel.createCupboard(result.insertId, (err, result) => {
-                    if (err) res.status(500).json({ fail: 'cannotCreateCupboard' });
-
-                    let cupboardId = result.insertId;
-                    req.session.cupboardId = cupboardId;
-                    res.status(201).json({ fail: 'none' });
-                });
-            }
-        });
     });
 };
