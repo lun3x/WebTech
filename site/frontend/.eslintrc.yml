@@ -37,3 +37,8 @@ rules:
   arrow-body-style: "off"
   no-nested-ternary: "off"
   no-multi-spaces: "off"
+  react/jsx-curly-brace-presence: "off"
+  function-paren-newline: "off"
+  key-spacing: "off"
+  brace-style: ["error", "stroustrup", { "allowSingleLine": true }]
+  max-len: ["warn", { "code": 120 }]

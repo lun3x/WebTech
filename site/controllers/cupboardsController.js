@@ -24,5 +24,7 @@ exports.addFood = (req, res) => {
 
     res.setHeader('Content-Type', 'application/json');
 
+    console.log('cupboards controller add food');
+
     db.addFood(foodID, cupboardID, res);
 };

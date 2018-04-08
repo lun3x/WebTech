@@ -5,8 +5,13 @@ import PropTypes from 'prop-types';
 
 class ApiErrorSnackbar extends Component {
 
+    static defaultProps = {
+        message: 'Error fetching data',
+    }
+
     static propTypes = {
         open: PropTypes.bool.isRequired,
+        message: PropTypes.string,
     }
 
     constructor(props) {
@@ -22,16 +27,14 @@ class ApiErrorSnackbar extends Component {
         });
     };
 
-
     render() {
-        const error = 'Error fetching data';
         const style = {};
 
         return (
             <Snackbar
                 open={this.props.open && this.state.open}
                 style={style}
-                message={error}
+                message={this.props.message}
                 autoHideDuration={4000}
                 onRequestClose={this.handleClose}
             />

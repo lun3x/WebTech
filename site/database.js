@@ -16,8 +16,9 @@ exports.returnIngredients = (res) => {
     });
     con.query('SELECT * FROM Ingredients;', (err, dbResult) => {
         if (err) throw err;
+        console.log('/ingredients returns...');
         console.log(JSON.stringify(dbResult));
-        res.json(dbResult);
+        res.status(200).json({ data: { ingredients: dbResult } });
     });
 };
 
@@ -55,6 +56,8 @@ exports.addFood = (ingredient_id, cupboard_id, res) => {
         if (err) console.log('Already connected!');
     });
 
+    console.log('add food');
+
     let sql = 'INSERT INTO IngredientCupboards (ingredient_id, cupboard_id) VALUES (?,?);';
     let inserts = [ ingredient_id, cupboard_id ];
     sql = mysql.format(sql, inserts); // Avoid SQL injection
@@ -62,7 +65,19 @@ exports.addFood = (ingredient_id, cupboard_id, res) => {
     console.log(sql);
 
     con.query(sql, (err) => {
-        res.json({
+        let status = null;
+        if (err) {
+            status = 422;
+        }
+        else {
+            status = 200;
+        }
+
+        console.log('query callback');
+        console.log('status', status);
+        console.log('err', err);
+
+        res.status(status).json({
             success: !err
         });
     });
@@ -100,7 +115,8 @@ exports.authenticate = (username, password, req, res) => {
             console.log('AUTHENTICATED');
             req.session.authenticated = true;
             res.redirect('/');
-        } else {
+        }
+        else {
             console.log('NOT AUTHENTICATED');
             res.send('Not authenticated');
         }
