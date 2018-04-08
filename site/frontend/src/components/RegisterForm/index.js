@@ -59,7 +59,7 @@ class RegisterForm extends Component {
             if (res.status === 201) {
                 // Successful registration
                 this.props.doneRegister(false);
-            } else if (res.status !== 401) {
+            } else if (res.status !== 403) {
                 throw new Error('Bad status from server.');
             }
             return res.json();

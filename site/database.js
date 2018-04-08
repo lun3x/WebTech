@@ -120,7 +120,7 @@ exports.authenticate = (req, res) => {
         }
         else {
             console.log("NOT AUTHENTICATED");
-            res.json({
+            res.status(401).json({
                 success: false
             });
         }
@@ -138,7 +138,7 @@ exports.createUser = (req, res) => {
 
     con.query(sql, (err) => {
         if (err) {
-            res.status(401).json({
+            res.status(403).json({
                 fail: 'usernameTaken'
             });
         } else {

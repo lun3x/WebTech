@@ -31,9 +31,6 @@ exports.addFood = (req, res) => {
         return;
     }
 
-    let foodID = req.params.foodID;
-    let cupboardID = req.params.cupboardID;
-
     res.setHeader('Content-Type', 'application/json');
 
     db.addFood(req, res);
