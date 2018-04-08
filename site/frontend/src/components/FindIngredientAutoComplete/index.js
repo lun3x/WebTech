@@ -33,9 +33,9 @@ class FindIngredientAutoComplete extends Component {
         }
         else {
             // make an api call to add the selected ingredient to the current cupboard
-            let foodId = this.props.ingredients[index].id;
+            let ingredientId = this.props.ingredients[index].id;
             let cupboardId = 1;
-            fetch(`/cupboards/${cupboardId}/add/${foodId}`, { method: 'PUT' })
+            fetch(`/api/cupboards/${cupboardId}/add/${ingredientId}`, { method: 'PUT' })
                 .then(res => {
                     this.setState({ addFoodAwaitingResponse: false });
 

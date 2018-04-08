@@ -42,6 +42,7 @@ class CupboardPage extends Component {
                 return res.json();
             })
             .then(json => {
+                console.dir(json.data.ingredients);
                 this.setState({ allIngredients: json.data.ingredients });
             })
             .catch(err => {

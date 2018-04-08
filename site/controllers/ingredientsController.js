@@ -1,6 +1,6 @@
 // ingredientsController.js
 
-const db = require('../database.js');
+const db = require('../models/ingredientsModel.js');
 
 // A list of all ingredients
 exports.allIngredients = (req, res) => {
