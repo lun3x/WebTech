@@ -51,7 +51,7 @@ class CupboardPage extends Component {
     }
 
     fetchUserCupboard = () => {
-        fetch(`/api/cupboard`)
+        fetch(`/api/cupboard/ingredients`, { method: 'GET', credentials: 'same-origin' })
             .then(res => {
                 this.setState({ userIngredientsAreLoading: false });
                 if (res.status !== 200) {

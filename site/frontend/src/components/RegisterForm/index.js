@@ -163,7 +163,6 @@ class RegisterForm extends Component {
                     style={style}
                     onClick={this.props.doneRegister}
                 />
-                <br />
                 <RaisedButton
                     label="Register"
                     primary

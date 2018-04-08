@@ -7,5 +7,14 @@ exports.allIngredients = (req, res) => {
     // set Content-Type header
     res.setHeader('Content-Type', 'application/json');
 
-    db.returnIngredients(res);
+    db.returnIngredients((err, dbResult) => {
+        if (err) res.status(500).send('Error! Couldn`t get ingredients.');
+        else {
+            res.json({
+                data: {
+                    ingredients: dbResult
+                }
+            });
+        }
+    });
 };

@@ -19,8 +19,7 @@ class LandingPage extends Component {
     componentWillMount() {
         this.setState({ authenticationIsLoading: true });
 
-        let userId = 1;
-        fetch(`/auth/isAuthenticated`)
+        fetch(`/auth/isAuthenticated`, { method: 'GET', credentials: 'same-origin' })
             .then((res) => {
                 this.setState({ authenticationIsLoading: false });
                 if (res.status !== 200) {
