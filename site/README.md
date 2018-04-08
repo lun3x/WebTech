@@ -7,8 +7,8 @@
 
 ## Authors
 
-[@ahmerb](github.com/ahmerb) - Ahmer Butt \
-[@lun3x](github.com/lun3x) - Louis Wyborn
+[@ahmerb](www.github.com/ahmerb) - Ahmer Butt \
+[@lun3x](www.github.com/lun3x) - Louis Wyborn
 
 ## Usage
 
