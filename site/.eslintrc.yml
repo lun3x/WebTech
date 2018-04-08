@@ -20,7 +20,7 @@ rules:
   camelcase: "off"
   prefer-destructuring: "off"
   comma-dangle: "off"
-  array-bracket-spacing: ["warn", "always", { singleValue: "off" }]
+  array-bracket-spacing: ["warn", "always"]
   no-multi-spaces: "off"
   no-multi-str: "off"
   brace-style: ["error", "stroustrup", { "allowSingleLine": true }]
