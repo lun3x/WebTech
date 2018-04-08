@@ -38,3 +38,4 @@ rules:
   no-nested-ternary: "off"
   no-multi-spaces: "off"
   no-alert: "off"
+  no-control-regex: "off"
