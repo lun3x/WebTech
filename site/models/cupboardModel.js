@@ -34,6 +34,18 @@ exports.getCupboard = (cupboard_id, controllerCallback) => {
     db.con.query(sql, controllerCallback);
 };
 
+exports.createCupboard = (user_id, controllerCallback) => {
+    db.con.connect((err) => {
+        if (err) console.log('Already connected!');
+    });
+
+    let sql = 'INSERT INTO Cupboards (user_id) VALUES (?)';
+    let inserts = [ user_id ];
+    sql = mysql.format(sql, inserts);
+
+    db.con.query(sql, controllerCallback)
+};
+
 exports.createIngredientCupboard = (ingredient_id, cupboard_id, controllerCallback) => {
     db.con.connect((err) => {
         if (err) console.log('Already connected!');

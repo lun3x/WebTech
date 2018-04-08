@@ -4,12 +4,14 @@ var bcrypt = require('bcrypt');
 const router = express.Router();
 
 const db = require('../models/authModel.js');
+const cupboardModel = require('../models/cupboardModel.js');
 
 exports.isAuthenticated = (req, res) => {
     if (!req.session || !req.session.authenticated) res.json({ authenticated: false });
     else res.json({ authenticated: true });
 };
 
+// TODO: cupoard_id on login
 exports.login = (req, res) => {
     db.getUser(req.body.username, (err, dbResult) => {
         if (dbResult.length === 1) {
@@ -56,9 +58,19 @@ exports.register = (req, res) => {
             res.status(500).json({ fail: 'hashFail' });
             return;
         }
-        db.createUser(req.body.name, hash, req.body.username, (err) => {
+        db.createUser(req.body.name, hash, req.body.username, (err, result) => {
             if (err) res.status(409).json({ fail: 'usernameTaken' }); 
-            else     res.status(201).json({ fail: 'none' });
+            else {
+
+                // now create a cupboard for this user
+                cupboardModel.createCupboard(result.insertId, (err, result) => {
+                    if (err) res.status(500).json({ fail: 'cannotCreateCupboard' });
+
+                    let cupboardId = result.insertId;
+                    req.session.cupboardId = cupboardId;
+                    res.status(201).json({ fail: 'none' });
+                });
+            }
         });
     });
 };

@@ -18,6 +18,7 @@ exports.createUser = (name, hashPass, username, controllerCallback) => {
         if (err) console.log('Already connected!');
     });
 
+    // create a new user
     let sql = 'INSERT INTO Users (name, password, username) VALUES (?,?,?);';
     let inserts = [name, hashPass, username];
     sql = mysql.format(sql, inserts);
