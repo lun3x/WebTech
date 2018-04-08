@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import RaisedButton from 'material-ui/RaisedButton';
 import TextField from 'material-ui/TextField';
 import AppBar from 'material-ui/AppBar';
+import CircularProgress from 'material-ui/CircularProgress';
 import { Paper } from 'material-ui';
 import fetch from 'cross-fetch';
 import PropTypes from 'prop-types';
@@ -34,11 +35,14 @@ class LoginForm extends Component {
         const target = event.target;
 
         this.setState({
+            loginFailed: false,
             [target.name]: target.value
         });
     }
 
     handleSubmit(event) {
+        if (this.state.username.length === 0 || this.state.password.length === 0) return;
+
         this.setState({ loginLoading: true });
 
         fetch(`/auth/login`, {
@@ -53,15 +57,12 @@ class LoginForm extends Component {
             })
         }).then((res) => {
             this.setState({ loginLoading: false });
-            if (res.status !== 200) {
-                throw new Error('Bad status from server');
-            }
-            return res.json();
-        }).then((json) => {
-            if (json.success) {
-                this.props.onAuthChange(json.success);
-            } else {
+            if (res.status === 200) {
+                this.props.onAuthChange(true);
+            } else if (res.status === 401) {
                 this.setState({ loginFailed: true });
+            } else {
+                throw new Error('Bad status from server');
             }
         }).catch((err) => {
             this.setState({ loginError: true });
@@ -88,11 +89,12 @@ class LoginForm extends Component {
                             />
                         </div>
                         :
-                        <div>
+                        <form onSubmit={this.handleSubmit}>
                             <TextField
                                 name="username"
                                 hintText="Enter your username"
                                 floatingLabelText="Username"
+                                onKeyPress={(e) => { if (e.key === 'Enter') this.handleSubmit(e); }}
                                 value={this.state.username}
                                 onChange={this.handleChange}
                             />
@@ -102,6 +104,8 @@ class LoginForm extends Component {
                                 type="password"
                                 hintText="Enter your password"
                                 floatingLabelText="Password"
+                                onKeyPress={(e) => { if (e.key === 'Enter') this.handleSubmit(e); }}
+                                errorText={this.state.loginFailed ? 'Username or password incorrect' : ''}
                                 value={this.state.password}
                                 onChange={this.handleChange}
                             />
@@ -109,20 +113,32 @@ class LoginForm extends Component {
                             <RaisedButton
                                 label="Login"
                                 primary
+                                disabled={this.state.username.length === 0 || this.state.password.length === 0}
                                 style={style}
                                 onClick={this.handleSubmit}
-                            />
+                            />  
                             <RaisedButton
                                 label="Register"
                                 primary
+                                disabled={this.state.username.length === 0 || this.state.password.length === 0}
                                 style={style}
                                 onClick={(e) => { this.setState({ registration: true }); }}
                             />
-                        </div>
+                            <br />
+                            {
+                                this.state.loginLoading ?
+                                    <CircularProgress />
+                                    :
+                                    null
+                                    
+                            }
+                        </form>
                 }
-                {this.state.loginError}
+                <ApiErrorSnackbar
+                    open={this.state.loginError}
+                    message="Error connecting to server!"
+                />
                 {this.state.loginLoading}
-                {this.state.loginFailed}
             </div>
         );
     }

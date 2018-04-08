@@ -39,3 +39,4 @@ rules:
   no-multi-spaces: "off"
   no-alert: "off"
   no-control-regex: "off"
+  max-len: "off"
