@@ -15,7 +15,6 @@ exports.getCupboardIngredients = (cupboard_id, controllerCallback) => {
     sql = mysql.format(sql, inserts); // Avoid SQL injection
 
     console.log(sql);
-
     db.con.query(sql, controllerCallback);
 };
 
@@ -29,7 +28,6 @@ exports.getCupboard = (cupboard_id, controllerCallback) => {
     sql = mysql.format(sql, inserts);
 
     console.log(sql);
-
     db.con.query(sql, controllerCallback);
 };
 
@@ -42,6 +40,7 @@ exports.createCupboard = (user_id, controllerCallback) => {
     let inserts = [ user_id ];
     sql = mysql.format(sql, inserts);
 
+    console.log(sql);
     db.con.query(sql, controllerCallback)
 };
 
@@ -54,6 +53,7 @@ exports.createIngredientCupboard = (ingredient_id, cupboard_id, controllerCallba
     let inserts = [ ingredient_id, cupboard_id ];
     sql = mysql.format(sql, inserts);
 
+    console.log(sql);
     db.con.query(sql, controllerCallback);
 };
 

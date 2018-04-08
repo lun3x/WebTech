@@ -15,5 +15,8 @@ router.get('/cupboard/ingredients', cupboardsController.getUserCupboard);
 /* PUT add food to user's cupboard */
 router.put('/cupboard/add/:ingredient_id', cupboardsController.addFood);
 
+/* POST create new cupboard */
+router.post('/cupboard/create', cupboardsController.addCupboard);
+
 
 module.exports = router;

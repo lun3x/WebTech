@@ -6,5 +6,9 @@ exports.returnIngredients = (controllerCallback) => {
     db.con.connect((err) => {
         if (err) console.log('Already connected!');
     });
-    db.con.query('SELECT * FROM Ingredients;', controllerCallback);
+    
+    let sql = 'SELECT * FROM Ingredients;';
+
+    console.log(sql);
+    db.con.query(sql, controllerCallback);
 };

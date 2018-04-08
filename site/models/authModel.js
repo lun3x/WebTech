@@ -10,6 +10,7 @@ exports.getUser = (username, controllerCallback) => {
     let inserts = [ username ];
     sql = mysql.format(sql, inserts);
 
+    console.log(sql);
     db.con.query(sql, controllerCallback);
 };
 
@@ -23,6 +24,7 @@ exports.createUser = (name, hashPass, username, controllerCallback) => {
     let inserts = [ name, hashPass, username ];
     sql = mysql.format(sql, inserts);
 
+    console.log(sql);
     db.con.query(sql, controllerCallback);
 };
 
@@ -35,5 +37,6 @@ exports.updateDefaultCupboard = (cupboard_id, user_id, controllerCallback) => {
     let inserts = [ cupboard_id, user_id ];
     sql = mysql.format(sql, inserts);
 
+    console.log(sql);
     db.con.query(sql, controllerCallback);
 };
