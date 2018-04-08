@@ -26,7 +26,7 @@ class FindIngredientAutoComplete extends Component {
     }
 
     handleSubmit = (chosenRequest, index) => {
-        console.log('handle submit', chosenRequest, index);
+        this.setState({ addFoodAwaitingResponse: true });
 
         if (index === -1) {
             // just ignore unless an item in list menu is selected
@@ -34,22 +34,17 @@ class FindIngredientAutoComplete extends Component {
         else {
             // make an api call to add the selected ingredient to the current cupboard
             let ingredientId = this.props.ingredients[index].id;
-            let cupboardId = 1;
-            fetch(`/api/cupboards/${cupboardId}/add/${ingredientId}`, { method: 'PUT' })
+            fetch(`/api/cupboard/add/${ingredientId}`, { method: 'PUT', credentials: 'same-origin' })
                 .then(res => {
                     this.setState({ addFoodAwaitingResponse: false });
 
-                    if (res.status !== 200) {
-                        throw new Error('Bad status from server');
+                    if (res.status === 201) {
+                        this.setState({ addFoodSuccess: true });
+                        this.props.setDirty();
                     }
-                    return res.json();
-                })
-                .then(json => {
-                    this.setState({ addFoodSuccess: true });
-                    this.props.setDirty();
-                })
-                .catch(err => {
-                    this.setState({ addFoodFail: true });
+                    else {
+                        this.setState({ addFoodFail: true });
+                    }
                 });
         }
     }

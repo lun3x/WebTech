@@ -22,12 +22,14 @@ exports.login = (req, res) => {
                     req.session.user_id = dbResult[0].id;
                     req.session.cupboard_id = dbResult[0].default_cupboard_id;
                     res.status(200).send('Authenticated');
-                } else {
+                }
+                else {
                     console.log('NOT AUTHENTICATED - PASSWORD INCORRECT');
                     res.status(401).send('Not Authenticated');
                 }
             });   
-        } else {
+        }
+        else {
             console.log('NOT AUTHENTICATED - USER DOESN`T EXIST');
             res.status(401).send('Not Authenticated');
         }
