@@ -10,8 +10,8 @@ router.get('/ingredients', ingredientsController.allIngredients);
 
 
 /* GET the cupboard for user `user_id`. */
-router.get('/cupboards/add/:foodID/:cupboardID', cupboardsController.addFood);
-router.get('/cupboards/remove/:foodID', cupboardsController.removeFood);
+router.post('/cupboards/:cupboard_id/add/:ingredient_id', cupboardsController.addFood);
+router.delete('/cupboards/remove/:ingredient_id', cupboardsController.removeFood);
 router.get('/cupboard', cupboardsController.getUserCupboard);
 
 

@@ -57,13 +57,9 @@ class LoginForm extends Component {
             })
         }).then((res) => {
             this.setState({ loginLoading: false });
-            if (res.status === 200) {
-                this.props.onAuthChange(true);
-            } else if (res.status === 401) {
-                this.setState({ loginFailed: true });
-            } else {
-                throw new Error('Bad status from server');
-            }
+            if      (res.status === 200) this.props.onAuthChange(true);
+            else if (res.status === 401) this.setState({ loginFailed: true });
+            else    throw new Error('Bad status from server');
         }).catch((err) => {
             this.setState({ loginError: true });
         });
