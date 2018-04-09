@@ -10,7 +10,33 @@
 [@ahmerb](https://www.github.com/ahmerb) - Ahmer Butt \
 [@lun3x](https://www.github.com/lun3x) - Louis Wyborn
 
-## Usage
+## Setup & Usage
+
+#### Database
+
+Install mysql and setup a user `root` and password `pass`. Login with
+
+```bash
+$ cd site
+$ mysql -u root -ppass
+```
+
+Create a new database `mydb2`.
+
+```sql
+mysql> create database mydb2;
+mysql> \q
+```
+
+Run all migrations.
+
+```bash
+$ npx db-migrate up -v
+```
+
+TODO: Add a seed file
+
+#### Run the application
 
 To compile and bundle frontend:
 
