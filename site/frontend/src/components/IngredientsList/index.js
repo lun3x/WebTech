@@ -22,7 +22,7 @@ class IngredientList extends Component {
 
     render() {
         // create IngredientBox for each user ingredient
-        let i = 0;
+        let i = -1;
         const ingredientList = this.props.userIngredients.map((x) => {
             i++;
             return <IngredientBox key={i} ingredientName={x.name} />;
@@ -30,6 +30,7 @@ class IngredientList extends Component {
 
         // add a IngredientPlusBox at the end
         i++;
+        console.dir(ingredientList);
         ingredientList.push(
             <AddIngredientDialog
                 key={i}
@@ -37,6 +38,7 @@ class IngredientList extends Component {
                 triggerCupboardReload={this.props.reload}
             />
         );
+        console.dir(ingredientList);
 
         const outerStyle = {
             display: 'flex',

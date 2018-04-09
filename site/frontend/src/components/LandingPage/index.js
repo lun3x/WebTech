@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { Paper } from 'material-ui';
 import fetch from 'cross-fetch';
-import CupboardPage from '../CupboardPage';
+import ContainerPage from '../ContainerPage';
 import LoginForm from '../LoginForm';
 import ApiErrorSnackbar from '../ApiErrorSnackbar';
 
@@ -39,11 +39,29 @@ class LandingPage extends Component {
         this.setState({ authenticated: auth });
     }
 
+    logout = () => {
+        this.setState({ authenticationIsLoading: true });
+
+        fetch('/auth/logout', { method: 'GET' })
+            .then(res => {
+                this.setState({ authenticationIsLoading: false });
+                if (res.status !== 200) {
+                    throw new Error('Failed to logout');
+                }
+                this.setState({ authenticated: false });
+            })
+            .catch((err) => {
+                this.setState({ authenticationLoadingError: true });
+            });
+    }
+
     render() {
         const style = {
-            height: 500,
+            height: '100%',
+            width: '65%',
             textAlign: 'centre',
             padding: 10,
+            margin: 'auto'
         };
 
         return (
@@ -55,7 +73,8 @@ class LandingPage extends Component {
                     : this.state.authenticationIsLoading
                     ? <p> Still loading.</p>
                     : this.state.authenticated
-                    ? <CupboardPage />
+                    //? <CupboardPage handleAuthChange={this.handleAuthChange} />
+                    ? <ContainerPage logout={this.logout} />
                     : <LoginForm onAuthChange={this.handleAuthChange} />
                     /* eslint-enable indent */
                 }
