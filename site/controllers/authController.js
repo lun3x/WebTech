@@ -72,10 +72,10 @@ exports.register = (req, res) => {
                         else {
                             // get id of newly created cupboard
                             let cupboard_id = result2.insertId;
-
+                            
                             // update default cupboard of new user
                             db.updateDefaultCupboard(cupboard_id, user_id, (err4) => {
-                                if (err4) res.status(500).json({ fail: 'cannotUpdateDefaultCupboard' });
+                                if (err4) { console.dir(err4); res.status(500).json({ fail: 'cannotUpdateDefaultCupboard' }); }
                                 else {
                                     res.status(201).json({ fail: 'none' });
                                     

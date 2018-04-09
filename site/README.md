@@ -34,7 +34,12 @@ Run all migrations.
 $ npx db-migrate up -v
 ```
 
-TODO: Add a seed file
+Now, seed the database with the following. If prompted for password, enter `pass`.
+
+```bash
+mysql -u root -p mydb2 < seed.sql
+```
+
 
 #### Run the application
 

@@ -15,7 +15,7 @@ exports.setup = (options, seedLink) => {
 exports.up = (db, callback) => {
     db.addColumn('Users', 'default_cupboard_id', {
         type: 'int',
-        notNull: true,
+        notNull: false,
         unsigned: true,
         foreignKey: {
             name: 'FK_DefaultCupboard',
