@@ -41,7 +41,7 @@ exports.createCupboard = (user_id, controllerCallback) => {
     sql = mysql.format(sql, inserts);
 
     console.log(sql);
-    db.con.query(sql, controllerCallback)
+    db.con.query(sql, controllerCallback);
 };
 
 exports.createIngredientCupboard = (ingredient_id, cupboard_id, controllerCallback) => {

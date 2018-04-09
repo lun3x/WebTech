@@ -25,5 +25,6 @@ rules:
   no-multi-str: "off"
   brace-style: ["error", "stroustrup", { "allowSingleLine": true }]
   max-len: ["warn", { "code": 120 }]
+  no-control-regex: "off"
 
   

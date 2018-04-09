@@ -44,20 +44,18 @@ exports.addFood = (req, res) => {
 
     db.getCupboard(req.session.cupboard_id, (err, dbResult) => {
         if (err) res.status(500).send('Oops, something broke!');
-        else {
-            if (dbResult.length === 1) {
-                if (dbResult[0].user_id === req.session.user_id) {
-                    db.createIngredientCupboard(req.params.ingredient_id, req.session.cupboard_id, (err2) => {
-                        res.status(201).send('Success! Added ingredient to cupboard.');
-                    });
-                }
-                else {
-                    res.status(403).send('Error! Not authorised to add to this cupboard.');
-                }
+        else if (dbResult.length === 1) {
+            if (dbResult[0].user_id === req.session.user_id) {
+                db.createIngredientCupboard(req.params.ingredient_id, req.session.cupboard_id, (err2) => {
+                    res.status(201).send('Success! Added ingredient to cupboard.');
+                });
             }
             else {
-                res.status(404).send('Error! Could not find cupboard to add ingredient to.');
+                res.status(403).send('Error! Not authorised to add to this cupboard.');
             }
+        }
+        else {
+            res.status(404).send('Error! Could not find cupboard to add ingredient to.');
         }
     });
 };
@@ -72,4 +70,4 @@ exports.addCupboard = (req, res) => {
         if (err) res.status(500).send('Error! Couldn`t add new cupboard.');
         else     res.status(201).send('Success! Created new cupboard.');
     }); 
-}
+};

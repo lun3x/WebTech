@@ -1,5 +1,5 @@
 const express = require('express');
-var bcrypt = require('bcrypt');
+const bcrypt = require('bcrypt');
 
 const router = express.Router();
 
@@ -15,7 +15,7 @@ exports.isAuthenticated = (req, res) => {
 exports.login = (req, res) => {
     db.getUser(req.body.username, (err, dbResult) => {
         if (dbResult.length === 1) {
-            bcrypt.compare(req.body.password, dbResult[0].password, (err, compResult) => {
+            bcrypt.compare(req.body.password, dbResult[0].password, (err2, compResult) => {
                 if (compResult) {
                     console.log('AUTHENTICATED');
                     req.session.authenticated = true;
@@ -39,7 +39,7 @@ exports.login = (req, res) => {
 exports.logout = (req, res) => {
     delete req.session.authenticated;
     delete req.session.user_id;
-	res.redirect('/');
+    res.redirect('/');
 };
 
 exports.register = (req, res) => {
@@ -57,27 +57,28 @@ exports.register = (req, res) => {
     req.body.username = req.body.username.toLowerCase();
 
     // hash plain text password
-    bcrypt.hash(req.body.password, 10, function(err, hash) {
+    bcrypt.hash(req.body.password, 10, (err, hash) => {
         if (err) res.status(500).json({ fail: 'hashFail' });
         else {
             // create user with hashed password
-            db.createUser(req.body.name, hash, req.body.username, (err, result) => {
-                if (err) res.status(409).json({ fail: 'usernameTaken' }); 
+            db.createUser(req.body.name, hash, req.body.username, (err2, result) => {
+                if (err2) res.status(409).json({ fail: 'usernameTaken' }); 
                 else {
                     // get id of newly created user
                     let user_id = result.insertId;
                     // create cupboard linked to new user
-                    cupboardModel.createCupboard(user_id, (err, result) => {
-                        if (err) res.status(500).json({ fail: 'cannotCreateCupboard' });
+                    cupboardModel.createCupboard(user_id, (err3, result2) => {
+                        if (err3) res.status(500).json({ fail: 'cannotCreateCupboard' });
                         else {
                             // get id of newly created cupboard
-                            let cupboard_id = result.insertId;
+                            let cupboard_id = result2.insertId;
+
                             // update default cupboard of new user
-                            db.updateDefaultCupboard(cupboard_id, user_id, (err) => {
-                                if (err) res.status(500).json({ fail: 'cannotUpdateDefaultCupboard' });
+                            db.updateDefaultCupboard(cupboard_id, user_id, (err4) => {
+                                if (err4) res.status(500).json({ fail: 'cannotUpdateDefaultCupboard' });
                                 else {
                                     res.status(201).json({ fail: 'none' });
-                                    return;
+                                    
                                 }
                             });
                         }
