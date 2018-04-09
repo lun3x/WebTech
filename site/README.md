@@ -10,7 +10,38 @@
 [@ahmerb](https://www.github.com/ahmerb) - Ahmer Butt \
 [@lun3x](https://www.github.com/lun3x) - Louis Wyborn
 
-## Usage
+## Setup & Usage
+
+#### Database
+
+Install mysql and setup a user `root` and password `pass`. Login with
+
+```bash
+$ cd site
+$ mysql -u root -ppass
+```
+
+Create a new database `mydb2`.
+
+```sql
+mysql> create database mydb2;
+mysql> \q
+```
+
+Run all migrations.
+
+```bash
+$ npx db-migrate up -v
+```
+
+Now, seed the database with the following. If prompted for password, enter `pass`.
+
+```bash
+mysql -u root -p mydb2 < seed.sql
+```
+
+
+#### Run the application
 
 To compile and bundle frontend:
 
@@ -59,3 +90,15 @@ DELETE - Delete a resource.
 409 - Conflict on POST (e.g. resource already exists).
 
 422 - Semantic/syntactic failure trying to process request parameters or body.
+
+## For Developers
+
+#### Database
+
+To add a new migration, cd into site and run:
+
+```bash
+npx db-migrate create addSomethingNew
+```
+
+The documentation for db-migrate is found [here](https://db-migrate.readthedocs.io/en/latest/).
