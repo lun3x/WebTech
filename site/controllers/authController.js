@@ -11,7 +11,6 @@ exports.isAuthenticated = (req, res) => {
     else res.json({ authenticated: true });
 };
 
-// TODO: cupoard_id on login
 exports.login = (req, res) => {
     db.getUser(req.body.username, (err, dbResult) => {
         if (dbResult.length === 1) {
@@ -39,7 +38,8 @@ exports.login = (req, res) => {
 exports.logout = (req, res) => {
     delete req.session.authenticated;
     delete req.session.user_id;
-    res.redirect('/');
+    res.status(200).json({ });
+    //res.redirect('/');
 };
 
 exports.register = (req, res) => {

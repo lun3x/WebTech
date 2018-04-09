@@ -1,11 +1,18 @@
 import React, { Component } from 'react';
 import { Paper } from 'material-ui';
 import fetch from 'cross-fetch';
+import PropTypes from 'prop-types';
 import FindRecipesButton from '../FindRecipesButton';
 import IngredientList from '../IngredientsList';
 import ApiErrorSnackbar from '../ApiErrorSnackbar';
+import NavBar from '../NavBar';
 
 class CupboardPage extends Component {
+
+    static propTypes = {
+        //handleAuthChange: PropTypes.func.isRequired,
+    }
+
     constructor(props) {
         super(props);
         this.state = {
@@ -18,6 +25,9 @@ class CupboardPage extends Component {
             allIngredients: undefined,
             allIngredientsAreLoading: false,
             allIngredientsLoadingError: false,
+
+            // is this the selected page from NavBar?
+            //isActive: true, // default is yes
         };
     }
 
@@ -30,6 +40,10 @@ class CupboardPage extends Component {
         // fetch all ingredients
         this.fetchAllIngredients();
     }
+
+    // setActive = (isActive) => {
+    //     this.setState({ isActive });
+    // }
 
     fetchAllIngredients = () => {
         // fetch a list of all ingredients
@@ -55,7 +69,6 @@ class CupboardPage extends Component {
             .then(res => {
                 this.setState({ userIngredientsAreLoading: false });
                 if (res.status !== 200) {
-                    alert(res.status);
                     throw new Error('Bad status from server');
                 }
                 return res.json();
@@ -91,6 +104,8 @@ class CupboardPage extends Component {
 
                 <FindRecipesButton />
 
+                { /*<NavBar handleAuthChange={this.props.handleAuthChange} /> */ }
+
                 <ApiErrorSnackbar
                     open={this.state.userIngredientsLoadingError}
                     message={'Error loading ingredients in your cupboard'}
@@ -104,7 +119,6 @@ class CupboardPage extends Component {
                     open={this.state.allIngredientsLoadingError}
                     message={'Error loading list of all ingredients'}
                 />
-    
             </div>
         );
     }

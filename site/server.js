@@ -17,7 +17,7 @@ let con = mysql.createConnection({
     host: 'localhost',
     user: 'root',
     password: 'pass',
-    database: 'mydb2'
+    database: 'mydb2',
 });
 
 //=== Banned URLs ===//
