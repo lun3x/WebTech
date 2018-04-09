@@ -85,3 +85,15 @@ DELETE - Delete a resource.
 409 - Conflict on POST (e.g. resource already exists).
 
 422 - Semantic/syntactic failure trying to process request parameters or body.
+
+## For Developers
+
+#### Database
+
+To add a new migration, cd into site and run:
+
+```bash
+npx db-migrate addSomethingNew
+```
+
+The documentation for db-migrate is found [here](https://db-migrate.readthedocs.io/en/latest/).
