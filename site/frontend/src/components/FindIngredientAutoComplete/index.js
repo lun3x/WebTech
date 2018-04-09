@@ -34,18 +34,20 @@ class FindIngredientAutoComplete extends Component {
         else {
             // make an api call to add the selected ingredient to the current cupboard
             let ingredientId = this.props.ingredients[index].id;
-            fetch(`/api/cupboard/add/${ingredientId}`, { method: 'PUT', credentials: 'same-origin' })
-                .then(res => {
-                    this.setState({ addFoodAwaitingResponse: false });
+            fetch(`/api/cupboard/add/${ingredientId}`, {
+                method: 'PUT',
+                credentials: 'same-origin'
+            }).then(res => {
+                this.setState({ addFoodAwaitingResponse: false });
 
-                    if (res.status === 201) {
-                        this.setState({ addFoodSuccess: true });
-                        this.props.setDirty();
-                    }
-                    else {
-                        this.setState({ addFoodFail: true });
-                    }
-                });
+                if (res.status === 201) {
+                    this.setState({ addFoodSuccess: true });
+                    this.props.setDirty();
+                }
+                else {
+                    this.setState({ addFoodFail: true });
+                }
+            });
         }
     }
 

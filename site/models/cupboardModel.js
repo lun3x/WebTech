@@ -6,7 +6,7 @@ exports.getCupboardIngredients = (cupboard_id, controllerCallback) => {
         if (err) console.log('Already connected!');
     });
 
-    let sql = 'SELECT Ingredients.name FROM IngredientCupboards\
+    let sql = 'SELECT IngredientCupboards.id, Ingredients.name FROM IngredientCupboards\
              INNER JOIN Ingredients ON IngredientCupboards.ingredient_id = Ingredients.id\
              INNER JOIN Cupboards ON IngredientCupboards.cupboard_id = Cupboards.id\
              WHERE Cupboards.id = ?;';
@@ -57,17 +57,15 @@ exports.createIngredientCupboard = (ingredient_id, cupboard_id, controllerCallba
     db.con.query(sql, controllerCallback);
 };
 
-exports.deleteIngredientCupboard = (ingredient_id, user_id, controllerCallback) => {
+exports.deleteIngredientCupboard = (ingredientC_id, controllerCallback) => {
     db.con.connect((err) => {
         if (err) console.log('Already connected!');
     });
 
-    let sql = 'DELETE ic FROM IngredientCupboards ic\
-               INNER JOIN Cupboards c ON IngredientCupboards.cupboard_id = Cupboards.id\
-               WHERE IngredientCupboards.id = ?\
-               AND Cupboards.user_id = ?';
+    let sql = 'DELETE FROM IngredientCupboards\
+               WHERE IngredientCupboards.id = ?';
 
-    let inserts = [ ingredient_id, user_id ];
+    let inserts = [ ingredientC_id ];
     sql = mysql.format(sql, inserts);
 
     console.log(sql);

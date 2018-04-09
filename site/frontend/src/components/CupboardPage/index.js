@@ -65,20 +65,20 @@ class CupboardPage extends Component {
     }
 
     fetchUserCupboard = () => {
-        fetch(`/api/cupboard/ingredients`, { method: 'GET', credentials: 'same-origin' })
-            .then(res => {
-                this.setState({ userIngredientsAreLoading: false });
-                if (res.status !== 200) {
-                    throw new Error('Bad status from server');
-                }
-                return res.json();
-            })
-            .then(json => {
-                this.setState({ userIngredients: json.data.cupboard.food });
-            })
-            .catch(err => {
-                this.setState({ userIngredientsLoadingError: true });
-            });
+        fetch(`/api/cupboard/ingredients`, {
+            method: 'GET',
+            credentials: 'same-origin'
+        }).then(res => {
+            this.setState({ userIngredientsAreLoading: false });
+            if (res.status !== 200) {
+                throw new Error('Bad status from server');
+            }
+            return res.json();
+        }).then(json => {
+            this.setState({ userIngredients: json.data.cupboard.food });
+        }).catch(err => {
+            this.setState({ userIngredientsLoadingError: true });
+        });
     }
 
     triggerCupboardReload = () => {

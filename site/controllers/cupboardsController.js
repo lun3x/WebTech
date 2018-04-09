@@ -30,7 +30,9 @@ exports.removeFood = (req, res) => {
         return;
     }
 
-    db.deleteIngredientCupboard(req.params.ingredient_id, req.session.user_id, (err) => {
+    //TODO needs authentication
+
+    db.deleteIngredientCupboard(req.params.ingredient_id, (err) => {
         if (err) res.status(404).send('Error! Couldn`t find ingredient to delete from cupboard');
         else     res.status(200).send('Success! Deleted ingredient from cupboard'); 
     });

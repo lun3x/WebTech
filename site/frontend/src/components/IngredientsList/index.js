@@ -12,7 +12,10 @@ class IngredientList extends Component {
     };
 
     static propTypes = {
-        userIngredients: PropTypes.arrayOf(PropTypes.shape({ name: PropTypes.string })),
+        userIngredients: PropTypes.arrayOf(PropTypes.shape({
+            id: PropTypes.number,
+            name: PropTypes.string
+        })),
         allIngredients:  PropTypes.arrayOf(PropTypes.shape({
             id: PropTypes.number,
             name: PropTypes.string
@@ -25,7 +28,7 @@ class IngredientList extends Component {
         let i = -1;
         const ingredientList = this.props.userIngredients.map((x) => {
             i++;
-            return <IngredientBox key={i} ingredientName={x.name} />;
+            return <IngredientBox key={i} ingredientName={x.name} reload={this.props.reload} ingredientID={x.id} />;
         });
 
         // add a IngredientPlusBox at the end
