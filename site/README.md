@@ -93,7 +93,7 @@ DELETE - Delete a resource.
 To add a new migration, cd into site and run:
 
 ```bash
-npx db-migrate addSomethingNew
+npx db-migrate create addSomethingNew
 ```
 
 The documentation for db-migrate is found [here](https://db-migrate.readthedocs.io/en/latest/).
