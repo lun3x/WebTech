@@ -24,7 +24,6 @@ class IngredientBox extends Component {
     }
 
     handleClick = (event) => {
-        alert(this.props.ingredientID);
         this.setState({ removeFoodAwaitingResponse: true });
 
         fetch(`/api/cupboard/remove/${this.props.ingredientID}`, {
