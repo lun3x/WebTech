@@ -80,7 +80,7 @@ class LoginForm extends Component {
                             <RegisterForm
                                 username={this.state.username}
                                 password={this.state.password}
-                                doneRegister={(e) => { this.setState({ registration: false }); }}
+                                doneRegister={(e) => { this.setState({ registration: false, loginError: false, loginFailed: false }); }}
                                 onUPChange={this.handleChange}
                             />
                         </div>
