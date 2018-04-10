@@ -30,11 +30,22 @@ exports.removeFood = (req, res) => {
         return;
     }
 
-    //TODO needs authentication
-
-    db.deleteIngredientCupboard(req.params.ingredient_id, (err) => {
-        if (err) res.status(404).send('Error! Couldn`t find ingredient to delete from cupboard');
-        else     res.status(200).send('Success! Deleted ingredient from cupboard'); 
+    db.getCupboard(req.session.cupboard_id, (err, dbResult) => {
+        if (err) res.status(500).send('Error! Failed to get cupboard.');
+        else if (dbResult.length === 1) {
+            if (dbResult[0].user_id === req.session.user_id) {
+                db.deleteIngredientCupboard(req.params.ingredient_id, (err2) => {
+                    if (err2) res.status(500).send('Error! Couldn`t delete ingredient from cupboard.');
+                    res.status(200).send('Success! Deleted ingredient from cupboard.');
+                });
+            }
+            else {
+                res.status(403).send('Error! Not authorised to delete from this cupboard.');
+            }
+        }
+        else {
+            res.status(404).send('Error! Could not find cupboard to remove ingredient from.');
+        }
     });
 };
 
@@ -45,11 +56,12 @@ exports.addFood = (req, res) => {
     }
 
     db.getCupboard(req.session.cupboard_id, (err, dbResult) => {
-        if (err) res.status(500).send('Oops, something broke!');
+        if (err) res.status(500).send('Error! Failed to get cupboard.');
         else if (dbResult.length === 1) {
             if (dbResult[0].user_id === req.session.user_id) {
                 db.createIngredientCupboard(req.params.ingredient_id, req.session.cupboard_id, (err2) => {
-                    res.status(201).send('Success! Added ingredient to cupboard.');
+                    if (err2) res.status(500).send('Error! Couldn`t add ingredient to cupboard');
+                    else      res.status(201).send('Success! Added ingredient to cupboard.');
                 });
             }
             else {

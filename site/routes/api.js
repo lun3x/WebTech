@@ -4,13 +4,15 @@ const router = express.Router();
 
 const ingredientsController = require('../controllers/ingredientsController');
 const cupboardsController   = require('../controllers/cupboardsController');
+const recipesController   = require('../controllers/recipesController');
 
-/* GET all ingredients. */
+/* GET */
 router.get('/ingredients', ingredientsController.allIngredients);
+router.get('/recipe/all', recipesController.allRecipes);
+router.get('/cupboard/ingredients', cupboardsController.getUserCupboard);
 
 /* DELETE ingredient from current working cupboard */
 router.delete('/cupboard/remove/:ingredient_id', cupboardsController.removeFood);
-router.get('/cupboard/ingredients', cupboardsController.getUserCupboard);
 
 /* PUT add food to user's cupboard */
 router.put('/cupboard/add/:ingredient_id', cupboardsController.addFood);
