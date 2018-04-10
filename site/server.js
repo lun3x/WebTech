@@ -5,20 +5,17 @@ const express = require('express');
 
 const app = express();
 
-const bodyParser = require('body-parser');
 const path = require('path');
 const bcrypt = require('bcrypt');
+const redis   = require('redis');
 const session = require('express-session');
+const RedisStore = require('connect-redis')(session);
+const bodyParser = require('body-parser');
 const fs = require('fs');
 const mysql = require('mysql');
 
-//=== Setup Db Connection ===//
-let con = mysql.createConnection({
-    host: 'localhost',
-    user: 'root',
-    password: 'pass',
-    database: 'mydb2',
-});
+//=== Setup Db Connections ===//
+const redisClient = redis.createClient();
 
 //=== Banned URLs ===//
 let banned = [];
@@ -34,7 +31,6 @@ let auth = require('./routes/auth');
 let api = require('./routes/api');
 let test = require('./routes/test');
 let ajax = require('./routes/ajax');
-
 
 
 //=== Middleware functions ===//
@@ -124,7 +120,12 @@ app.use(session({
     saveUninitialized: false,
     cookie: {
         maxAge: 600000
-    }
+    },
+    store: new RedisStore({
+        host: 'localhost',
+        port: 6379,
+        client: redisClient
+    })
 }));
 
 // user login
