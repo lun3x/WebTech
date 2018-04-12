@@ -1,5 +1,3 @@
-'use strict';
-
 let dbm;
 let type;
 let seed;

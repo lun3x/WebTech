@@ -132,7 +132,7 @@ app.use(session({
 app.use('/auth', auth);
 app.use('/api', api);
 
-// serve static pages
+// serve frontend
 let options = {}; //{ setHeaders: deliverXHTML };
 app.use(express.static(path.join(__dirname, 'frontend/dist'), options));
 

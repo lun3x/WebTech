@@ -10,7 +10,8 @@ import NavBar from '../NavBar';
 class CupboardPage extends Component {
 
     static propTypes = {
-        //handleAuthChange: PropTypes.func.isRequired,
+        gotoFindRecipesPage: PropTypes.func.isRequired,
+        setUserIngredientIds: PropTypes.func.isRequired,
     }
 
     constructor(props) {
@@ -25,9 +26,6 @@ class CupboardPage extends Component {
             allIngredients: undefined,
             allIngredientsAreLoading: false,
             allIngredientsLoadingError: false,
-
-            // is this the selected page from NavBar?
-            //isActive: true, // default is yes
         };
     }
 
@@ -41,10 +39,6 @@ class CupboardPage extends Component {
         this.fetchAllIngredients();
     }
 
-    // setActive = (isActive) => {
-    //     this.setState({ isActive });
-    // }
-
     fetchAllIngredients = () => {
         // fetch a list of all ingredients
         fetch('/api/ingredients')
@@ -56,7 +50,6 @@ class CupboardPage extends Component {
                 return res.json();
             })
             .then(json => {
-                console.dir(json.data.ingredients);
                 this.setState({ allIngredients: json.data.ingredients });
             })
             .catch(err => {
@@ -76,6 +69,7 @@ class CupboardPage extends Component {
             return res.json();
         }).then(json => {
             this.setState({ userIngredients: json.data.cupboard.food });
+            this.props.setUserIngredientIds(json.data.cupboard.food.map((x) => x.id));
         }).catch(err => {
             this.setState({ userIngredientsLoadingError: true });
         });
@@ -102,7 +96,7 @@ class CupboardPage extends Component {
                     /* eslint-enable indent */
                 }
 
-                <FindRecipesButton />
+                <FindRecipesButton gotoFindRecipesPage={this.props.gotoFindRecipesPage} />
 
                 { /*<NavBar handleAuthChange={this.props.handleAuthChange} /> */ }
 

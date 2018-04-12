@@ -8,3 +8,11 @@ exports.getAllRecipes = (controllerCallback) => {
     console.log(sql);
     db.con.query(sql, controllerCallback);
 };
+
+exports.findRecipes = (ingredient_ids, controllerCallback) => {
+    let sql = 
+        '';
+    
+    console.log(sql);
+    db.con.query(sql, controllerCallback);
+};

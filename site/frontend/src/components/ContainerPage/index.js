@@ -5,6 +5,7 @@ import Paper from 'material-ui/Paper';
 import NavBar from '../NavBar';
 import CupboardPage from '../CupboardPage';
 import SettingsPage from '../SettingsPage';
+import RecipesPage from '../RecipesPage';
 
 class ContainerPage extends Component {
 
@@ -16,18 +17,23 @@ class ContainerPage extends Component {
         super(props);
         this.state = {
             selectedPage: 0, // default is CupboardPage
+            ingredientIds: undefined,
         };
     }
 
-    selectPage = (ix) => this.setState({ selectedPage: ix });
+    setIngredientIds = (ids) => this.setState({ ingredientIds: ids });
 
+    selectPage = (ix) => this.setState({ selectedPage: ix });
 
     render() {
         let page = null;
         switch (this.state.selectedPage) {
         case 0:
             page = (
-                <CupboardPage />
+                <CupboardPage
+                    gotoFindRecipesPage={() => this.selectPage(2)}
+                    setUserIngredientIds={this.setIngredientIds}
+                />
             );
             break;
         case 1:
@@ -35,9 +41,17 @@ class ContainerPage extends Component {
                 <SettingsPage logout={this.props.logout} />
             );
             break;
+        case 2:
+            page = (
+                <RecipesPage goBack={() => this.selectPage(0)} ingredientIds={this.state.ingredientIds} />
+            );
+            break;
         default:
             page = (
-                <CupboardPage />
+                <CupboardPage
+                    gotoFindRecipesPage={() => this.selectPage(2)}
+                    setUserIngredientIds={this.setIngredientIds} 
+                />
             );
             break;
         }
