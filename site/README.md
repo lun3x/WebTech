@@ -14,7 +14,7 @@
 
 #### Database
 
-Install mysql and setup a user `root` and password `pass`. Login with
+Install mysql using brew and setup a user `root` and password `pass`. Login with
 
 ```bash
 $ cd site
@@ -40,19 +40,35 @@ Now, seed the database with the following. If prompted for password, enter `pass
 mysql -u root -p mydb2 < seed.sql
 ```
 
+#### Redis
+
+We use redis for session storage. Install redis with Homebrew.
+
 
 #### Run the application
 
-To compile and bundle frontend:
+To launch mysql server:
 
 ```bash
-$ cd site/frontend && npm run build
+$ mysql.server start
+```
+
+To launch redis (for session storage)
+
+```bash
+$ /usr/local/etc/redis.conf
 ```
 
 To run the server:
 
 ```bash
-$ cd site && npm start
+$ cd site && npm install && npm start
+```
+
+To compile and bundle frontend:
+
+```bash
+$ cd site/frontend && npm install && npm run build
 ```
 
 ## API

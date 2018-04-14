@@ -72,7 +72,16 @@ exports.findRecipes = (req, res) => {
                     ingredients: [
                         'Onion'
                     ]
-                }
+                },
+                {
+                    id: 4,
+                    name: 'Baked Potato',
+                    method: '1. Pour cheese all over the potato.\n\
+                             2. Roast in the oven until cheese is melted.',
+                    ingredients: [
+                        'Cheese', 'Potato'
+                    ]
+                },
             ]
         }
     });

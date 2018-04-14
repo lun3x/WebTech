@@ -5,7 +5,7 @@ import { GridList, GridTile } from 'material-ui/GridList';
 class RecipesPage extends Component {
 
     static propTypes = {
-        // goBack: PropTypes.func.isRequired, // TODO: goBack handler (but we might no need it here)
+        // goBack: PropTypes.func.isRequired, // TODO: goBack handler (but we might not need it here)
         ingredientIds: PropTypes.arrayOf(PropTypes.number).isRequired,
     }
 
@@ -95,6 +95,12 @@ class RecipesPage extends Component {
                 height: 450,
                 overflowY: 'auto',
             },
+            gridTile: {
+                cursor: 'pointer',
+            },
+            titleStyle: {
+                //color: 'rgb(0, 188, 212)',
+            },
         };
 
         /* 
@@ -126,13 +132,18 @@ class RecipesPage extends Component {
                         <GridTile
                             key={recipe.id}
                             title={recipe.name}
+                            onClick={() => alert('clicked')}
                             //actionIcon={<IconButton><StarBorder color="white" /></IconButton>}TODO:actionIcon etc
                             //actionPosition="left"
-                            titlePosition="top"
+                            titleStyle={styles.titleStyle}
+                            subtitleStyle={styles.titleStyle}
+                            style={styles.gridTile}
+                            titlePosition="bottom"
                             // eslint-disable-next-line max-len
-                            titleBackground="linear-gradient(to bottom, rgba(0,0,0,0.7) 0%,rgba(0,0,0,0.3) 70%,rgba(0,0,0,0) 100%)"
+                            titleBackground="linear-gradient(to top, rgba(0,0,0,0.7) 0%,rgba(0,0,0,0.3) 70%,rgba(0,0,0,0) 100%)"
                             cols={index === 0 ? 2 : 1}
                             rows={index === 0 ? 2 : 1}
+                            subtitle={`You have ${recipe.ingredients.join(', ')}`}
                         >
                             <img src={recipe.img_src} alt={recipe.name} />
                         </GridTile>
