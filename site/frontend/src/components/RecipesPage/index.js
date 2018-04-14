@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { GridList, GridTile } from 'material-ui/GridList';
+import RecipeDetailsPage from '../RecipeDetailsPage';
 
 class RecipesPage extends Component {
 
@@ -15,6 +16,7 @@ class RecipesPage extends Component {
             recipesAreLoading: false,
             recipesLoadFail: false,
             recipes: undefined,
+            selectedRecipe: undefined,
         };
     }
 
@@ -73,12 +75,21 @@ class RecipesPage extends Component {
             return res.blob();
         }).then(blobData => {
             const urlCreator = window.URL || window.webkitURL;
+            recipe.img_blob = blobData; // eslint-disable-line no-param-reassign
             recipe.img_src = urlCreator.createObjectURL(blobData); // eslint-disable-line no-param-reassign
             return recipe;
         }).catch(err => {
             console.log(`recipe id=${recipe.id} load img err:`, err);
             this.setState({ recipesLoadFail: true });
         });
+    }
+
+    loadRecipePage = (recipe) => {
+        this.setState({ selectedRecipe: recipe });
+    }
+
+    goBack = () => {
+        this.setState({ selectedRecipe: undefined });
     }
 
 
@@ -120,6 +131,8 @@ class RecipesPage extends Component {
             <p>Error loading.</p>
         ) : this.state.recipesAreLoading || !this.state.recipes ? (
             <p>Still loading.</p>
+        ) : this.state.selectedRecipe ? (
+            <RecipeDetailsPage recipe={this.state.selectedRecipe} goBack={this.goBack} />
         ) : (
             <div style={styles.root} >
                 <GridList
@@ -132,7 +145,7 @@ class RecipesPage extends Component {
                         <GridTile
                             key={recipe.id}
                             title={recipe.name}
-                            onClick={() => alert('clicked')}
+                            onClick={() => this.loadRecipePage(recipe)}
                             //actionIcon={<IconButton><StarBorder color="white" /></IconButton>}TODO:actionIcon etc
                             //actionPosition="left"
                             titleStyle={styles.titleStyle}
