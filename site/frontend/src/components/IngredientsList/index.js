@@ -33,7 +33,6 @@ class IngredientList extends Component {
 
         // add a IngredientPlusBox at the end
         i++;
-        console.dir(ingredientList);
         ingredientList.push(
             <AddIngredientDialog
                 key={i}
@@ -41,7 +40,6 @@ class IngredientList extends Component {
                 triggerCupboardReload={this.props.reload}
             />
         );
-        console.dir(ingredientList);
 
         const outerStyle = {
             display: 'flex',

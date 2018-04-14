@@ -44,3 +44,4 @@ rules:
   key-spacing: "off"
   brace-style: ["error", "stroustrup", { "allowSingleLine": true }]
   max-len: ["warn", { "code": 120 }]
+  newline-per-chained-call: "off"
