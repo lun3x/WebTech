@@ -133,7 +133,7 @@ app.use('/auth', auth);
 app.use('/api', api);
 
 // serve frontend
-let options = {}; //{ setHeaders: deliverXHTML };
+let options = { setHeaders: deliverXHTML };
 app.use(express.static(path.join(__dirname, 'frontend/dist'), options));
 
 // a middleware that doesn't do much (we made it for testing)
