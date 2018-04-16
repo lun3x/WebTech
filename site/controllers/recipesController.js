@@ -36,55 +36,57 @@ exports.findRecipes = (req, res) => {
         return;
     }
 
-    // db.findRecipes(req.body.ingredients, (err, dbResult) => {
-    //     if (err) res.status(500).send('Error! Failed to search for recipes.');
-    //     else {
-    //         res.setHeader('Content-Type', 'application/json');
-    //         res.status(200).json({
-    //             data: {
-    //                 recipes: dbResult
-    //             }
-    //         });
-    //     }
-    // });
-
-    // TODO: DO ACTUAL SQL QUERY, THIS IS JUST DUMMY DATA
-    res.setHeader('Content-Type', 'application/json');
-    res.status(200).json({
-        data: {
-            recipes: [
-                {
-                    id: 2,
-                    name: 'Roast Salmon',
-                    method: '1. Rub garlic into salmon.\n\
-                             2. Place Salmon in baking tray with chopped peppers.\n\
-                             3. Roast for 30 mins at 180 degrees in fan oven.',
-                    ingredients: [
-                        'Peppers', 'Garlic', 'Salmon'
-                    ]
-                },
-                {
-                    id: 3,
-                    name: 'Caramelized Onions',
-                    method: '1. Just put the onions in a pan on medium heat with oil.\n\
-                             2. Keep stirring.\n\
-                             3. Did you really need an app to tell you how to do this?',
-                    ingredients: [
-                        'Onion'
-                    ]
-                },
-                {
-                    id: 4,
-                    name: 'Baked Potato',
-                    method: '1. Pour cheese all over the potato.\n\
-                             2. Roast in the oven until cheese is melted.',
-                    ingredients: [
-                        'Cheese', 'Potato'
-                    ]
-                },
-            ]
+    db.findRecipes(req.body.ingredient_ids, (err, dbResult) => {
+        if (err) res.status(500).send('Error! Failed to search for recipes.');
+        else {
+            console.dir(dbResult);
+            res.setHeader('Content-Type', 'application/json');
+            res.status(200).json({
+                data: {
+                    recipes: dbResult
+                }
+            });
         }
     });
+
+    // TODO: DO ACTUAL SQL QUERY, THIS IS JUST DUMMY DATA
+    // res.setHeader('Content-Type', 'application/json');
+    // res.status(200).json({
+    // data: {
+    //     recipes: [
+    //         {
+    //             id: 2,
+    //             name: 'Roast Salmon',
+    //             method: '1. Rub garlic into salmon.\n\
+    //                      2. Place Salmon in baking tray with chopped peppers.\n\
+    //                      3. Roast for 30 mins at 180 degrees in fan oven.',
+    //             ingredients: [
+    //                 'Peppers', 'Garlic', 'Salmon'
+    //             ]
+    //         },
+    //         {
+    //             id: 3,
+    //             name: 'Caramelized Onions',
+    //             method: '1. Just put the onions in a pan on medium heat with oil.\n\
+    //                      2. Keep stirring.\n\
+    //                      3. Did you really need an app to tell you how to do this?',
+    //             ingredients: [
+    //                 'Onion'
+    //             ]
+    //         },
+    //         {
+    //             id: 4,
+    //             name: 'Baked Potato',
+    //             method: '1. Pour cheese all over the potato.\n\
+    //                      2. Roast in the oven until cheese is melted.',
+    //             ingredients: [
+    //                 'Cheese', 'Potato'
+    //             ]
+    //         },
+    //     ]
+    // }
+    //
+    // });
 };
 
 exports.recipeImage = (req, res) => {
