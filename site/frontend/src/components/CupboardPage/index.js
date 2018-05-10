@@ -69,7 +69,7 @@ class CupboardPage extends Component {
             return res.json();
         }).then(json => {
             this.setState({ userIngredients: json.data.cupboard.food });
-            this.props.setUserIngredientIds(json.data.cupboard.food.map((x) => x.id));
+            this.props.setUserIngredientIds(json.data.cupboard.food.map((x) => x.ingredient_id));
         }).catch(err => {
             this.setState({ userIngredientsLoadingError: true });
         });

@@ -2,7 +2,7 @@ const mysql = require('mysql');
 const db = require('../database.js');
 
 exports.getCupboardIngredients = (cupboard_id, controllerCallback) => {
-    let sql = 'SELECT IngredientCupboards.id, Ingredients.name FROM IngredientCupboards\
+    let sql = 'SELECT IngredientCupboards.id, Ingredients.name, IngredientCupboards.ingredient_id FROM IngredientCupboards\
              INNER JOIN Ingredients ON IngredientCupboards.ingredient_id = Ingredients.id\
              INNER JOIN Cupboards ON IngredientCupboards.cupboard_id = Cupboards.id\
              WHERE Cupboards.id = ?;';

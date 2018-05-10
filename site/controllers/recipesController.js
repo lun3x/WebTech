@@ -36,7 +36,7 @@ exports.findRecipes = (req, res) => {
         return;
     }
 
-    db.findRecipeIngredients(req.body.ingredients, (err, dbResult) => {
+    db.findRecipeIngredients(req.body.ingredient_ids, (err, dbResult) => {
         if (err) res.status(500).send('Error! Failed to search for recipes.');
         else {
             if (dbResult.length === 0) {
@@ -48,16 +48,24 @@ exports.findRecipes = (req, res) => {
                 });
                 return;
             }
-            
+
             // Sort by recipe ids
             dbResult.sort((a, b) => a.recipe_id - b.recipe_id);
+
+            console.dir(dbResult);
+
             let usable_recipes = [];
             let current_ingredients = [];
             let current_recipe_id = dbResult[0].recipe_id;
+
+            console.dir(current_recipe_id);
+
             for (let i = 0; i < dbResult.length; i++) {
                 if (dbResult[i].recipe_id !== current_recipe_id) {
+                    console.log('NEXT RECIPE');
                     //CHECK RECIPE USABLE
-                    if (current_ingredients.every(val => req.body.ingredients.indexOf(val) >= 0)) {
+                    if (current_ingredients.every(val => req.body.ingredient_ids.indexOf(val) >= 0)) {
+                        console.log('ADDED RECIPE 1');
                         usable_recipes.push(dbResult[i - 1].recipe_id);
                     }
 
@@ -67,10 +75,25 @@ exports.findRecipes = (req, res) => {
                 
                 current_ingredients.push(dbResult[i].ingredient_id);
             }
+            
+            console.dir(current_ingredients);
 
             // CHECK FINAL RECIPE USABLE
-            if (current_ingredients.every(val => req.body.ingredients.indexOf(val) >= 0)) {
+            if (current_ingredients.every(val => req.body.ingredient_ids.indexOf(val) >= 0)) {
+                console.log('ADDED RECIPE 2');
                 usable_recipes.push(dbResult[dbResult.length - 1].recipe_id);
+            }
+
+            console.dir(usable_recipes);
+
+            if (usable_recipes.length === 0) {
+                res.setHeader('Content-Type', 'application/json');
+                res.status(200).json({
+                    data: {
+                        recipes: []
+                    }
+                });
+                return;
             }
 
             db.findRecipes(usable_recipes, (err2, dbResult2) => {
