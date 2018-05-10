@@ -31,58 +31,59 @@ exports.findRecipes = (req, res) => {
 
     console.dir(req.body);
 
-    if (!(req.body && Array.isArray(req.body.ingredient_ids))) {
+    if (!(req.body && Array.isArray(req.body.ingredient_ids) && req.body.ingredient_ids.length > 0)) {
         res.status(422).send('Error! Correct format { ingredient_ids: [id::number] }');
         return;
     }
 
-    // db.findRecipes(req.body.ingredients, (err, dbResult) => {
-    //     if (err) res.status(500).send('Error! Failed to search for recipes.');
-    //     else {
-    //         res.setHeader('Content-Type', 'application/json');
-    //         res.status(200).json({
-    //             data: {
-    //                 recipes: dbResult
-    //             }
-    //         });
-    //     }
-    // });
+    db.findRecipeIngredients(req.body.ingredients, (err, dbResult) => {
+        if (err) res.status(500).send('Error! Failed to search for recipes.');
+        else {
+            if (dbResult.length === 0) {
+                res.setHeader('Content-Type', 'application/json');
+                res.status(200).json({
+                    data: {
+                        recipes: []
+                    }
+                });
+                return;
+            }
+            
+            // Sort by recipe ids
+            dbResult.sort((a, b) => a.recipe_id - b.recipe_id);
+            let usable_recipes = [];
+            let current_ingredients = [];
+            let current_recipe_id = dbResult[0].recipe_id;
+            for (let i = 0; i < dbResult.length; i++) {
+                if (dbResult[i].recipe_id !== current_recipe_id) {
+                    //CHECK RECIPE USABLE
+                    if (current_ingredients.every(val => req.body.ingredients.indexOf(val) >= 0)) {
+                        usable_recipes.push(dbResult[i - 1].recipe_id);
+                    }
 
-    // TODO: DO ACTUAL SQL QUERY, THIS IS JUST DUMMY DATA
-    res.setHeader('Content-Type', 'application/json');
-    res.status(200).json({
-        data: {
-            recipes: [
-                {
-                    id: 2,
-                    name: 'Roast Salmon',
-                    method: '1. Rub garlic into salmon.\n\
-                             2. Place Salmon in baking tray with chopped peppers.\n\
-                             3. Roast for 30 mins at 180 degrees in fan oven.',
-                    ingredients: [
-                        'Peppers', 'Garlic', 'Salmon'
-                    ]
-                },
-                {
-                    id: 3,
-                    name: 'Caramelized Onions',
-                    method: '1. Just put the onions in a pan on medium heat with oil.\n\
-                             2. Keep stirring.\n\
-                             3. Did you really need an app to tell you how to do this?',
-                    ingredients: [
-                        'Onion'
-                    ]
-                },
-                {
-                    id: 4,
-                    name: 'Baked Potato',
-                    method: '1. Pour cheese all over the potato.\n\
-                             2. Roast in the oven until cheese is melted.',
-                    ingredients: [
-                        'Cheese', 'Potato'
-                    ]
-                },
-            ]
+                    current_recipe_id = dbResult[i].recipe_id;
+                    current_ingredients = [];
+                }
+                
+                current_ingredients.push(dbResult[i].ingredient_id);
+            }
+
+            // CHECK FINAL RECIPE USABLE
+            if (current_ingredients.every(val => req.body.ingredients.indexOf(val) >= 0)) {
+                usable_recipes.push(dbResult[dbResult.length - 1].recipe_id);
+            }
+
+            db.findRecipes(usable_recipes, (err2, dbResult2) => {
+                if (err2) res.status(500).send('Error! Failed to search for usable recipes.');
+                else {
+                    res.setHeader('Content-Type', 'application/json');
+                    res.status(200).json({
+                        data: {
+                            recipes: dbResult2
+                        }
+                    });
+                }
+            });
         }
     });
 };
