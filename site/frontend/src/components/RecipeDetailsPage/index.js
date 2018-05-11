@@ -12,9 +12,44 @@ class RecipeDetailsPage extends Component {
             id: PropTypes.number.isRequired,
             name: PropTypes.string.isRequired,
             method: PropTypes.string.isRequired,
-            ingredients: PropTypes.arrayOf(PropTypes.string.isRequired).isRequired,
             img_src: PropTypes.string.isRequired,
         }).isRequired,
+    }
+
+    constructor(props) {
+        super(props);
+        this.state = {
+            // ingredientsAreLoading: false,
+            // ingredientLoadFail: False,
+            ingredients: []
+        };
+    }
+
+    componentWillMount() {
+        // this.setState({ ingredientsAreLoading: true });
+        this.fetchIngredients();
+    }
+
+    fetchIngredients = () => {
+        fetch(`/api/recipes/ingredients/${this.props.recipe.id}`, {
+            method: 'GET',
+            credentials: 'same-origin'
+        }).then(res => {
+            // this.setState({ ingredientsAreLoading: false });
+            if (res.status !== 200) {
+                throw new Error('Bad status from server');
+            }
+            return res.json();
+        }).then(json => {
+            // get image for each recipe and add as base64 encoded string
+            // to each recipe object
+            // let ingredients = json.data.ingredients;
+            console.log(json.data.ingredients);
+            this.setState({ ingredients: json.data.ingredients.map(i => i.name) });
+        }).catch(err => {
+            console.log('Ingredient loading err', err);
+            // this.setState({ ingredientsLoadFail: true });
+        });
     }
 
     render() {
@@ -48,7 +83,7 @@ class RecipeDetailsPage extends Component {
                 <CardText>
                     <div>
                         <span> <b>Ingredients</b> </span>
-                        <p>{this.props.recipe.ingredients.join('\n')}</p>
+                        <p>{this.state.ingredients.join(',')}</p>
                         <span> <b>Method</b> </span>
                         <p>{this.props.recipe.method}</p>
                     </div>

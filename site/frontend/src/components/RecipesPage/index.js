@@ -119,9 +119,6 @@ class RecipesPage extends Component {
             {
                 id::int,
                 name, method::string,
-                ingredients::[
-                    ingredient_name::string
-                ],
                 img_src::base64string
             }
         ]
@@ -156,7 +153,7 @@ class RecipesPage extends Component {
                             titleBackground="linear-gradient(to top, rgba(0,0,0,0.7) 0%,rgba(0,0,0,0.3) 70%,rgba(0,0,0,0) 100%)"
                             cols={index === 0 ? 2 : 1}
                             rows={index === 0 ? 2 : 1}
-                            subtitle={`You have ${recipe.ingredients.join(', ')}`}
+                            // subtitle={`You have ${recipe.ingredients.join(', ')}`}
                         >
                             <img src={recipe.img_src} alt={recipe.name} />
                         </GridTile>

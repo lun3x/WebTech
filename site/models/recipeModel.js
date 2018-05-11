@@ -9,6 +9,17 @@ exports.getAllRecipes = (controllerCallback) => {
     db.con.query(sql, controllerCallback);
 };
 
+exports.findIngredientNamesOfRecipe = (recipe_id, controllerCallback) => {
+    let sql = 'SELECT Ingredients.name FROM RecipeIngredients \
+               INNER JOIN Ingredients ON RecipeIngredients.ingredient_id = Ingredients.id \
+               WHERE RecipeIngredients.recipe_id = ?;';
+    
+    let inserts = [ recipe_id ];
+    sql = mysql.format(sql, inserts);
+    console.log(sql);
+    db.con.query(sql, controllerCallback);
+};
+
 exports.findRecipeIngredients = (ingredient_ids, controllerCallback) => {
     let sql = 'SELECT * FROM RecipeIngredients';
     // for (let i = 0; i < ingredient_ids.length; i++) {
@@ -44,7 +55,7 @@ exports.findRecipes = (recipe_ids, controllerCallback) => {
         }
 
         let inserts = [ recipe_ids[i] ];
-        sql = mysql.format(whereING, inserts);
+        whereING = mysql.format(whereING, inserts);
 
         sql += whereING;
     }

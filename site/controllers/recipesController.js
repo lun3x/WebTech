@@ -23,6 +23,32 @@ exports.allRecipes = (req, res) => {
     });
 };
 
+exports.findIngredientNamesOfRecipe = (req, res) => {
+    if (!req.session || !req.session.authenticated) {
+        res.status(401).send('Error! Not logged in.');
+        return;
+    }
+
+    // let id = req.params.id;
+
+    db.findIngredientNamesOfRecipe(req.params.id, (err, dbResult) => {
+        if (err) res.status(500).send('Error! Failed to find ingredients for recipe.');
+        else {
+            let ingredientNames = [];
+            for (let i = 0; i < dbResult.length; i++) {
+                ingredientNames.push(dbResult[i]);
+            }
+
+            res.setHeader('Content-Type', 'application/json');
+            res.status(200).json({
+                data: {
+                    ingredients: ingredientNames
+                }
+            });
+        }
+    });
+};
+
 exports.findRecipes = (req, res) => {
     if (!req.session || !req.session.authenticated) {
         res.status(401).send('Error! Not logged in.');
@@ -100,6 +126,7 @@ exports.findRecipes = (req, res) => {
                 if (err2) res.status(500).send('Error! Failed to search for usable recipes.');
                 else {
                     res.setHeader('Content-Type', 'application/json');
+                    console.dir(dbResult2);
                     res.status(200).json({
                         data: {
                             recipes: dbResult2

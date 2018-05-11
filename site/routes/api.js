@@ -43,7 +43,10 @@ router.get('/recipes/all', recipesController.allRecipes);
 router.get('/recipes/image/:id', recipesController.recipeImage);
 
 /* PUT find recipes which use the ingredients specified (by id) in req body */
-router.put('/recipes/find', recipesController.findRecipes); 
+router.put('/recipes/find', recipesController.findRecipes);
+
+/* GET names of ingredients in recipe */
+router.get('/recipes/ingredients/:id', recipesController.findIngredientNamesOfRecipe);
 
 
 module.exports = router;
