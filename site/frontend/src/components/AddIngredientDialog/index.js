@@ -32,12 +32,6 @@ class AddIngredientDialog extends Component {
         };
     }
 
-    setDirty = () => {
-        if (!this.state.dirty) {
-            this.setState({ dirty: true });
-        }
-    }
-
     handleOpen = () => {
         this.setState({ open: true });
     };
@@ -51,7 +45,7 @@ class AddIngredientDialog extends Component {
     }
 
     handleSubmit = (chosenRequest, index) => {
-        this.setState({ addFoodAwaitingResponse: true });
+        this.setState({ addFoodAwaitingResponse: true, addFoodFail: false, addFoodSuccess: false });
 
         if (index === -1) {
             // just ignore unless an item in list menu is selected
@@ -67,7 +61,7 @@ class AddIngredientDialog extends Component {
 
                 if (res.status === 201) {
                     this.setState({ addFoodSuccess: true });
-                    this.setDirty();
+                    this.props.triggerCupboardReload();
                 }
                 else {
                     this.setState({ addFoodFail: true });
