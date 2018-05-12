@@ -83,7 +83,7 @@ class RecipeDetailsPage extends Component {
                 <CardText>
                     <div>
                         <span> <b>Ingredients</b> </span>
-                        <p>{this.state.ingredients.join(',')}</p>
+                        <p>{this.state.ingredients.join('\n')}</p>
                         <span> <b>Method</b> </span>
                         <p>{this.props.recipe.method}</p>
                     </div>

@@ -6,6 +6,9 @@ import NavBar from '../NavBar';
 import CupboardPage from '../CupboardPage';
 import SettingsPage from '../SettingsPage';
 import RecipesPage from '../RecipesPage';
+import SuggestPage from '../SuggestPage';
+
+import ApiErrorSnackbar from '../ApiErrorSnackbar';
 
 class ContainerPage extends Component {
 
@@ -18,12 +21,43 @@ class ContainerPage extends Component {
         this.state = {
             selectedPage: 0, // default is CupboardPage
             ingredientIds: undefined,
+            
+            // fetch all ingredients
+            allIngredients: undefined,
+            allIngredientsAreLoading: false,
+            allIngredientsLoadingError: false,
         };
+    }
+
+    componentWillMount() {
+        this.setState({ allIngredientsAreLoading: true });
+
+        // fetch all ingredients
+        this.fetchAllIngredients();
     }
 
     setIngredientIds = (ids) => this.setState({ ingredientIds: ids });
 
     selectPage = (ix) => this.setState({ selectedPage: ix });
+
+    fetchAllIngredients = () => {
+        // fetch a list of all ingredients
+        fetch('/api/ingredients')
+            .then(res => {
+                this.setState({ allIngredientsAreLoading: false });
+                if (res.status !== 200) {
+                    throw new Error('Bad status from server');
+                }
+                return res.json();
+            })
+            .then(json => {
+                this.setState({ allIngredients: json.data.ingredients });
+            })
+            .catch(err => {
+                this.setState({ allIngredientsLoadingError: true });
+            });
+    }
+    
 
     render() {
         let page = null;
@@ -31,6 +65,7 @@ class ContainerPage extends Component {
         case 0:
             page = (
                 <CupboardPage
+                    allIngredients={this.state.allIngredients}
                     gotoFindRecipesPage={() => this.selectPage(2)}
                     setUserIngredientIds={this.setIngredientIds}
                 />
@@ -44,6 +79,14 @@ class ContainerPage extends Component {
         case 2:
             page = (
                 <RecipesPage goBack={() => this.selectPage(0)} ingredientIds={this.state.ingredientIds} />
+            );
+            break;
+        case 3:
+            page = (
+                <SuggestPage
+                    allIngredients={this.state.allIngredients}
+                    goBack={() => this.selectPage(0)}
+                />
             );
             break;
         default:
@@ -67,6 +110,15 @@ class ContainerPage extends Component {
                 { page }
 
                 <NavBar selectPageHandler={this.selectPage} />
+
+                <ApiErrorSnackbar
+                    open={this.state.allIngredientsAreLoading}
+                    message={'Loading all ingredients'}
+                />
+                <ApiErrorSnackbar
+                    open={this.state.allIngredientsLoadingError}
+                    message={'Error loading list of all ingredients'}
+                />
             </div>
         );
     }

@@ -21,24 +21,41 @@ exports.findIngredientNamesOfRecipe = (recipe_id, controllerCallback) => {
 };
 
 exports.findRecipeIngredients = (ingredient_ids, controllerCallback) => {
-    let sql = 'SELECT * FROM RecipeIngredients';
-    // for (let i = 0; i < ingredient_ids.length; i++) {
-    //     let whereING;
-    //     if (i === 0) {
-    //         whereING = ' WHERE ingredient_id = ?';
-    //     }
-    //     else {
-    //         whereING = ' OR WHERE ingredient_id = ?';
-    //     }
+    let sql = 'SELECT * FROM RecipeIngredients;';
+    
+    console.log(sql);
+    db.con.query(sql, controllerCallback);
+};
 
-    //     let inserts = [ ingredient_ids[i] ];
-    //     sql = mysql.format(whereING, inserts);
+exports.createRecipe = (name, method, controllerCallback) => {
+    let sql = 'INSERT INTO Recipes (name, method) VALUES (?, ?);';
 
-    //     sql += whereING;
-    // }
+    let inserts = [ name, method ];
+    sql = mysql.format(sql, inserts);
+
+    console.log(sql);
+    db.con.query(sql, controllerCallback);
+};
+
+exports.addIngredientsToRecipe = (recipe_id, ingredient_ids, controllerCallback) => {
+    let sql = 'INSERT INTO RecipeIngredients (recipe_id, ingredient_id) VALUES ';
+
+    for (let i = 0; i < ingredient_ids.length; i++) {
+        let valueInsert;
+        if (i === 0) {
+            valueInsert = '(?, ?)';
+        }
+        else {
+            valueInsert = ', (?, ?)';
+        }
+        let inserts = [ recipe_id, ingredient_ids[i] ];
+        valueInsert = mysql.format(valueInsert, inserts);
+
+        sql += valueInsert;
+    }
 
     sql += ';';
-    
+
     console.log(sql);
     db.con.query(sql, controllerCallback);
 };

@@ -52,6 +52,11 @@ class NavBar extends Component {
                         icon={settingsIcon}
                         onClick={() => this.selectIndex(1)}
                     />
+                    <BottomNavigationItem
+                        label={'Suggest Recipes'}
+                        icon={settingsIcon}
+                        onClick={() => this.selectIndex(3)}
+                    />
                 </BottomNavigation>
             </Paper>           
         );

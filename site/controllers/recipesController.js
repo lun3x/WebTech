@@ -23,6 +23,30 @@ exports.allRecipes = (req, res) => {
     });
 };
 
+exports.createRecipe = (req, res) => {
+    if (!req.session || !req.session.authenticated) {
+        res.status(401).send('Error! Not logged in.');
+        return;
+    }
+
+    if (!(req.body && req.body.recipe && req.body.recipe.name && req.body.recipe.method && Array.isArray(req.body.recipe.ingredient_ids) && req.body.recipe.ingredient_ids.length > 0)) {
+        res.status(422).send('Error! Correct format { ingredient_ids: [id::number] }');
+        return;
+    }
+
+    db.createRecipe(req.body.recipe.name, req.body.recipe.method, (err, newRecipe) => {
+        if (err) res.status(500).send('Error! Couldn`t create recipe.');
+        else {
+            db.addIngredientsToRecipe(newRecipe.insertId, (err2) => {
+                if (err2) res.status(500).send('Error! Couldn`t add ingredients to recipe.');
+                else {
+                    res.status(200).send('Success! Added new recipe.');
+                }
+            });
+        }
+    });
+};
+
 exports.findIngredientNamesOfRecipe = (req, res) => {
     if (!req.session || !req.session.authenticated) {
         res.status(401).send('Error! Not logged in.');

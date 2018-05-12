@@ -12,6 +12,10 @@ class CupboardPage extends Component {
     static propTypes = {
         gotoFindRecipesPage: PropTypes.func.isRequired,
         setUserIngredientIds: PropTypes.func.isRequired,
+        allIngredients:  PropTypes.arrayOf(PropTypes.shape({
+            id: PropTypes.number,
+            name: PropTypes.string
+        })).isRequired,
     }
 
     constructor(props) {
@@ -21,11 +25,6 @@ class CupboardPage extends Component {
             userIngredients: undefined,
             userIngredientsAreLoading: false,
             userIngredientsLoadingError: false,
-
-            // fetch all ingredients
-            allIngredients: undefined,
-            allIngredientsAreLoading: false,
-            allIngredientsLoadingError: false,
         };
     }
 
@@ -34,27 +33,6 @@ class CupboardPage extends Component {
 
         // fetch the user's cupboard
         this.fetchUserCupboard();
-
-        // fetch all ingredients
-        this.fetchAllIngredients();
-    }
-
-    fetchAllIngredients = () => {
-        // fetch a list of all ingredients
-        fetch('/api/ingredients')
-            .then(res => {
-                this.setState({ allIngredientsAreLoading: false });
-                if (res.status !== 200) {
-                    throw new Error('Bad status from server');
-                }
-                return res.json();
-            })
-            .then(json => {
-                this.setState({ allIngredients: json.data.ingredients });
-            })
-            .catch(err => {
-                this.setState({ allIngredientsLoadingError: true });
-            });
     }
 
     fetchUserCupboard = () => {
@@ -90,7 +68,7 @@ class CupboardPage extends Component {
                     ? <p>Still loading.</p>
                     : <IngredientList 
                         userIngredients={this.state.userIngredients}
-                        allIngredients={this.state.allIngredients}
+                        allIngredients={this.props.allIngredients}
                         reload={this.triggerCupboardReload}
                     />
                     /* eslint-enable indent */
@@ -103,15 +81,6 @@ class CupboardPage extends Component {
                 <ApiErrorSnackbar
                     open={this.state.userIngredientsLoadingError}
                     message={'Error loading ingredients in your cupboard'}
-                />
-
-                <ApiErrorSnackbar
-                    open={this.state.allIngredientsAreLoading}
-                    message={'Loading all ingredients'}
-                />
-                <ApiErrorSnackbar
-                    open={this.state.allIngredientsLoadingError}
-                    message={'Error loading list of all ingredients'}
                 />
             </div>
         );
