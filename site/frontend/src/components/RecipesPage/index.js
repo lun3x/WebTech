@@ -15,7 +15,7 @@ class RecipesPage extends Component {
         this.state = {
             recipesAreLoading: false,
             recipesLoadFail: false,
-            recipes: undefined,
+            recipes: [],
             selectedRecipe: undefined,
         };
     }
@@ -130,6 +130,8 @@ class RecipesPage extends Component {
             <p>Still loading.</p>
         ) : this.state.selectedRecipe ? (
             <RecipeDetailsPage recipe={this.state.selectedRecipe} goBack={this.goBack} />
+        ) : this.state.recipes.length === 0 ? (
+            <p>No recipes found!</p>
         ) : (
             <div style={styles.root} >
                 <GridList

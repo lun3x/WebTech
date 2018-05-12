@@ -37,7 +37,7 @@ exports.createRecipe = (req, res) => {
     db.createRecipe(req.body.recipe.name, req.body.recipe.method, (err, newRecipe) => {
         if (err) res.status(500).send('Error! Couldn`t create recipe.');
         else {
-            db.addIngredientsToRecipe(newRecipe.insertId, (err2) => {
+            db.addIngredientsToRecipe(newRecipe.insertId, req.body.recipe.ingredient_ids, (err2) => {
                 if (err2) res.status(500).send('Error! Couldn`t add ingredients to recipe.');
                 else {
                     res.status(200).send('Success! Added new recipe.');
@@ -112,10 +112,8 @@ exports.findRecipes = (req, res) => {
 
             for (let i = 0; i < dbResult.length; i++) {
                 if (dbResult[i].recipe_id !== current_recipe_id) {
-                    console.log('NEXT RECIPE');
                     //CHECK RECIPE USABLE
                     if (current_ingredients.every(val => req.body.ingredient_ids.indexOf(val) >= 0)) {
-                        console.log('ADDED RECIPE 1');
                         usable_recipes.push(dbResult[i - 1].recipe_id);
                     }
 
@@ -130,7 +128,6 @@ exports.findRecipes = (req, res) => {
 
             // CHECK FINAL RECIPE USABLE
             if (current_ingredients.every(val => req.body.ingredient_ids.indexOf(val) >= 0)) {
-                console.log('ADDED RECIPE 2');
                 usable_recipes.push(dbResult[dbResult.length - 1].recipe_id);
             }
 
@@ -173,6 +170,10 @@ exports.recipeImage = (req, res) => {
         res.status(422).send('Error! Must include recipe_id');
         return;
     }
+
+    //========REMOVE FROM FINAL THIS IS SILLY ERROR HANDLING FOR DEBUGGING========//
+    req.params.id %= 3;
+    //=======//
 
     let img_path = path.join(__dirname, '../static/images/recipe_images', req.params.id + '.png');
 

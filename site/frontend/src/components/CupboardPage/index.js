@@ -66,7 +66,7 @@ class CupboardPage extends Component {
                     ? <p>Error loading.</p>
                     : this.state.userIngredientsAreLoading
                     ? <p>Still loading.</p>
-                    : <IngredientList 
+                    : <IngredientList
                         userIngredients={this.state.userIngredients}
                         allIngredients={this.props.allIngredients}
                         reload={this.triggerCupboardReload}

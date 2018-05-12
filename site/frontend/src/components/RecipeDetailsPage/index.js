@@ -62,6 +62,9 @@ class RecipeDetailsPage extends Component {
                     verticalAlign: 'bottom',
                 },
             },
+            body: {
+                whiteSpace: 'pre-wrap'
+            },
         };
 
         return (
@@ -81,7 +84,7 @@ class RecipeDetailsPage extends Component {
                 </CardMedia>
                 { /* <CardTitle title="Card title" subtitle="Card subtitle" /> */ }
                 <CardText>
-                    <div>
+                    <div style={styles.body}>
                         <span> <b>Ingredients</b> </span>
                         <p>{this.state.ingredients.join('\n')}</p>
                         <span> <b>Method</b> </span>

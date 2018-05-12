@@ -31,7 +31,7 @@ class IngredientBox extends Component {
             credentials: 'same-origin',
         }).then((res) => {
             this.setState({ removeFoodAwaitingResponse: false });
-            this.props.reload();
+            this.props.reload(this.props.ingredientID);
             if (res.status !== 200) {
                 this.setState({ removeFoodError: true });
             }

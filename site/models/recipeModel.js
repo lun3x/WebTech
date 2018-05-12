@@ -68,7 +68,7 @@ exports.findRecipes = (recipe_ids, controllerCallback) => {
             whereING = ' WHERE id = ?';
         }
         else {
-            whereING = ' OR WHERE id = ?';
+            whereING = ' OR id = ?';
         }
 
         let inserts = [ recipe_ids[i] ];

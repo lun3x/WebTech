@@ -49,7 +49,7 @@ router.put('/recipes/find', recipesController.findRecipes);
 router.get('/recipes/ingredients/:id', recipesController.findIngredientNamesOfRecipe);
 
 /* POST create new recipe specified in body */
-router.post('recipes/create', recipesController.createRecipe);
+router.post('/recipes/create', recipesController.createRecipe);
 
 
 module.exports = router;

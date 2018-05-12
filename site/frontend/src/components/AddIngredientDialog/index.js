@@ -10,7 +10,7 @@ import FindIngredientAutoComplete from '../FindIngredientAutoComplete';
 class AddIngredientDialog extends Component {
 
     static defaultProps = {
-        ingredients: []
+        ingredients: [],
     };
 
     static propTypes = {
@@ -19,6 +19,10 @@ class AddIngredientDialog extends Component {
             name: PropTypes.string
         })),
         triggerCupboardReload: PropTypes.func.isRequired,
+        addFoodAwaitingResponse: PropTypes.bool.isRequired,
+        addFoodSuccess: PropTypes.bool.isRequired,
+        addFoodFail: PropTypes.bool.isRequired,
+        handleAddFood: PropTypes.func.isRequired
     };
 
     constructor(props) {
@@ -26,9 +30,6 @@ class AddIngredientDialog extends Component {
         this.state = {
             open: false,   // is the dialog open
             dirty: false,  // if a new food is added, we need to trigger a reload of mycupboard
-            addFoodAwaitingResponse: false,
-            addFoodSuccess: false,
-            addFoodFail: false,
         };
     }
 
@@ -41,32 +42,6 @@ class AddIngredientDialog extends Component {
         
         if (this.state.dirty) {
             this.props.triggerCupboardReload();
-        }
-    }
-
-    handleSubmit = (chosenRequest, index) => {
-        this.setState({ addFoodAwaitingResponse: true, addFoodFail: false, addFoodSuccess: false });
-
-        if (index === -1) {
-            // just ignore unless an item in list menu is selected
-        }
-        else {
-            // make an api call to add the selected ingredient to the current cupboard
-            let ingredientId = this.props.ingredients[index].id;
-            fetch(`/api/cupboard/add/${ingredientId}`, {
-                method: 'PUT',
-                credentials: 'same-origin'
-            }).then(res => {
-                this.setState({ addFoodAwaitingResponse: false });
-
-                if (res.status === 201) {
-                    this.setState({ addFoodSuccess: true });
-                    this.props.triggerCupboardReload();
-                }
-                else {
-                    this.setState({ addFoodFail: true });
-                }
-            });
         }
     }
 
@@ -92,10 +67,10 @@ class AddIngredientDialog extends Component {
                 >
                     Search for an ingredient below.
                     <FindIngredientAutoComplete
-                        addFoodAwaitingResponse={this.state.addFoodAwaitingResponse}
-                        addFoodFail={this.state.addFoodFail}
-                        addFoodSuccess={this.state.addFoodSuccess}
-                        handleSubmit={this.handleSubmit}
+                        addFoodAwaitingResponse={this.props.addFoodAwaitingResponse}
+                        addFoodFail={this.props.addFoodFail}
+                        addFoodSuccess={this.props.addFoodSuccess}
+                        handleSubmit={this.props.handleAddFood}
                         ingredients={this.props.ingredients}
                         setDirty={this.props.triggerCupboardReload}
                     />

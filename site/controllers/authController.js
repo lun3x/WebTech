@@ -68,7 +68,9 @@ exports.register = (req, res) => {
                     let user_id = result.insertId;
                     // create cupboard linked to new user
                     cupboardModel.createCupboard(user_id, (err3, result2) => {
-                        if (err3) res.status(500).json({ fail: 'cannotCreateCupboard' });
+                        if (err3) {
+                            res.status(500).json({ fail: 'cannotCreateCupboard' });
+                        }
                         else {
                             // get id of newly created cupboard
                             let cupboard_id = result2.insertId;

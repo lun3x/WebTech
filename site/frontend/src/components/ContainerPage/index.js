@@ -23,7 +23,7 @@ class ContainerPage extends Component {
             ingredientIds: undefined,
             
             // fetch all ingredients
-            allIngredients: undefined,
+            allIngredients: [],
             allIngredientsAreLoading: false,
             allIngredientsLoadingError: false,
         };
