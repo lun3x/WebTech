@@ -42,6 +42,23 @@ exports.logout = (req, res) => {
     //res.redirect('/');
 };
 
+exports.changeUsername = (req, res) => {
+    if (!req.session || !req.session.authenticated) {
+        res.status(401).send('Error! Not logged in.');
+        return;
+    }
+
+    if (!/^[\x00-\x7F]*$/.test(req.body.username)) {
+        res.status(422).send('Error! Username does not meet requirements.');
+        return;
+    }
+
+    db.changeUsername(req.session.user_id, req.body.username, (err) => {
+        if (err) res.status(409).send('Error! Username taken');
+        else res.status(200).send('Success! Changed username');
+    });
+};
+
 exports.changePassword = (req, res) => {
     if (!req.session || !req.session.authenticated) {
         res.status(401).send('Error! Not logged in.');

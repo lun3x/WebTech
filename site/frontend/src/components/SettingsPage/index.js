@@ -5,13 +5,14 @@ import Subheader from 'material-ui/Subheader';
 import Divider from 'material-ui/Divider';
 import ChangePasswordForm from '../ChangePasswordForm';
 import ApiErrorSnackbar from '../ApiErrorSnackbar';
+import ChangeUsernameForm from '../ChangeUsernameForm';
 
 const style = {
     root: {
         display: 'flex',
         flexWrap: 'wrap',
     },
-    changePass: {
+    changeBox: {
         margin: 15
     }
 };
@@ -25,17 +26,18 @@ class SettingsPage extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            changePassOpen: false,
-            changeSuccess: false
+            changeOpen: false,
+            changePassSuccess: false,
+            changeUserSuccess: false
         };
     }
 
-    handleOpen = () => {
-        this.setState({ changePassOpen: true, changeSuccess: false });
+    handlePassClose = (success) => {
+        this.setState({ changeOpen: false, changePassSuccess: success });
     }
 
-    handleClose = (success) => {
-        this.setState({ changePassOpen: false, changeSuccess: success });
+    handleUserClose = (success) => {
+        this.setState({ changeOpen: false, changeUserSuccess: success });
     }
 
     render() {
@@ -53,26 +55,25 @@ class SettingsPage extends Component {
                     />
                     <Divider />
                     <Subheader>Account</Subheader>
-                    <ListItem
-                        primaryText={'Change username'}
-                        secondaryText={'This isn\'t implemented yet'}
-                    />
                     {
-                        this.state.changePassOpen ?
+                        this.state.changeOpen ?
                             null
                             :
                             <ListItem
-                                primaryText={'Change password'}
-                                onClick={this.handleOpen}
+                                primaryText={'Change username or password'}
+                                onClick={e => this.setState({ changeOpen: true, changeUserSuccess: false, changePassSuccess: false })}
                             />
                     }
                 </List>
 
                 {
-                    this.state.changePassOpen ?
-                        <div style={style.changePass}>
+                    this.state.changeOpen ?
+                        <div style={style.changeBox}>
                             <ChangePasswordForm
-                                onClose={this.handleClose}
+                                onClose={this.handlePassClose}
+                            />
+                            <ChangeUsernameForm
+                                onClose={this.handleUserClose}
                             />
                         </div>
                         :
@@ -80,8 +81,13 @@ class SettingsPage extends Component {
                 }
 
                 <ApiErrorSnackbar
-                    open={this.state.changeSuccess}
+                    open={this.state.changePassSuccess}
                     message="Successfully changed password."
+                />
+
+                <ApiErrorSnackbar
+                    open={this.state.changeUserSuccess}
+                    message="Successfully changed username."
                 />
                 
             </div>

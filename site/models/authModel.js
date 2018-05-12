@@ -19,6 +19,15 @@ exports.changePassword = (user_id, hashPass, controllerCallback) => {
     db.con.query(sql, controllerCallback);
 };
 
+exports.changeUsername = (user_id, username, controllerCallback) => {
+    let sql = 'UPDATE Users SET username = ? WHERE id = ?;';
+    let inserts = [ username, user_id ];
+    sql = mysql.format(sql, inserts);
+
+    console.log(sql);
+    db.con.query(sql, controllerCallback);
+};
+
 exports.createUser = (name, hashPass, username, controllerCallback) => {
     // create a new user
     let sql = 'INSERT INTO Users (name, password, username) VALUES (?,?,?);';
