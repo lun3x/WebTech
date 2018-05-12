@@ -5,7 +5,10 @@ import PropTypes from 'prop-types';
 class FindIngredientAutoComplete extends Component {
 
     static defaultProps = {
-        ingredients: []
+        ingredients: [],
+        addFoodAwaitingResponse: false,
+        addFoodSuccess: false,
+        addFoodFail: false
     };
 
     static propTypes = {
@@ -14,42 +17,11 @@ class FindIngredientAutoComplete extends Component {
             name: PropTypes.string
         })),
         setDirty: PropTypes.func.isRequired,
+        handleSubmit: PropTypes.func.isRequired,
+        addFoodAwaitingResponse: PropTypes.bool,
+        addFoodSuccess: PropTypes.bool,
+        addFoodFail: PropTypes.bool,
     };
-
-    constructor(props) {
-        super(props);
-        this.state = {
-            addFoodAwaitingResponse: false,
-            addFoodSuccess: false,
-            addFoodFail: false,
-        };
-    }
-
-    handleSubmit = (chosenRequest, index) => {
-        this.setState({ addFoodAwaitingResponse: true });
-
-        if (index === -1) {
-            // just ignore unless an item in list menu is selected
-        }
-        else {
-            // make an api call to add the selected ingredient to the current cupboard
-            let ingredientId = this.props.ingredients[index].id;
-            fetch(`/api/cupboard/add/${ingredientId}`, {
-                method: 'PUT',
-                credentials: 'same-origin'
-            }).then(res => {
-                this.setState({ addFoodAwaitingResponse: false });
-
-                if (res.status === 201) {
-                    this.setState({ addFoodSuccess: true });
-                    this.props.setDirty();
-                }
-                else {
-                    this.setState({ addFoodFail: true });
-                }
-            });
-        }
-    }
 
     render() {
         const style = {
@@ -66,15 +38,15 @@ class FindIngredientAutoComplete extends Component {
 
         let statusText = '';
         let textStyle  = null;
-        if (this.state.addFoodAwaitingResponse) {
+        if (this.props.addFoodAwaitingResponse) {
             statusText = 'Adding ingredient...';
             textStyle  = style.statusTextAwaiting;
         }
-        else if (this.state.addFoodFail) {
+        else if (this.props.addFoodFail) {
             statusText = 'Can\'t update your cupboard :(';
             textStyle  = style.statusTextError;
         }
-        else if (this.state.addFoodSuccess) {
+        else if (this.props.addFoodSuccess) {
             statusText = 'Added ingredient :)';
             textStyle  = style.statusTextSuccess;
         }
@@ -86,7 +58,7 @@ class FindIngredientAutoComplete extends Component {
                     filter={AutoComplete.fuzzyFilter}
                     dataSource={this.props.ingredients.map(x => x.name)}
                     maxSearchResults={10}
-                    onNewRequest={this.handleSubmit}
+                    onNewRequest={this.props.handleSubmit}
                 />
                 <div>
                     <p {...textStyle} >{statusText}</p>

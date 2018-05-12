@@ -26,6 +26,9 @@ class AddIngredientDialog extends Component {
         this.state = {
             open: false,   // is the dialog open
             dirty: false,  // if a new food is added, we need to trigger a reload of mycupboard
+            addFoodAwaitingResponse: false,
+            addFoodSuccess: false,
+            addFoodFail: false,
         };
     }
 
@@ -44,6 +47,32 @@ class AddIngredientDialog extends Component {
         
         if (this.state.dirty) {
             this.props.triggerCupboardReload();
+        }
+    }
+
+    handleSubmit = (chosenRequest, index) => {
+        this.setState({ addFoodAwaitingResponse: true });
+
+        if (index === -1) {
+            // just ignore unless an item in list menu is selected
+        }
+        else {
+            // make an api call to add the selected ingredient to the current cupboard
+            let ingredientId = this.props.ingredients[index].id;
+            fetch(`/api/cupboard/add/${ingredientId}`, {
+                method: 'PUT',
+                credentials: 'same-origin'
+            }).then(res => {
+                this.setState({ addFoodAwaitingResponse: false });
+
+                if (res.status === 201) {
+                    this.setState({ addFoodSuccess: true });
+                    this.setDirty();
+                }
+                else {
+                    this.setState({ addFoodFail: true });
+                }
+            });
         }
     }
 
@@ -69,6 +98,10 @@ class AddIngredientDialog extends Component {
                 >
                     Search for an ingredient below.
                     <FindIngredientAutoComplete
+                        addFoodAwaitingResponse={this.state.addFoodAwaitingResponse}
+                        addFoodFail={this.state.addFoodFail}
+                        addFoodSuccess={this.state.addFoodSuccess}
+                        handleSubmit={this.handleSubmit}
                         ingredients={this.props.ingredients}
                         setDirty={this.props.triggerCupboardReload}
                     />
