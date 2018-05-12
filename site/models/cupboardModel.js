@@ -32,6 +32,15 @@ exports.createCupboard = (user_id, controllerCallback) => {
     db.con.query(sql, controllerCallback);
 };
 
+exports.deleteCupboard = (cupboard_id, controllerCallback) => {
+    let sql = 'DELETE FROM Cupboards WHERE id = ?;';
+    let inserts = [ cupboard_id ];
+    sql = mysql.format(sql, inserts);
+
+    console.log(sql);
+    db.con.query(sql, controllerCallback);
+};
+
 exports.createIngredientCupboard = (ingredient_id, cupboard_id, controllerCallback) => {
     let sql = 'INSERT INTO IngredientCupboards (ingredient_id, cupboard_id) VALUES (?,?);';
     let inserts = [ ingredient_id, cupboard_id ];

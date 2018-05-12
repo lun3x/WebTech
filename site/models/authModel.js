@@ -10,10 +10,29 @@ exports.getUser = (username, controllerCallback) => {
     db.con.query(sql, controllerCallback);
 };
 
+exports.changePassword = (user_id, hashPass, controllerCallback) => {
+    let sql = 'UPDATE Users SET password = ? WHERE id = ?;';
+    let inserts = [ hashPass, user_id ];
+    sql = mysql.format(sql, inserts);
+
+    console.log(sql);
+    db.con.query(sql, controllerCallback);
+};
+
 exports.createUser = (name, hashPass, username, controllerCallback) => {
     // create a new user
     let sql = 'INSERT INTO Users (name, password, username) VALUES (?,?,?);';
     let inserts = [ name, hashPass, username ];
+    sql = mysql.format(sql, inserts);
+
+    console.log(sql);
+    db.con.query(sql, controllerCallback);
+};
+
+exports.deleteUser = (user_id, controllerCallback) => {
+    // deletes an existing user
+    let sql = 'DELETE FROM Users WHERE id = ?;';
+    let inserts = [ user_id ];
     sql = mysql.format(sql, inserts);
 
     console.log(sql);

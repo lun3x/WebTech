@@ -42,14 +42,36 @@ exports.logout = (req, res) => {
     //res.redirect('/');
 };
 
+exports.changePassword = (req, res) => {
+    if (!req.session || !req.session.authenticated) {
+        res.status(401).send('Error! Not logged in.');
+        return;
+    }
+
+    if (!/^[\x00-\xFF]*$/.test(req.body.password)) {
+        res.status(422).send('Error! Password does not meet requirements.');
+        return;
+    }
+
+    bcrypt.hash(req.body.password, 10, (err, hash) => {
+        if (err) res.status(500).json({ fail: 'hashFail' });
+        else {
+            db.changePassword(req.session.user_id, hash, (err2) => {
+                if (err2) res.status(500).json({ fail: 'cannotChangePass' });
+                else res.status(200).send('Success! Password changed.');
+            });
+        }
+    });
+};
+
 exports.register = (req, res) => {
     // check username is ASCII and password is extended ASCII
     if (!/^[\x00-\x7F]*$/.test(req.body.username)) {
-        res.status(401).json({ fail: 'usernameChar' });
+        res.status(422).json({ fail: 'usernameChar' });
         return;
     } 
     else if (!/^[\x00-\xFF]*$/.test(req.body.password)) {
-        res.status(401).json({ fail: 'passwordChar' });
+        res.status(422).json({ fail: 'passwordChar' });
         return;
     }
 
@@ -70,6 +92,9 @@ exports.register = (req, res) => {
                     cupboardModel.createCupboard(user_id, (err3, result2) => {
                         if (err3) {
                             res.status(500).json({ fail: 'cannotCreateCupboard' });
+                            db.deleteUser(user_id, (err3b) => {
+                                if (err3b) console.log('User account rollback failed - database may be in damaged state!');
+                            });
                         }
                         else {
                             // get id of newly created cupboard
@@ -77,7 +102,17 @@ exports.register = (req, res) => {
                             
                             // update default cupboard of new user
                             db.updateDefaultCupboard(cupboard_id, user_id, (err4) => {
-                                if (err4) { console.dir(err4); res.status(500).json({ fail: 'cannotUpdateDefaultCupboard' }); }
+                                if (err4) {
+                                    res.status(500).json({ fail: 'cannotUpdateDefaultCupboard' });
+                                    cupboardModel.deleteCupboard(cupboard_id, (err4b) => {
+                                        if (err4b) console.log('Cupboard rollback failed - database may be in damaged state!');
+                                        else {
+                                            db.deleteUser(user_id, (err4c) => {
+                                                if (err4c) console.log('User account rollback failed after cupboard rollback - database may be in damaged state!');
+                                            });
+                                        }
+                                    });
+                                }
                                 else {
                                     res.status(201).json({ fail: 'none' });
                                     

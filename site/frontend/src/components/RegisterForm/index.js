@@ -28,20 +28,13 @@ class RegisterForm extends Component {
         this.state = {
             password2: '',
             name: '',
-            registerLoading: false,
+            // registerLoading: false,
             registerError: false,
-            registerFailed: false,
             usernameTaken: false
         };
-
-        this.handleChange = this.handleChange.bind(this);
-        this.handleSubmit = this.handleSubmit.bind(this);
-        this.validateForm = this.validateForm.bind(this);
-        this.usernameErrorText = this.usernameErrorText.bind(this);
-        this.passwordErrorText = this.passwordErrorText.bind(this);
     }
 
-    handleChange(event) {
+    handleChange = (event) => {
         const target = event.target;
 
         this.setState({
@@ -49,8 +42,8 @@ class RegisterForm extends Component {
         });
     }
 
-    handleSubmit(event) {
-        this.setState({ registerLoading: true });
+    handleSubmit = (event) => {
+        // this.setState({ registerLoading: true });
 
         fetch(`/auth/register`, {
             method: 'POST',
@@ -64,12 +57,12 @@ class RegisterForm extends Component {
                 name: this.state.name
             })
         }).then((res) => {
-            this.setState({ registerLoading: false });
+            // this.setState({ registerLoading: false });
             if (res.status === 201) {
                 // Successful registration
                 this.props.doneRegister(false);
             }
-            else if (res.status !== 409) {
+            else if (res.status !== 409 && res.status !== 422) {
                 throw new Error('Bad status from server.');
             }
             return res.json();
@@ -90,7 +83,7 @@ class RegisterForm extends Component {
         event.preventDefault();
     }
 
-    validateForm() {
+    validateForm = () => {
         if (this.props.password !== this.state.password2) return false;
         if (this.props.password.length < 3) return false;
         if (this.props.username.length < 3) return false;
@@ -99,13 +92,13 @@ class RegisterForm extends Component {
         return true;
     }
 
-    usernameErrorText() {
-        if (!isValid(this.props.password, 'username')) return 'Character(s) not allowed';
+    usernameErrorText = () => {
+        if (!isValid(this.props.username, 'username')) return 'Character(s) not allowed';
         if (this.state.usernameTaken) return 'Username already taken';
         return '';
     }
 
-    passwordErrorText() {
+    passwordErrorText = () => {
         if (!isValid(this.props.password, 'password')) return 'Character(s) not allowed';
         return '';
     }
@@ -170,9 +163,11 @@ class RegisterForm extends Component {
                     style={style}
                     onClick={this.handleSubmit}
                 />
-                {this.state.registerLoading}
-                {this.state.registerError}
-                {this.state.registerFailed}
+
+                <ApiErrorSnackbar
+                    open={this.state.registerError}
+                    message="Failed to register user."
+                />
             </div>
         );
     }

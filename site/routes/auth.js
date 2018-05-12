@@ -8,6 +8,8 @@ const authController = require('../controllers/authController.js');
 router.get('/isAuthenticated', authController.isAuthenticated);
 router.get('/logout', authController.logout);
 
+router.put('/changePassword', authController.changePassword);
+
 router.post('/login', authController.login);
 router.post('/register', authController.register);
 
