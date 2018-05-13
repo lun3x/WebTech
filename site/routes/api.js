@@ -51,5 +51,11 @@ router.get('/recipes/ingredients/:id', recipesController.findIngredientNamesOfRe
 /* POST create new recipe specified in body */
 router.post('/recipes/create', recipesController.createRecipe);
 
+/* PUT upvote recipe */
+router.put('/recipes/:id/upvote', recipesController.upvoteRecipe);
+
+/* PUT downvote recipe */
+router.put('/recipes/:id/downvote', recipesController.downVoteRecipe);
+
 
 module.exports = router;

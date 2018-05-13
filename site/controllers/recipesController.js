@@ -1,6 +1,7 @@
 // recipesController.js
 
 const db = require('../models/recipeModel.js');
+const voteModel = require('../models/voteModel.js');
 const path = require('path');
 const fs = require('fs');
 
@@ -81,7 +82,7 @@ exports.findRecipes = (req, res) => {
 
     console.dir(req.body);
 
-    if (!(req.body && Array.isArray(req.body.ingredient_ids) && req.body.ingredient_ids.length > 0)) {
+    if (!(req.body && Array.isArray(req.body.ingredient_ids) && req.body.ingredient_ids.length >= 0)) {
         res.status(422).send('Error! Correct format { ingredient_ids: [id::number] }');
         return;
     }
@@ -102,13 +103,9 @@ exports.findRecipes = (req, res) => {
             // Sort by recipe ids
             dbResult.sort((a, b) => a.recipe_id - b.recipe_id);
 
-            console.dir(dbResult);
-
             let usable_recipes = [];
             let current_ingredients = [];
             let current_recipe_id = dbResult[0].recipe_id;
-
-            console.dir(current_recipe_id);
 
             for (let i = 0; i < dbResult.length; i++) {
                 if (dbResult[i].recipe_id !== current_recipe_id) {
@@ -124,14 +121,10 @@ exports.findRecipes = (req, res) => {
                 current_ingredients.push(dbResult[i].ingredient_id);
             }
             
-            console.dir(current_ingredients);
-
             // CHECK FINAL RECIPE USABLE
             if (current_ingredients.every(val => req.body.ingredient_ids.indexOf(val) >= 0)) {
                 usable_recipes.push(dbResult[dbResult.length - 1].recipe_id);
             }
-
-            console.dir(usable_recipes);
 
             if (usable_recipes.length === 0) {
                 res.setHeader('Content-Type', 'application/json');
@@ -147,7 +140,6 @@ exports.findRecipes = (req, res) => {
                 if (err2) res.status(500).send('Error! Failed to search for usable recipes.');
                 else {
                     res.setHeader('Content-Type', 'application/json');
-                    console.dir(dbResult2);
                     res.status(200).json({
                         data: {
                             recipes: dbResult2
@@ -194,6 +186,94 @@ exports.recipeImage = (req, res) => {
     // res.status(200).end(base64_img); 
     res.setHeader('Content-Type', 'image/png');
     res.sendFile(img_path);
+};
+
+exports.upvoteRecipe = (req, res) => {
+    if (!req.session || !req.session.authenticated) {
+        res.status(401).send('Error! Not logged in.');
+        return;
+    }
+
+    voteModel.getVoteStatus(req.params.id, req.session.user_id, (err, result) => {
+        if (err) res.status(500).send('Error! Failed to get vote status.');
+        else if (result.length === 0) {
+            voteModel.createVote(req.params.id, req.session.user_id, true, (err2) => {
+                if (err2) res.status(500).send('Error! Failed to create upvote.');
+                else {
+                    res.status(200).json({
+                        upvoted: true,
+                        downvoted: false
+                    });
+                }
+            });
+        }
+        else if (result[0].upvote) {
+            voteModel.deleteVote(req.params.id, req.session.user_id, (err2) => {
+                if (err2) res.status(500).send('Error! Failed to delete upvote.');
+                else {
+                    res.status(200).json({
+                        upvoted: false,
+                        downvoted: false
+                    });
+                }
+            });
+        }
+        else if (!result[0].upvote) {
+            voteModel.updateVote(req.params.id, req.session.user_id, true, (err2) => {
+                if (err2) res.status(500).send('Error! Failed to change vote.');
+                else {
+                    res.status(200).json({
+                        upvoted: true,
+                        downvoted: false,
+                    });
+                }
+            });
+        }
+    });
+};
+
+exports.downVoteRecipe = (req, res) => {
+    if (!req.session || !req.session.authenticated) {
+        res.status(401).send('Error! Not logged in.');
+        return;
+    }
+
+    voteModel.getVoteStatus(req.params.id, req.session.user_id, (err, result) => {
+        if (err) res.status(500).send('Error! Failed to get vote status.');
+        else if (result.length === 0) {
+            voteModel.createVote(req.params.id, req.session.user_id, false, (err2) => {
+                if (err2) res.status(500).send('Error! Failed to create downvote.');
+                else {
+                    res.status(200).json({
+                        upvoted: false,
+                        downvoted: true
+                    });
+                }
+            });
+        }
+        else if (!result[0].upvote) {
+            voteModel.deleteVote(req.params.id, req.session.user_id, (err2) => {
+                if (err2) res.status(500).send('Error! Failed to delete downvote.');
+                else {
+                    res.status(200).json({
+                        upvoted: false,
+                        downvoted: false
+                    });
+                }
+            });
+        }
+        else if (result[0].upvote) {
+            voteModel.updateVote(req.params.id, req.session.user_id, false, (err2) => {
+                if (err2) res.status(500).send('Error! Failed to change vote.');
+                else {
+                    res.status(200).json({
+                        upvoted: false,
+                        downvoted: true,
+                    });
+                }
+            });
+        }
+    });
 };
 
 

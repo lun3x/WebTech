@@ -28,6 +28,12 @@ exports.up = (db, callback) => {
         method: {
             type: 'text',
             length: 65535
+        },
+        votes: {
+            type: 'int',
+            unsigned: true,
+            notNull: true,
+            defaultValue: 0,
         }
     }, (err) => {
         if (err) { callback(err); return; }

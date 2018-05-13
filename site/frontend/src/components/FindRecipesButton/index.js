@@ -6,6 +6,7 @@ class FindRecipesButton extends Component {
 
     static propTypes = {
         gotoFindRecipesPage: PropTypes.func.isRequired,
+        disabled: PropTypes.bool.isRequired
     }
 
 
@@ -20,6 +21,7 @@ class FindRecipesButton extends Component {
                 style={style}
                 label={label}
                 secondary
+                disabled={this.props.disabled}
                 onClick={this.props.gotoFindRecipesPage}
             />
         );

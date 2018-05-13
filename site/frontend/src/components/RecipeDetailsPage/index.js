@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import { Card, CardActions, CardHeader, CardMedia, CardTitle, CardText } from 'material-ui/Card';
 import Avatar from 'material-ui/Avatar';
 import NavigationArrowBack from 'material-ui/svg-icons/navigation/arrow-back';
+import { RaisedButton } from 'material-ui';
 
 class RecipeDetailsPage extends Component {
 
@@ -13,7 +14,7 @@ class RecipeDetailsPage extends Component {
             name: PropTypes.string.isRequired,
             method: PropTypes.string.isRequired,
             img_src: PropTypes.string.isRequired,
-        }).isRequired,
+        }).isRequired
     }
 
     constructor(props) {
@@ -21,13 +22,20 @@ class RecipeDetailsPage extends Component {
         this.state = {
             // ingredientsAreLoading: false,
             // ingredientLoadFail: False,
-            ingredients: []
+            ingredients: [],
+            upvoted: false,
+            downvoted: false
         };
     }
 
     componentWillMount() {
         // this.setState({ ingredientsAreLoading: true });
         this.fetchIngredients();
+        this.fetchVoteState();
+    }
+
+    fetchVoteState = () => {
+
     }
 
     fetchIngredients = () => {
@@ -52,6 +60,42 @@ class RecipeDetailsPage extends Component {
         });
     }
 
+    handleUpvote = () => {
+        fetch(`/api/recipes/${this.props.recipe.id}/upvote`, {
+            method: 'PUT',
+            credentials: 'same-origin'
+        }).then(res => {
+            if (res.status !== 200) {
+                throw new Error('Failed to upvote.');
+            }
+            else {
+                return res.json();
+            }
+        }).then(json => {
+            this.setState({ upvoted: json.upvoted, downvoted: json.downvoted });
+        }).catch(err => {
+            console.log('Upvote error: ', err);
+        });
+    }
+
+    handleUpvote = () => {
+        fetch(`/api/recipes/${this.props.recipe.id}/downvote`, {
+            method: 'PUT',
+            credentials: 'same-origin'
+        }).then(res => {
+            if (res.status !== 200) {
+                throw new Error('Failed to upvote.');
+            }
+            else {
+                return res.json();
+            }
+        }).then(json => {
+            this.setState({ upvoted: json.upvoted, downvoted: json.downvoted });
+        }).catch(err => {
+            console.log('Upvote error: ', err);
+        });
+    }
+
     render() {
         const styles = {
             header: {
@@ -65,6 +109,9 @@ class RecipeDetailsPage extends Component {
             body: {
                 whiteSpace: 'pre-wrap'
             },
+            buttons: {
+                margin: 15
+            }
         };
 
         return (
@@ -77,6 +124,18 @@ class RecipeDetailsPage extends Component {
                         style={styles.header.avatar}
                     />}
                 />
+                <CardActions>
+                    <RaisedButton
+                        label={this.state.upvoted ? '-' : 'Upvote'}
+                        style={styles.buttons}
+                        onClick={this.handleUpvote}
+                    />
+                    <RaisedButton
+                        label={this.state.downvoted ? '-' : 'Downvote'}
+                        style={styles.buttons}
+                        onClick={this.handleDownvote}
+                    />
+                </CardActions>
                 <CardMedia
                     overlay={<CardTitle title={this.props.recipe.name} /*subtitle="Overlay subtitle"*/ />}
                 >

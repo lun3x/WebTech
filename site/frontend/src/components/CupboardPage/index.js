@@ -22,7 +22,7 @@ class CupboardPage extends Component {
         super(props);
         this.state = {
             // fetch ingredients in user's cupboard
-            userIngredients: undefined,
+            userIngredients: [],
             userIngredientsAreLoading: false,
             userIngredientsLoadingError: false,
         };
@@ -74,7 +74,10 @@ class CupboardPage extends Component {
                     /* eslint-enable indent */
                 }
 
-                <FindRecipesButton gotoFindRecipesPage={this.props.gotoFindRecipesPage} />
+                <FindRecipesButton
+                    disabled={this.state.userIngredients.length === 0}
+                    gotoFindRecipesPage={this.props.gotoFindRecipesPage}
+                />
 
                 { /*<NavBar handleAuthChange={this.props.handleAuthChange} /> */ }
 

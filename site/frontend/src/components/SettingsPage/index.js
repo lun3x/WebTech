@@ -68,14 +68,14 @@ class SettingsPage extends Component {
 
                 {
                     this.state.changeOpen ?
-                        <div style={style.changeBox}>
+                        <React.Fragment>
                             <ChangePasswordForm
                                 onClose={this.handlePassClose}
                             />
                             <ChangeUsernameForm
                                 onClose={this.handleUserClose}
                             />
-                        </div>
+                        </React.Fragment>
                         :
                         null
                 }

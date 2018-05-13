@@ -28,7 +28,7 @@ exports.findRecipeIngredients = (ingredient_ids, controllerCallback) => {
 };
 
 exports.createRecipe = (name, method, controllerCallback) => {
-    let sql = 'INSERT INTO Recipes (name, method) VALUES (?, ?);';
+    let sql = 'INSERT INTO Recipes (name, method, votes) VALUES (?, ?, 0);';
 
     let inserts = [ name, method ];
     sql = mysql.format(sql, inserts);
@@ -77,7 +77,7 @@ exports.findRecipes = (recipe_ids, controllerCallback) => {
         sql += whereING;
     }
 
-    sql += ';';
+    sql += ' ORDER BY votes DESC;';
     
     console.log(sql);
     db.con.query(sql, controllerCallback);
