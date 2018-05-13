@@ -24,18 +24,33 @@ class RecipeDetailsPage extends Component {
             // ingredientLoadFail: False,
             ingredients: [],
             upvoted: false,
-            downvoted: false
+            downvoted: false,
+            votes: 0,
         };
     }
 
     componentWillMount() {
         // this.setState({ ingredientsAreLoading: true });
         this.fetchIngredients();
-        this.fetchVoteState();
+        this.fetchVoteStatus();
     }
 
-    fetchVoteState = () => {
-
+    fetchVoteStatus = () => {
+        fetch(`/api/recipes/${this.props.recipe.id}/votes`, {
+            method: 'GET',
+            credentials: 'same-origin'
+        }).then(res => {
+            // this.setState({ ingredientsAreLoading: false });
+            if (res.status !== 200) {
+                throw new Error('Bad status from server');
+            }
+            return res.json();
+        }).then(json => {
+            this.setState({ votes: json.votes, upvoted: json.upvoted, downvoted: json.downvoted });
+        }).catch(err => {
+            console.log('Ingredient loading err', err);
+            // this.setState({ ingredientsLoadFail: true });
+        });
     }
 
     fetchIngredients = () => {
@@ -72,13 +87,16 @@ class RecipeDetailsPage extends Component {
                 return res.json();
             }
         }).then(json => {
+            if (this.state.upvoted)        this.setState({ votes: this.state.votes - 1 });
+            else if (this.state.downvoted) this.setState({ votes: this.state.votes + 2 });
+            else                           this.setState({ votes: this.state.votes + 1 });
             this.setState({ upvoted: json.upvoted, downvoted: json.downvoted });
         }).catch(err => {
             console.log('Upvote error: ', err);
         });
     }
 
-    handleUpvote = () => {
+    handleDownvote = () => {
         fetch(`/api/recipes/${this.props.recipe.id}/downvote`, {
             method: 'PUT',
             credentials: 'same-origin'
@@ -90,6 +108,9 @@ class RecipeDetailsPage extends Component {
                 return res.json();
             }
         }).then(json => {
+            if (this.state.upvoted)        this.setState({ votes: this.state.votes - 2 });
+            else if (this.state.downvoted) this.setState({ votes: this.state.votes + 1 });
+            else                           this.setState({ votes: this.state.votes - 1 });
             this.setState({ upvoted: json.upvoted, downvoted: json.downvoted });
         }).catch(err => {
             console.log('Upvote error: ', err);
@@ -124,7 +145,17 @@ class RecipeDetailsPage extends Component {
                         style={styles.header.avatar}
                     />}
                 />
+                <CardMedia
+                    overlay={<CardTitle title={this.props.recipe.name} /*subtitle="Overlay subtitle"*/ />}
+                >
+                    <img src={this.props.recipe.img_src} alt="failed to load" /*TODO: change to actual image*/ /> 
+                </CardMedia>
                 <CardActions>
+                    <RaisedButton
+                        label={this.state.votes}
+                        style={styles.buttons}
+                        disabled
+                    />
                     <RaisedButton
                         label={this.state.upvoted ? '-' : 'Upvote'}
                         style={styles.buttons}
@@ -136,11 +167,6 @@ class RecipeDetailsPage extends Component {
                         onClick={this.handleDownvote}
                     />
                 </CardActions>
-                <CardMedia
-                    overlay={<CardTitle title={this.props.recipe.name} /*subtitle="Overlay subtitle"*/ />}
-                >
-                    <img src={this.props.recipe.img_src} alt="failed to load" /*TODO: change to actual image*/ /> 
-                </CardMedia>
                 { /* <CardTitle title="Card title" subtitle="Card subtitle" /> */ }
                 <CardText>
                     <div style={styles.body}>

@@ -69,6 +69,7 @@ exports.addFood = (req, res) => {
             }
         }
         else {
+            console.log('Error adding food cant find cupboard');
             res.status(404).send('Error! Could not find cupboard to add ingredient to.');
         }
     });

@@ -16,6 +16,17 @@ exports.findIngredientNamesOfRecipe = (recipe_id, controllerCallback) => {
     
     let inserts = [ recipe_id ];
     sql = mysql.format(sql, inserts);
+
+    console.log(sql);
+    db.con.query(sql, controllerCallback);
+};
+
+exports.getRecipe = (recipe_id, controllerCallback) => {
+    let sql = 'SELECT * FROM Recipes WHERE id = ?;';
+
+    let inserts = [ recipe_id ];
+    sql = mysql.format(sql, inserts);
+
     console.log(sql);
     db.con.query(sql, controllerCallback);
 };
@@ -28,7 +39,7 @@ exports.findRecipeIngredients = (ingredient_ids, controllerCallback) => {
 };
 
 exports.createRecipe = (name, method, controllerCallback) => {
-    let sql = 'INSERT INTO Recipes (name, method, votes) VALUES (?, ?, 0);';
+    let sql = 'INSERT INTO Recipes (name, method, score) VALUES (?, ?, 0);';
 
     let inserts = [ name, method ];
     sql = mysql.format(sql, inserts);
@@ -77,8 +88,23 @@ exports.findRecipes = (recipe_ids, controllerCallback) => {
         sql += whereING;
     }
 
-    sql += ' ORDER BY votes DESC;';
+    sql += ' ORDER BY score DESC;';
     
+    console.log(sql);
+    db.con.query(sql, controllerCallback);
+};
+
+exports.updateRecipeScore = (recipe_id, change, controllerCallback) => {
+    let sql;
+    if      (change === 1)  sql = 'UPDATE Recipes SET score = score + 1 WHERE id = ?;';
+    else if (change === 2)  sql = 'UPDATE Recipes SET score = score + 2 WHERE id = ?;';
+    else if (change === -1) sql = 'UPDATE Recipes SET score = score - 1 WHERE id = ?;';
+    else if (change === -2) sql = 'UPDATE Recipes SET score = score - 2 WHERE id = ?;';
+    else                    sql = 'UPDATE Recipes SET score = score WHERE id = ?;';
+
+    let inserts = [ recipe_id ];
+    sql = mysql.format(sql, inserts);
+
     console.log(sql);
     db.con.query(sql, controllerCallback);
 };

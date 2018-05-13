@@ -57,5 +57,8 @@ router.put('/recipes/:id/upvote', recipesController.upvoteRecipe);
 /* PUT downvote recipe */
 router.put('/recipes/:id/downvote', recipesController.downVoteRecipe);
 
+/* GET vote state */
+router.get('/recipes/:id/votes', recipesController.getVoteStatus);
+
 
 module.exports = router;

@@ -80,8 +80,6 @@ exports.findRecipes = (req, res) => {
         return;
     }
 
-    console.dir(req.body);
-
     if (!(req.body && Array.isArray(req.body.ingredient_ids) && req.body.ingredient_ids.length >= 0)) {
         res.status(422).send('Error! Correct format { ingredient_ids: [id::number] }');
         return;
@@ -156,8 +154,6 @@ exports.recipeImage = (req, res) => {
         res.status(401).send('Error! Not logged in.');
     }
 
-    console.dir(req.params.id);
-
     if (!req.params.id) {
         res.status(422).send('Error! Must include recipe_id');
         return;
@@ -194,15 +190,20 @@ exports.upvoteRecipe = (req, res) => {
         return;
     }
 
-    voteModel.getVoteStatus(req.params.id, req.session.user_id, (err, result) => {
+    voteModel.getVote(req.params.id, req.session.user_id, (err, result) => {
         if (err) res.status(500).send('Error! Failed to get vote status.');
         else if (result.length === 0) {
             voteModel.createVote(req.params.id, req.session.user_id, true, (err2) => {
                 if (err2) res.status(500).send('Error! Failed to create upvote.');
                 else {
-                    res.status(200).json({
-                        upvoted: true,
-                        downvoted: false
+                    db.updateRecipeScore(req.params.id, 1, (err3) => {
+                        if (err3) res.status(500).send('Error! Failed to update recipe score.');
+                        else {
+                            res.status(200).json({
+                                upvoted: true,
+                                downvoted: false
+                            });
+                        }
                     });
                 }
             });
@@ -211,9 +212,14 @@ exports.upvoteRecipe = (req, res) => {
             voteModel.deleteVote(req.params.id, req.session.user_id, (err2) => {
                 if (err2) res.status(500).send('Error! Failed to delete upvote.');
                 else {
-                    res.status(200).json({
-                        upvoted: false,
-                        downvoted: false
+                    db.updateRecipeScore(req.params.id, -1, (err3) => {
+                        if (err3) res.status(500).send('Error! Failed to update recipe score.');
+                        else {
+                            res.status(200).json({
+                                upvoted: false,
+                                downvoted: false
+                            });
+                        }
                     });
                 }
             });
@@ -222,9 +228,14 @@ exports.upvoteRecipe = (req, res) => {
             voteModel.updateVote(req.params.id, req.session.user_id, true, (err2) => {
                 if (err2) res.status(500).send('Error! Failed to change vote.');
                 else {
-                    res.status(200).json({
-                        upvoted: true,
-                        downvoted: false,
+                    db.updateRecipeScore(req.params.id, 2, (err3) => {
+                        if (err3) res.status(500).send('Error! Failed to update recipe.');
+                        else {
+                            res.status(200).json({
+                                upvoted: true,
+                                downvoted: false,
+                            });
+                        }
                     });
                 }
             });
@@ -238,15 +249,20 @@ exports.downVoteRecipe = (req, res) => {
         return;
     }
 
-    voteModel.getVoteStatus(req.params.id, req.session.user_id, (err, result) => {
+    voteModel.getVote(req.params.id, req.session.user_id, (err, result) => {
         if (err) res.status(500).send('Error! Failed to get vote status.');
         else if (result.length === 0) {
             voteModel.createVote(req.params.id, req.session.user_id, false, (err2) => {
                 if (err2) res.status(500).send('Error! Failed to create downvote.');
                 else {
-                    res.status(200).json({
-                        upvoted: false,
-                        downvoted: true
+                    db.updateRecipeScore(req.params.id, -1, (err3) => {
+                        if (err3) res.status(500).send('Error! Failed to update score.');
+                        else {
+                            res.status(200).json({
+                                upvoted: false,
+                                downvoted: true
+                            });
+                        }
                     });
                 }
             });
@@ -255,9 +271,14 @@ exports.downVoteRecipe = (req, res) => {
             voteModel.deleteVote(req.params.id, req.session.user_id, (err2) => {
                 if (err2) res.status(500).send('Error! Failed to delete downvote.');
                 else {
-                    res.status(200).json({
-                        upvoted: false,
-                        downvoted: false
+                    db.updateRecipeScore(req.params.id, 1, (err3) => {
+                        if (err3) res.status(500).send('Error! Failed to update score.');
+                        else {
+                            res.status(200).json({
+                                upvoted: false,
+                                downvoted: false
+                            });
+                        }
                     });
                 }
             });
@@ -266,9 +287,14 @@ exports.downVoteRecipe = (req, res) => {
             voteModel.updateVote(req.params.id, req.session.user_id, false, (err2) => {
                 if (err2) res.status(500).send('Error! Failed to change vote.');
                 else {
-                    res.status(200).json({
-                        upvoted: false,
-                        downvoted: true,
+                    db.updateRecipeScore(req.params.id, -2, (err3) => {
+                        if (err3) res.status(500).send('Error! Failed to update score.');
+                        else {
+                            res.status(200).json({
+                                upvoted: false,
+                                downvoted: true,
+                            });
+                        }
                     });
                 }
             });
@@ -276,4 +302,32 @@ exports.downVoteRecipe = (req, res) => {
     });
 };
 
+exports.getVoteStatus = (req, res) => {
+    db.getRecipe(req.params.id, (err, results) => {
+        if (err) res.status(500).send('Error! Coudln\'t get recipe to count votes.');
+        else if (results.length === 1) {
+            let score = results[0].score;
 
+            voteModel.getVote(req.params.id, req.session.user_id, (err2, result2) => {
+                if (err2) res.status(500).send('Error! Couldn\'t get vote status');
+                else if (result2.length === 1) {
+                    res.status(200).json({
+                        votes: score,
+                        upvoted: result2[0].upvote,
+                        downvoted: !result2[0].upvote
+                    });
+                }
+                else {
+                    res.status(200).json({
+                        votes: score,
+                        upvoted: false,
+                        downvoted: false
+                    });
+                }
+            });
+        }
+        else {
+            res.status(404).send('Error! Recipe not found.');
+        }
+    });
+};

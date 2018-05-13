@@ -29,9 +29,9 @@ exports.up = (db, callback) => {
             type: 'text',
             length: 65535
         },
-        votes: {
+        score: {
             type: 'int',
-            unsigned: true,
+            unsigned: false,
             notNull: true,
             defaultValue: 0,
         }
