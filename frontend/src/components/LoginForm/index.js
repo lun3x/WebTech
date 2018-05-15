@@ -26,12 +26,9 @@ class LoginForm extends Component {
             loginFailed: false,
             registration: false
         };
-
-        this.handleChange = this.handleChange.bind(this);
-        this.handleSubmit = this.handleSubmit.bind(this);
     }
 
-    handleChange(event) {
+    handleChange = (event) => {
         const target = event.target;
 
         this.setState({
@@ -40,7 +37,7 @@ class LoginForm extends Component {
         });
     }
 
-    handleSubmit(event) {
+    handleSubmit = (event) => {
         if (this.state.username.length === 0 || this.state.password.length === 0) return;
 
         this.setState({ loginLoading: true });
@@ -136,7 +133,6 @@ class LoginForm extends Component {
                     open={this.state.loginError}
                     message="Error connecting to server!"
                 />
-                {this.state.loginLoading}
             </div>
         );
     }
