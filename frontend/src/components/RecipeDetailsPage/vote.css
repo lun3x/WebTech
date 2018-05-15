@@ -1,10 +1,3 @@
-/* CSS */
-
-body {
-    line-height: 2;
-}
-
-
 @keyframes rubberBand {
     from {
       transform: scale3d(1, 1, 1);
@@ -42,7 +35,7 @@ body {
   animation-duration: 5s;
 }
 
-._1DRNRkKYmk8mMvywUiRwhy {
+:local(.disabled) {
   position: relative;
   background-color: #4CAF50;
   border: none;

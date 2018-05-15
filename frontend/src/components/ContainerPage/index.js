@@ -10,6 +10,8 @@ import SuggestPage from '../SuggestPage';
 
 import ApiErrorSnackbar from '../ApiErrorSnackbar';
 
+import makeCancellable from '../../promiseWrapper';
+
 class ContainerPage extends Component {
 
     static propTypes = {
@@ -26,14 +28,37 @@ class ContainerPage extends Component {
             allIngredients: [],
             allIngredientsAreLoading: false,
             allIngredientsLoadingError: false,
+
+            cancellableFetch: this.getCancellablePromise
         };
     }
 
-    componentWillMount() {
+    componentWillMount = () => {
         this.setState({ allIngredientsAreLoading: true });
 
         // fetch all ingredients
         this.fetchAllIngredients();
+    }
+
+    componentWillUnmount = () => {
+        this.state.cancellableFetch.cancel();
+    }
+
+    getCancellablePromise = () => {
+        return makeCancellable(fetch('/api/ingredients')
+            .then(res => {
+                this.setState({ allIngredientsAreLoading: false });
+                if (!res.ok) {
+                    throw new Error('Failed to load all ingredients.');
+                }
+                return res.json();
+            })
+            .then(json => {
+                this.setState({ allIngredients: json.data.ingredients });
+            })
+            .catch(err => {
+                this.setState({ allIngredientsLoadingError: true });
+            }));
     }
 
     setIngredientIds = (ids) => this.setState({ ingredientIds: ids });
@@ -41,12 +66,11 @@ class ContainerPage extends Component {
     selectPage = (ix) => this.setState({ selectedPage: ix });
 
     fetchAllIngredients = () => {
-        // fetch a list of all ingredients
         fetch('/api/ingredients')
             .then(res => {
                 this.setState({ allIngredientsAreLoading: false });
-                if (res.status !== 200) {
-                    throw new Error('Bad status from server');
+                if (!res.ok) {
+                    throw new Error('Failed to load all ingredients.');
                 }
                 return res.json();
             })
@@ -68,6 +92,7 @@ class ContainerPage extends Component {
                     allIngredients={this.state.allIngredients}
                     gotoFindRecipesPage={() => this.selectPage(2)}
                     setUserIngredientIds={this.setIngredientIds}
+                    logout={this.props.logout}
                 />
             );
             break;
@@ -92,8 +117,10 @@ class ContainerPage extends Component {
         default:
             page = (
                 <CupboardPage
+                    allIngredients={this.state.allIngredients}
                     gotoFindRecipesPage={() => this.selectPage(2)}
-                    setUserIngredientIds={this.setIngredientIds} 
+                    setUserIngredientIds={this.setIngredientIds}
+                    logout={this.props.logout}
                 />
             );
             break;

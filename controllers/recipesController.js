@@ -6,13 +6,8 @@ const path = require('path');
 const fs = require('fs');
 
 exports.allRecipes = (req, res) => {
-    if (!req.session || !req.session.authenticated) {
-        res.status(401).send('Error! Not logged in.');
-        return;
-    }
-
     db.getAllRecipes((err, dbResult) => {
-        if (err) res.status(500).send('Error! Couldn\'t get ingredients.');
+        if (err) res.status(500).send('Error! Couldn\'t get recipes.');
         else {
             res.setHeader('Content-Type', 'application/json');
             res.status(200).json({
@@ -49,13 +44,6 @@ exports.createRecipe = (req, res) => {
 };
 
 exports.findIngredientNamesOfRecipe = (req, res) => {
-    if (!req.session || !req.session.authenticated) {
-        res.status(401).send('Error! Not logged in.');
-        return;
-    }
-
-    // let id = req.params.id;
-
     db.findIngredientNamesOfRecipe(req.params.id, (err, dbResult) => {
         if (err) res.status(500).send('Error! Failed to find ingredients for recipe.');
         else {

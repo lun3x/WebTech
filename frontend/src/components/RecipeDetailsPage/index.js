@@ -6,6 +6,7 @@ import NavigationArrowBack from 'material-ui/svg-icons/navigation/arrow-back';
 import { RaisedButton } from 'material-ui';
 import UpvoteButton from '../UpvoteButton';
 import DownvoteButton from '../DownvoteButton';
+import voteStyle from './vote.css';
 
 class RecipeDetailsPage extends Component {
 
@@ -158,14 +159,18 @@ class RecipeDetailsPage extends Component {
                         style={styles.buttons}
                         disabled
                     />
-                    <UpvoteButton
-                        disabled={this.state.upvoted}
-                        onClick={this.handleUpvote}
-                    />
-                    <DownvoteButton
-                        disabled={this.state.downvoted}
-                        onClick={this.handleDownvote}
-                    />
+                    <button
+                        // onClick={this.handleUpvote}
+                        style={voteStyle.buttons}
+                    >
+                    Upvote
+                    </button>
+                    <button
+                        // onClick={this.handleDownvote}
+                        style={voteStyle.disabled}
+                    >
+                    Downvote
+                    </button>
                 </CardActions>
                 { /* <CardTitle title="Card title" subtitle="Card subtitle" /> */ }
                 <CardText>
