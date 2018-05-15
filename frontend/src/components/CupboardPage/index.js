@@ -27,27 +27,7 @@ class CupboardPage extends Component {
             userIngredients: [],
             userIngredientsAreLoading: false,
             userIngredientsLoadingError: false,
-            cancellableFetch: makeCancellable(fetch(`/api/cupboard/ingredients`, {
-                method: 'GET',
-                credentials: 'same-origin'
-            })
-                .then(res => {
-                    this.setState({ userIngredientsAreLoading: false });
-                    if (res.status === 401) {
-                        this.props.logout();
-                    }
-                    else if (!res.ok) {
-                        throw new Error('Bad status from server.');
-                    }
-                    return res.json();
-                })
-                .then(json => {
-                    this.setState({ userIngredients: json.data.cupboard.food });
-                    this.props.setUserIngredientIds(json.data.cupboard.food.map((x) => x.ingredient_id));
-                })
-                .catch(err => {
-                    this.setState({ userIngredientsLoadingError: true });
-                }))
+            cancellableFetch: this.getCancellablePromise
         };
     }
 
@@ -59,29 +39,28 @@ class CupboardPage extends Component {
         this.state.cancellableFetch.cancel();
     }
 
-    // getCancellablePromise = () => {
-    //     return makeCancellable(fetch(`/api/cupboard/ingredients`, {
-    //         method: 'GET',
-    //         credentials: 'same-origin'
-    //     })
-    //         .then(res => {
-    //             this.setState({ userIngredientsAreLoading: false });
-    //             if (res.status === 401) {
-    //                 this.props.logout();
-    //             }
-    //             else if (!res.ok) {
-    //                 throw new Error('Bad status from server.');
-    //             }
-    //             return res.json();
-    //         })
-    //         .then(json => {
-    //             this.setState({ userIngredients: json.data.cupboard.food });
-    //             this.props.setUserIngredientIds(json.data.cupboard.food.map((x) => x.ingredient_id));
-    //         })
-    //         .catch(err => {
-    //             this.setState({ userIngredientsLoadingError: true });
-    //         }));
-    // }
+    getCancellablePromise =
+        makeCancellable(fetch(`/api/cupboard/ingredients`, {
+            method: 'GET',
+            credentials: 'same-origin'
+        })
+            .then(res => {
+                this.setState({ userIngredientsAreLoading: false });
+                if (res.status === 401) {
+                    this.props.logout();
+                }
+                else if (!res.ok) {
+                    throw new Error('Bad status from server.');
+                }
+                return res.json();
+            })
+            .then(json => {
+                this.setState({ userIngredients: json.data.cupboard.food });
+                this.props.setUserIngredientIds(json.data.cupboard.food.map((x) => x.ingredient_id));
+            })
+            .catch(err => {
+                this.setState({ userIngredientsLoadingError: true });
+            }));
 
     fetchUserCupboard = () => {
         // Call fetch promise, handle HTTP error by setting curr
