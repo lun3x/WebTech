@@ -27,7 +27,8 @@ class CupboardPage extends Component {
             userIngredients: [],
             userIngredientsAreLoading: false,
             userIngredientsLoadingError: false,
-            cancellableFetch: this.getCancellableFetch
+
+            cancellableFetch: undefined
         };
     }
 
@@ -36,11 +37,11 @@ class CupboardPage extends Component {
     }
 
     componentWillUnmount = () => {
-        this.state.cancellableFetch.cancel();
+        if (this.state.cancellableFetch) this.state.cancellableFetch.cancel();
     }
 
-    getCancellableFetch =
-        makeCancellable(fetch(`/api/cupboard/ingredients`, {
+    getCancellableFetch = () => {
+        let cancellable = makeCancellable(fetch(`/api/cupboard/ingredients`, {
             method: 'GET',
             credentials: 'same-origin'
         })
@@ -61,16 +62,23 @@ class CupboardPage extends Component {
             .catch(err => {
                 this.setState({ userIngredientsLoadingError: true });
             }));
-
-    fetchUserCupboard = () => {
-        this.state.cancellableFetch.promise
-            .then(() => console.log('Got cupboard ingredients.'))
+        
+        cancellable.promise
+            .then(() => {
+                console.log('Got cupboard ingredients.');
+                this.setState({ cancellableFetch: undefined });
+            })
             .catch((err) => console.log('Component unmounted: ', err));
+        
+        return cancellable;
     }
 
     triggerCupboardReload = () => {
-        this.setState({ userIngredientsAreLoading: true, userIngredientsLoadingError: false });
-        this.fetchUserCupboard();
+        this.setState({
+            userIngredientsAreLoading: true,
+            userIngredientsLoadingError: false,
+            cancellableFetch: this.getCancellableFetch()
+        });
     };
 
     render() {

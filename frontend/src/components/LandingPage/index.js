@@ -38,7 +38,6 @@ class LandingPage extends Component {
             credentials: 'same-origin'
         })
             .then((res) => {
-                console.log('AUTHENTICATING');
                 this.setState({ authenticationIsLoading: false });
                 if (!res.ok) {
                     throw new Error('Bad status from server');
@@ -68,7 +67,6 @@ class LandingPage extends Component {
             credentials: 'same-origin'
         })
             .then(res => {
-                console.log('LOGGING OUT');
                 this.setState({ authenticationIsLoading: false });
                 if (!res.ok) {
                     throw new Error('Failed to logout.');
@@ -88,7 +86,7 @@ class LandingPage extends Component {
 
         return cancellable;
     }
-    
+
     handleAuthChange(auth) {
         this.setState({ authenticated: auth });
     }
