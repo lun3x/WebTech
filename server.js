@@ -15,7 +15,7 @@ const fs = require('fs');
 const mysql = require('mysql');
 
 //=== Setup Db Connections ===//
-const redisClient = redis.createClient();
+const redisClient = redis.createClient(process.env.REDIS_URL);
 
 //=== Banned URLs ===//
 let banned = [];
