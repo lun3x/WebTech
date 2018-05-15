@@ -29,7 +29,7 @@ class ContainerPage extends Component {
             allIngredientsAreLoading: false,
             allIngredientsLoadingError: false,
 
-            cancellableFetch: this.getCancellablePromise
+            cancellableFetch: this.getCancellableFetch
         };
     }
 
@@ -44,8 +44,8 @@ class ContainerPage extends Component {
         this.state.cancellableFetch.cancel();
     }
 
-    getCancellablePromise = () => {
-        return makeCancellable(fetch('/api/ingredients')
+    getCancellableFetch = 
+        makeCancellable(fetch('/api/ingredients')
             .then(res => {
                 this.setState({ allIngredientsAreLoading: false });
                 if (!res.ok) {
@@ -59,29 +59,16 @@ class ContainerPage extends Component {
             .catch(err => {
                 this.setState({ allIngredientsLoadingError: true });
             }));
-    }
 
     setIngredientIds = (ids) => this.setState({ ingredientIds: ids });
 
     selectPage = (ix) => this.setState({ selectedPage: ix });
 
     fetchAllIngredients = () => {
-        fetch('/api/ingredients')
-            .then(res => {
-                this.setState({ allIngredientsAreLoading: false });
-                if (!res.ok) {
-                    throw new Error('Failed to load all ingredients.');
-                }
-                return res.json();
-            })
-            .then(json => {
-                this.setState({ allIngredients: json.data.ingredients });
-            })
-            .catch(err => {
-                this.setState({ allIngredientsLoadingError: true });
-            });
+        this.state.cancellableFetch.promise
+            .then(() => console.log('Got all ingredients.'))
+            .catch((err) => console.log('Component unmounted: ', err));
     }
-    
 
     render() {
         let page = null;

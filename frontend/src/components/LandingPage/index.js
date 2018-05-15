@@ -4,6 +4,7 @@ import fetch from 'cross-fetch';
 import ContainerPage from '../ContainerPage';
 import LoginForm from '../LoginForm';
 import ApiErrorSnackbar from '../ApiErrorSnackbar';
+import makeCancellable from '../../promiseWrapper';
 
 class LandingPage extends Component {
     constructor(props) {
@@ -13,16 +14,33 @@ class LandingPage extends Component {
             authenticated: false,
             authenticationIsLoading: false,
             authenticationLoadingError: false,
+
+            cancellableAuth: undefined,
+            cancellableLogout: undefined
         };
     }
 
     componentWillMount() {
-        this.setState({ authenticationIsLoading: true });
+        this.setState({
+            authenticationIsLoading: true,
+            cancellableAuth: this.getCancellableAuth()
+        });
+    }
 
-        fetch(`/auth/isAuthenticated`, { method: 'GET', credentials: 'same-origin' })
+    componentWillUnmount = () => {
+        if (this.state.cancellableLogout) this.state.cancellableLogout.cancel();
+        if (this.state.cancellableAuth) this.state.cancellableAuth.cancel();
+    }
+
+    getCancellableAuth = () => {
+        let cancellable = makeCancellable(fetch(`/auth/isAuthenticated`, {
+            method: 'GET',
+            credentials: 'same-origin'
+        })
             .then((res) => {
+                console.log('AUTHENTICATING');
                 this.setState({ authenticationIsLoading: false });
-                if (res.status !== 200) {
+                if (!res.ok) {
                     throw new Error('Bad status from server');
                 }
                 return res.json();
@@ -32,27 +50,47 @@ class LandingPage extends Component {
             })
             .catch((err) => {
                 this.setState({ authenticationLoadingError: true });
-            });
+            }));
+
+        cancellable.promise
+            .then(() => console.log('Got authentication state.'))
+            .catch((err) => console.log('Component unmounted: ', err));
+
+        return cancellable;
     }
 
-    handleAuthChange(auth) {
-        this.setState({ authenticated: auth });
-    }
-
-    logout = () => {
-        this.setState({ authenticationIsLoading: true });
-
-        fetch('/auth/logout', { method: 'GET' })
+    getCancellableLogout = () => {
+        let cancellable = makeCancellable(fetch('/auth/logout', {
+            method: 'GET',
+            credentials: 'same-origin'
+        })
             .then(res => {
+                console.log('LOGGING OUT');
                 this.setState({ authenticationIsLoading: false });
-                if (res.status !== 200) {
-                    throw new Error('Failed to logout');
+                if (!res.ok) {
+                    throw new Error('Failed to logout.');
                 }
                 this.setState({ authenticated: false });
             })
             .catch((err) => {
                 this.setState({ authenticationLoadingError: true });
-            });
+            }));
+        
+        cancellable.promise
+            .then(() => console.log('Logged user out.'))
+            .catch((err) => console.log('Component unmounted: ', err));
+
+        return cancellable;
+    }
+    handleAuthChange(auth) {
+        this.setState({ authenticated: auth });
+    }
+
+    logout = () => {
+        this.setState({
+            authenticationIsLoading: true,
+            cancellableLogout: this.getCancellableLogout()
+        });
     }
 
     render() {

@@ -27,7 +27,7 @@ class CupboardPage extends Component {
             userIngredients: [],
             userIngredientsAreLoading: false,
             userIngredientsLoadingError: false,
-            cancellableFetch: this.getCancellablePromise
+            cancellableFetch: this.getCancellableFetch
         };
     }
 
@@ -39,7 +39,7 @@ class CupboardPage extends Component {
         this.state.cancellableFetch.cancel();
     }
 
-    getCancellablePromise =
+    getCancellableFetch =
         makeCancellable(fetch(`/api/cupboard/ingredients`, {
             method: 'GET',
             credentials: 'same-origin'
@@ -63,7 +63,6 @@ class CupboardPage extends Component {
             }));
 
     fetchUserCupboard = () => {
-        // Call fetch promise, handle HTTP error by setting curr
         this.state.cancellableFetch.promise
             .then(() => console.log('Got cupboard ingredients.'))
             .catch((err) => console.log('Component unmounted: ', err));
