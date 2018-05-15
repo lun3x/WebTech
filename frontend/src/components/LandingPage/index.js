@@ -53,7 +53,10 @@ class LandingPage extends Component {
             }));
 
         cancellable.promise
-            .then(() => console.log('Got authentication state.'))
+            .then(() => {
+                console.log('Got authentication state.');
+                this.setState({ cancellableAuth: undefined });
+            })
             .catch((err) => console.log('Component unmounted: ', err));
 
         return cancellable;
@@ -77,11 +80,15 @@ class LandingPage extends Component {
             }));
         
         cancellable.promise
-            .then(() => console.log('Logged user out.'))
+            .then(() => {
+                console.log('Logged user out.');
+                this.setState({ cancellableLogout: undefined });
+            })
             .catch((err) => console.log('Component unmounted: ', err));
 
         return cancellable;
     }
+    
     handleAuthChange(auth) {
         this.setState({ authenticated: auth });
     }

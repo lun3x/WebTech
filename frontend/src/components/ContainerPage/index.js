@@ -29,23 +29,23 @@ class ContainerPage extends Component {
             allIngredientsAreLoading: false,
             allIngredientsLoadingError: false,
 
-            cancellableFetch: this.getCancellableFetch
+            cancellableFetch: undefined
         };
     }
 
     componentWillMount = () => {
-        this.setState({ allIngredientsAreLoading: true });
-
-        // fetch all ingredients
-        this.fetchAllIngredients();
+        this.setState({
+            allIngredientsAreLoading: true,
+            cancellableFetch: this.getCancellableFetch()
+        });
     }
 
     componentWillUnmount = () => {
-        this.state.cancellableFetch.cancel();
+        if (this.state.cancellableFetch) this.state.cancellableFetch.cancel();
     }
 
-    getCancellableFetch = 
-        makeCancellable(fetch('/api/ingredients')
+    getCancellableFetch = () => {
+        let cancellable = makeCancellable(fetch('/api/ingredients')
             .then(res => {
                 this.setState({ allIngredientsAreLoading: false });
                 if (!res.ok) {
@@ -59,16 +59,20 @@ class ContainerPage extends Component {
             .catch(err => {
                 this.setState({ allIngredientsLoadingError: true });
             }));
+        
+        cancellable.promise
+            .then(() => {
+                console.log('Got all ingredients.');
+                this.setState({ cancellableFetch: undefined });
+            })
+            .catch((err) => console.log('Component unmounted: ', err));
+
+        return cancellable;
+    }
 
     setIngredientIds = (ids) => this.setState({ ingredientIds: ids });
 
     selectPage = (ix) => this.setState({ selectedPage: ix });
-
-    fetchAllIngredients = () => {
-        this.state.cancellableFetch.promise
-            .then(() => console.log('Got all ingredients.'))
-            .catch((err) => console.log('Component unmounted: ', err));
-    }
 
     render() {
         let page = null;
