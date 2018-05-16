@@ -161,13 +161,14 @@ class RecipeDetailsPage extends Component {
                     />
                     <button
                         // onClick={this.handleUpvote}
-                        style={voteStyle.buttons}
+                        //style={voteStyle.buttons}
+                        className={voteStyle.button}
                     >
                     Upvote
                     </button>
                     <button
                         // onClick={this.handleDownvote}
-                        style={voteStyle.disabled}
+                        className={voteStyle.button}
                     >
                     Downvote
                     </button>

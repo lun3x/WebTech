@@ -14,10 +14,16 @@
 
 #### Database
 
-Install mysql using brew and setup a user `root` and password `pass`. Login with
+Install mysql using brew and setup a user `root` and password `pass`. If installed with brew, you
+might need to run
 
 ```bash
-$ cd site
+$ brew services start mysql
+```
+
+Now, login with
+
+```bash
 $ mysql -u root -ppass
 ```
 
