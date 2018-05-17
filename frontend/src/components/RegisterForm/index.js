@@ -9,6 +9,7 @@ import FindRecipesButton from '../FindRecipesButton';
 import IngredientList from '../IngredientsList';
 import ApiErrorSnackbar from '../ApiErrorSnackbar';
 import makeCancellable from '../../promiseWrapper';
+import makeCancellableVal from '../../valueWrapper';
 
 function isValid(text, type) {
     if (type === 'username') return /^[\x00-\x7F]*$/.test(text);
@@ -33,12 +34,12 @@ class RegisterForm extends Component {
             registerError: false,
             usernameTaken: false,
 
-            cancellableFetch: undefined
+            cancellablePromise: undefined
         };
     }
 
     componentWillUnmount = () => {
-        if (this.state.cancellableFetch) this.state.cancellableFetch.cancel();
+        if (this.state.cancellablePromise) this.state.cancellablePromise.cancel();
     }
 
     getCancellableFetch = () => {
@@ -53,35 +54,45 @@ class RegisterForm extends Component {
                 password: this.props.password,
                 name: this.state.name
             })
-        }).then((res) => {
-            // this.setState({ registerLoading: false });
-            if (res.status === 201) {
-                // Successful registration
-                this.props.doneRegister(false);
-            }
-            else if (res.status !== 409 && res.status !== 422) {
-                throw new Error('Bad status from server.');
-            }
-            return res.json();
-        }).then((json) => {
-            if (json.fail === 'usernameTaken') {
-                this.setState({ usernameTaken: true });
-            }
-            else if (json.fail === 'usernameChar') {
-                alert('Character(s) not allowed in username!');
-            }
-            else if (json.fail === 'passwordChar') {
-                alert('Character(s) not allowed in password!');
-            }
-        }).catch((err) => {
-            this.setState({ registerError: true });
         }));
 
-        cancellable.promise
-            .then(() => {
-                console.log('@RegisterForm: Registered.');
-                this.setState({ cancellableFetch: undefined });
+        cancellable
+            .then((res) => {
+                // this.setState({ registerLoading: false });
+                this.setState({
+                    cancellablePromise: makeCancellableVal(res)
+                });
+
+                if (res.ok) {
+                    // Successful registration
+                    this.props.doneRegister(false);
+                }
+
+                return this.state.cancellablePromise;
+            }).then(res => {
+                this.setState({
+                    cancellablePromise: makeCancellable(res.json())
+                });
+
+                if (res.status !== 409 && res.status !== 422) {
+                    this.setState({ registerError: true });
+                }
+
+                return this.state.cancellablePromise;
+            }).then(json => {
+                if (json.fail === 'usernameTaken') {
+                    this.setState({ usernameTaken: true });
+                }
+                else if (json.fail === 'usernameChar') {
+                    alert('Character(s) not allowed in username!');
+                }
+                else if (json.fail === 'passwordChar') {
+                    alert('Character(s) not allowed in password!');
+                }
+
+                this.setState({ cancellablePromise: undefined });
             })
+            .then(() => console.log('@RegisterForm: Registered.'))
             .catch((err) => console.log('@RegisterForm: Component unmounted.'));
 
         return cancellable;
@@ -93,12 +104,16 @@ class RegisterForm extends Component {
         this.setState({
             [target.name]: target.value
         });
+
+        if (target.name === 'username') {
+            this.setState({ usernameTaken: false });
+        }
     }
 
     handleSubmit = (event) => {
         this.setState({
             // registerLoading: true,
-            cancellableFetch: this.getCancellableFetch()
+            cancellablePromise: this.getCancellableFetch()
         });
 
         event.preventDefault();

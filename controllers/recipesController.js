@@ -140,6 +140,7 @@ exports.findRecipes = (req, res) => {
 exports.recipeImage = (req, res) => {
     if (!req.session || !req.session.authenticated) {
         res.status(401).send('Error! Not logged in.');
+        return;
     }
 
     if (!req.params.id) {

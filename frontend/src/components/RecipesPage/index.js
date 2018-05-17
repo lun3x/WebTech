@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import { GridList, GridTile } from 'material-ui/GridList';
 import RecipeDetailsPage from '../RecipeDetailsPage';
 import makeCancellable from '../../promiseWrapper';
+import makeCancellableVal from '../../valueWrapper';
 
 class RecipesPage extends Component {
 
@@ -49,51 +50,57 @@ class RecipesPage extends Component {
             headers: new Headers({
                 'Content-Type': 'application/json',
             })
-        }).then(res => {
-            this.setState({ recipesAreLoading: false });
-            if (res.status === 401) {
-                throw new Error('Access denied.');
-            }
-
-            else if (!res.ok) {
-                this.setState({ recipesLoadFail: true });
-            }
-            return res.json();
-        }).then(json => {
-            // get image for each recipe and add as base64 encoded string
-            // to each recipe object
-            let recipes = json.data.recipes;  
-            const fetchImagePromises = recipes.map(this.fetchRecipeImage);
-
-            this.setState({
-                cancellableRecipeImages: this.getCancellableRecipeImages(fetchImagePromises)
-            });
-        }).catch(err => {
-            console.log('@RecipesPage: Logging out!');
-            this.props.logout();
         }));
+        
+        cancellable
+            .then(res => {
+                this.setState({
+                    recipesAreLoading: false,
+                    cancellableRecipes: makeCancellable(res.json())
+                });
 
-        cancellable.promise
-            .then(() => {
-                console.log('@RecipesPage|Recipes: Got recipes.');
-                this.setState({ cancellableRecipes: undefined });
+                if (res.status === 401) {
+                    console.log('@RecipesPage: Logging out!');
+                    this.props.logout();
+                }
+                else if (!res.ok) {
+                    this.setState({ recipesLoadFail: true });
+                }
+                return this.state.cancellableRecipes;
             })
+            .then(json => {
+                // get image for each recipe and add as base64 encoded string
+                // to each recipe object
+                let recipes = json.data.recipes;  
+                const fetchImagePromises = recipes.map(this.fetchRecipeImage);
+
+                this.setState({
+                    cancellableRecipeImages: this.getCancellableRecipeImages(fetchImagePromises),
+                    cancellableRecipes: undefined
+                });
+            })
+            .then(() => console.log('@RecipesPage|Recipes: Got recipes.'))
             .catch((err) => console.log('@RecipesPage|Recipes: Component unmounted.'));
 
         return cancellable;
     }
 
     getCancellableRecipeImages = (fetchImagePromises) => {
-        let cancellable = makeCancellable(Promise.all(fetchImagePromises)
+        let cancellable = makeCancellable(Promise.all(fetchImagePromises));
+
+        cancellable
             .then(rs => {
                 this.setState({ recipes: rs });
-            }).catch(err => {
+            })
+            .catch(err => {
+                this.setState({ cancellableRecipeImages: makeCancellableVal(err) });
+                
                 console.log('@RecipesPage: Logging out!');
                 this.props.logout();
-            }));
-        
-        cancellable.promise
-            .then(() => {
+
+                return this.state.cancellableRecipeImages;
+            })
+            .then((err) => {
                 console.log('@RecipesPage|RecipeImages: Got recipes.');
                 this.setState({ cancellableRecipeImages: undefined });
             })

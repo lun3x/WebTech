@@ -8,6 +8,7 @@ import IngredientBox from '../IngredientBox';
 import AddIngredientDialog from '../AddIngredientDialog';
 import ApiErrorSnackbar from '../ApiErrorSnackbar';
 import makeCancellable from '../../promiseWrapper';
+import makeCancellableVal from '../../valueWrapper';
 
 class SuggestPage extends Component {
 
@@ -36,12 +37,12 @@ class SuggestPage extends Component {
             name: '',
             method: '',
 
-            cancellableFetch: undefined
+            cancellablePromise: undefined
         };
     }
 
     componentWillUnmount = () => {
-        if (this.state.cancellableFetch) this.state.cancellableFetch.cancel();
+        if (this.state.cancellablePromise) this.state.cancellablePromise.cancel();
     }
 
     getCancellableFetch = () => {
@@ -59,29 +60,34 @@ class SuggestPage extends Component {
                     ingredient_ids: this.state.recipeIngredients.map(i => i.id)
                 }
             })
-        }).then((res) => {
-            this.setState({ createRecipeAwaitingResponse: false });
-            if (res.status === 401) {
-                throw new Error('Access Denied.');
-            }
-            else if (!res.ok) {
-                this.setState({ createRecipeFail: true });
-            }
-            else {
-                this.clearRecipe();
-                this.setState({ createRecipeSuccess: true });
-            }
-        }).catch(err => {
-            console.log('@SuggestPage: Logging out!');
-            this.props.logout();
         }));
+        
+        cancellable
+            .then((res) => {
+                this.setState({
+                    createRecipeAwaitingResponse: false,
+                    cancellablePromise: makeCancellableVal(res)
+                });
 
-        cancellable.promise
-            .then(() => {
-                console.log('@SuggestPage: Created new recipe.');
-                this.setState({ cancellableFetch: undefined });
+                if (res.status === 401) {
+                    console.log('@SuggestPage: Logging out!');
+                    this.props.logout();
+                }
+                else if (!res.ok) {
+                    this.setState({ createRecipeFail: true });
+                }
+                else {
+                    this.clearRecipe();
+                    this.setState({ createRecipeSuccess: true });
+                }
+
+                return this.state.cancellablePromise;
             })
-            .catch((err) => console.log('@SuggestPage: Component unmounted.'));
+            .then(res => {
+                console.log('@SuggestPage: Created new recipe.');
+                this.setState({ cancellablePromise: undefined });
+            })
+            .catch(err => console.log('@SuggestPage: Component unmounted.'));
 
         return cancellable;
     }
@@ -137,7 +143,7 @@ class SuggestPage extends Component {
             createRecipeAwaitingResponse: true,
             createRecipeFail: false,
             createRecipeSuccess: false,
-            cancellableFetch: this.getCancellableFetch()
+            cancellablePromise: this.getCancellableFetch()
         });
     }
 
@@ -146,7 +152,7 @@ class SuggestPage extends Component {
         let i = -1;
         const ingredientList = this.state.recipeIngredients.map((x) => {
             i++;
-            return <IngredientBox key={i} ingredientName={x.name} reload={this.deleteIngredientFromRecipe} ingredientID={x.id} />;
+            return <IngredientBox key={i} ingredientName={x.name} reload={this.deleteIngredientFromRecipe} ingredientID={x.id} logout={this.props.logout} />;
         });
 
         // add a IngredientPlusBox at the end
