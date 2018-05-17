@@ -48,7 +48,7 @@ class LandingPage extends Component {
                     this.setState({ authenticationLoadingError: true });
                 }
                 else {
-                    this.setState({ authenticated: res.json.authenticated });
+                    this.setState({ authenticated: res.json().authenticated });
                 }
 
                 // Reset cancellable

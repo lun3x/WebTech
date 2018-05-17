@@ -45,22 +45,27 @@ class ContainerPage extends Component {
     }
 
     getCancellableFetch = () => {
-        let cancellable = makeCancellable(fetch('/api/ingredients'));
+        let cancellable = makeCancellable(fetch('/api/ingredients', {
+            method: 'GET'
+        }));
 
         cancellable.promise
             .then(res => {
+                //== State-setting calls ==//
                 this.setState({ allIngredientsAreLoading: false });
                 if (!res.ok) {
                     this.setState({ allIngredientsLoadingError: true });
                 }
-                return res.json();
-            })
-            .then(json => {
-                this.setState({ allIngredients: json.data.ingredients });
+                else {
+                    this.setState({ allIngredients: res.json().data.ingredients });
+                }
+
+                // Reset cancellable
+                this.setState({ cancellableFetch: undefined });
             })
             .then(() => {
+                //== Confirmation ==//
                 console.log('@ContainerPage: Got all ingredients.');
-                this.setState({ cancellableFetch: undefined });
             })
             .catch((err) => console.log('@ContainerPage: Component unmounted.'));
 
