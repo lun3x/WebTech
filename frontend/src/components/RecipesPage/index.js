@@ -2,12 +2,14 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { GridList, GridTile } from 'material-ui/GridList';
 import RecipeDetailsPage from '../RecipeDetailsPage';
+import makeCancellable from '../../promiseWrapper';
 
 class RecipesPage extends Component {
 
     static propTypes = {
         // goBack: PropTypes.func.isRequired, // TODO: goBack handler (but we might not need it here)
         ingredientIds: PropTypes.arrayOf(PropTypes.number).isRequired,
+        logout: PropTypes.func.isRequired
     }
 
     constructor(props) {
@@ -17,22 +19,30 @@ class RecipesPage extends Component {
             recipesLoadFail: false,
             recipes: [],
             selectedRecipe: undefined,
+
+            cancellableRecipes: undefined,
+            cancellableRecipeImages: undefined
         };
     }
 
-    componentWillMount() {
-        this.setState({ recipesAreLoading: true });
-        this.fetchRecipes();
+    componentWillMount = () => {
+        this.setState({
+            recipesAreLoading: true,
+            cancellableRecipes: this.getCancellableRecipes()
+        });
     }
 
-    fetchRecipes = () => {
-        // populate req body with id's of ingredients
+    componentWillUnmount = () => {
+        if (this.state.cancellableRecipes) this.state.cancellableRecipes.cancel();
+        if (this.state.cancellableRecipeImages) this.state.cancellableRecipeImages.cancel();
+    }
+
+    getCancellableRecipes = () => {
         let data = {
             ingredient_ids: this.props.ingredientIds
         };
 
-        console.log('about to fetch');
-        fetch('/api/recipes/find', {
+        let cancellable = makeCancellable(fetch('/api/recipes/find', {
             method: 'PUT',
             credentials: 'same-origin',
             body: JSON.stringify(data), // data can be `string` or {object}!
@@ -41,8 +51,12 @@ class RecipesPage extends Component {
             })
         }).then(res => {
             this.setState({ recipesAreLoading: false });
-            if (res.status !== 200) {
-                throw new Error('Bad status from server');
+            if (res.status === 401) {
+                throw new Error('Access denied.');
+            }
+
+            else if (!res.ok) {
+                this.setState({ recipesLoadFail: true });
             }
             return res.json();
         }).then(json => {
@@ -51,11 +65,41 @@ class RecipesPage extends Component {
             let recipes = json.data.recipes;  
             const fetchImagePromises = recipes.map(this.fetchRecipeImage);
 
-            Promise.all(fetchImagePromises).then(rs => { this.setState({ recipes: rs }); });
+            this.setState({
+                cancellableRecipeImages: this.getCancellableRecipeImages(fetchImagePromises)
+            });
         }).catch(err => {
-            console.log('recipe loading err', err);
-            this.setState({ recipesLoadFail: true });
-        });
+            console.log('@RecipesPage: Logging out!');
+            this.props.logout();
+        }));
+
+        cancellable.promise
+            .then(() => {
+                console.log('@RecipesPage|Recipes: Got recipes.');
+                this.setState({ cancellableRecipes: undefined });
+            })
+            .catch((err) => console.log('@RecipesPage|Recipes: Component unmounted.'));
+
+        return cancellable;
+    }
+
+    getCancellableRecipeImages = (fetchImagePromises) => {
+        let cancellable = makeCancellable(Promise.all(fetchImagePromises)
+            .then(rs => {
+                this.setState({ recipes: rs });
+            }).catch(err => {
+                console.log('@RecipesPage: Logging out!');
+                this.props.logout();
+            }));
+        
+        cancellable.promise
+            .then(() => {
+                console.log('@RecipesPage|RecipeImages: Got recipes.');
+                this.setState({ cancellableRecipeImages: undefined });
+            })
+            .catch((err) => console.log('@RecipesPage|RecipeImages: Component unmounted.'));
+            
+        return cancellable;
     }
 
     fetchRecipeImage = (recipe, i) => {
@@ -68,9 +112,12 @@ class RecipesPage extends Component {
                 //responseType: 'arraybuffer',
             })
         }).then(res => {
-            console.dir(recipe);
+            if (res.status === 401) {
+                throw new Error('Access Denied.');
+            }
             if (res.status !== 200) {
-                throw new Error('Bad status from server');
+                console.log(`recipe id=${recipe.id} load img err`);
+                this.setState({ recipesLoadFail: true });
             }
             return res.blob();
         }).then(blobData => {
@@ -78,9 +125,6 @@ class RecipesPage extends Component {
             recipe.img_blob = blobData; // eslint-disable-line no-param-reassign
             recipe.img_src = urlCreator.createObjectURL(blobData); // eslint-disable-line no-param-reassign
             return recipe;
-        }).catch(err => {
-            console.log(`recipe id=${recipe.id} load img err:`, err);
-            this.setState({ recipesLoadFail: true });
         });
     }
 
@@ -91,8 +135,6 @@ class RecipesPage extends Component {
     goBack = () => {
         this.setState({ selectedRecipe: undefined });
     }
-
-
 
     render() {
         const styles = {

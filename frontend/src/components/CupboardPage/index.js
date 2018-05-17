@@ -44,14 +44,20 @@ class CupboardPage extends Component {
         let cancellable = makeCancellable(fetch(`/api/cupboard/ingredients`, {
             method: 'GET',
             credentials: 'same-origin'
-        })
+        }));
+
+        cancellable.promise
             .then(res => {
                 this.setState({ userIngredientsAreLoading: false });
                 if (res.status === 401) {
+                    console.log('@CupboardPage: logging out');
                     this.props.logout();
                 }
-                else if (!res.ok) {
-                    throw new Error('Bad status from server.');
+                return res;
+            })
+            .then(res => {
+                if (!res.ok) {
+                    this.setState({ userIngredientsLoadingError: true });
                 }
                 return res.json();
             })
@@ -59,16 +65,11 @@ class CupboardPage extends Component {
                 this.setState({ userIngredients: json.data.cupboard.food });
                 this.props.setUserIngredientIds(json.data.cupboard.food.map((x) => x.ingredient_id));
             })
-            .catch(err => {
-                this.setState({ userIngredientsLoadingError: true });
-            }));
-        
-        cancellable.promise
             .then(() => {
-                console.log('Got cupboard ingredients.');
+                console.log('@CupboardPage: Got cupboard ingredients.');
                 this.setState({ cancellableFetch: undefined });
             })
-            .catch((err) => console.log('Component unmounted: ', err));
+            .catch((err) => console.log('@CupboardPage: Component unmounted.'));
         
         return cancellable;
     }
@@ -83,7 +84,7 @@ class CupboardPage extends Component {
 
     render() {
         return (
-            <div>
+            <React.Fragment>
                 {
                     /* eslint-disable indent */
                     this.state.userIngredientsLoadingError
@@ -94,6 +95,7 @@ class CupboardPage extends Component {
                         userIngredients={this.state.userIngredients}
                         allIngredients={this.props.allIngredients}
                         reload={this.triggerCupboardReload}
+                        logout={this.props.logout}
                     />
                     /* eslint-enable indent */
                 }
@@ -109,7 +111,7 @@ class CupboardPage extends Component {
                     open={this.state.userIngredientsLoadingError}
                     message={'Error loading ingredients in your cupboard'}
                 />
-            </div>
+            </React.Fragment>
         );
     }
 }

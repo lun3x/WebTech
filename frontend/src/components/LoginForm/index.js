@@ -10,6 +10,7 @@ import FindRecipesButton from '../FindRecipesButton';
 import IngredientList from '../IngredientsList';
 import ApiErrorSnackbar from '../ApiErrorSnackbar';
 import RegisterForm from '../RegisterForm';
+import makeCancellable from '../../promiseWrapper';
 
 class LoginForm extends Component {
     static propTypes = {
@@ -24,25 +25,18 @@ class LoginForm extends Component {
             loginLoading: false,
             loginError: false,
             loginFailed: false,
-            registration: false
+            registration: false,
+
+            cancellableFetch: undefined
         };
     }
 
-    handleChange = (event) => {
-        const target = event.target;
-
-        this.setState({
-            loginFailed: false,
-            [target.name]: target.value
-        });
+    componentWillUnmount = () => {
+        if (this.state.cancellableFetch) this.state.cancellableFetch.cancel();
     }
 
-    handleSubmit = (event) => {
-        if (this.state.username.length === 0 || this.state.password.length === 0) return;
-
-        this.setState({ loginLoading: true });
-
-        fetch(`/auth/login`, {
+    getCancellableFetch = () => {
+        let cancellable = makeCancellable(fetch(`/auth/login`, {
             method: 'POST',
             headers: {
                 Accept: 'application/json',
@@ -59,6 +53,33 @@ class LoginForm extends Component {
             else    throw new Error('Bad status from server');
         }).catch((err) => {
             this.setState({ loginError: true });
+        }));
+
+        cancellable.promise
+            .then(() => {
+                console.log('Logged in.');
+                this.setState({ cancellableFetch: undefined });
+            })
+            .catch((err) => console.log('Component unmounted.'));
+
+        return cancellable;
+    }
+
+    handleChange = (event) => {
+        const target = event.target;
+
+        this.setState({
+            loginFailed: false,
+            [target.name]: target.value
+        });
+    }
+
+    handleSubmit = (event) => {
+        if (this.state.username.length === 0 || this.state.password.length === 0) return;
+
+        this.setState({
+            loginLoading: true,
+            cancellableFetch: this.getCancellableFetch()
         });
         
         event.preventDefault();
@@ -70,7 +91,7 @@ class LoginForm extends Component {
         };
 
         return (
-            <div>
+            <React.Fragment>
                 {
                     this.state.registration ?
                         <div>
@@ -133,7 +154,7 @@ class LoginForm extends Component {
                     open={this.state.loginError}
                     message="Error connecting to server!"
                 />
-            </div>
+            </React.Fragment>
         );
     }
 }

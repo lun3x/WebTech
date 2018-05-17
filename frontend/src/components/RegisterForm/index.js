@@ -8,6 +8,7 @@ import PropTypes from 'prop-types';
 import FindRecipesButton from '../FindRecipesButton';
 import IngredientList from '../IngredientsList';
 import ApiErrorSnackbar from '../ApiErrorSnackbar';
+import makeCancellable from '../../promiseWrapper';
 
 function isValid(text, type) {
     if (type === 'username') return /^[\x00-\x7F]*$/.test(text);
@@ -30,22 +31,18 @@ class RegisterForm extends Component {
             name: '',
             // registerLoading: false,
             registerError: false,
-            usernameTaken: false
+            usernameTaken: false,
+
+            cancellableFetch: undefined
         };
     }
 
-    handleChange = (event) => {
-        const target = event.target;
-
-        this.setState({
-            [target.name]: target.value
-        });
+    componentWillUnmount = () => {
+        if (this.state.cancellableFetch) this.state.cancellableFetch.cancel();
     }
 
-    handleSubmit = (event) => {
-        // this.setState({ registerLoading: true });
-
-        fetch(`/auth/register`, {
+    getCancellableFetch = () => {
+        let cancellable = makeCancellable(fetch(`/auth/register`, {
             method: 'POST',
             headers: {
                 Accept: 'application/json',
@@ -78,6 +75,30 @@ class RegisterForm extends Component {
             }
         }).catch((err) => {
             this.setState({ registerError: true });
+        }));
+
+        cancellable.promise
+            .then(() => {
+                console.log('@RegisterForm: Registered.');
+                this.setState({ cancellableFetch: undefined });
+            })
+            .catch((err) => console.log('@RegisterForm: Component unmounted.'));
+
+        return cancellable;
+    }
+
+    handleChange = (event) => {
+        const target = event.target;
+
+        this.setState({
+            [target.name]: target.value
+        });
+    }
+
+    handleSubmit = (event) => {
+        this.setState({
+            // registerLoading: true,
+            cancellableFetch: this.getCancellableFetch()
         });
 
         event.preventDefault();

@@ -8,6 +8,7 @@ import PropTypes from 'prop-types';
 import FindRecipesButton from '../FindRecipesButton';
 import IngredientList from '../IngredientsList';
 import ApiErrorSnackbar from '../ApiErrorSnackbar';
+import makeCancellable from '../../promiseWrapper';
 
 function isValid(text) {
     return /^[\x00-\x7F]*$/.test(text);
@@ -23,27 +24,18 @@ class ChangeUsernameForm extends Component {
         this.state = {
             username: '',
             changeFailed: false,
-            usernameTaken: false
+            usernameTaken: false,
+
+            cancellableFetch: undefined
         };
     }
 
-    handleChange = (event) => {
-        const target = event.target;
-
-        this.setState({
-            [target.name]: target.value
-        });
+    componentWillUnmount = () => {
+        if (this.state.cancellableFetch) this.state.cancellableFetch.cancel();
     }
 
-    handleSubmit = (event) => {
-        if (!this.validateForm()) {
-            event.preventDefault();
-            return;
-        }
-
-        this.setState({ changeFailed: false });
-
-        fetch(`/auth/changeUsername`, {
+    getCancellableFetch = () => {
+        let cancellable = makeCancellable(fetch(`/auth/changeUsername`, {
             method: 'PUT',
             headers: {
                 Accept: 'application/json',
@@ -69,6 +61,37 @@ class ChangeUsernameForm extends Component {
             }
         }).catch((err) => {
             this.setState({ changeFailed: true });
+        }));
+
+        cancellable.promise
+            .then(() => {
+                console.log('@ChangeUsernameForm: Changed username.');
+                this.setState({
+                    cancellableFetch: undefined
+                });
+            })
+            .catch((err) => console.log('@ChangeUsernameForm: Component unmounted.'));
+
+        return cancellable;
+    }
+
+    handleChange = (event) => {
+        const target = event.target;
+
+        this.setState({
+            [target.name]: target.value
+        });
+    }
+
+    handleSubmit = (event) => {
+        if (!this.validateForm()) {
+            event.preventDefault();
+            return;
+        }
+
+        this.setState({
+            changeFailed: false,
+            cancellableFetch: this.getCancellableFetch()
         });
 
         event.preventDefault();

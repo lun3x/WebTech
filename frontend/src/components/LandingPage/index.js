@@ -56,7 +56,7 @@ class LandingPage extends Component {
                 console.log('Got authentication state.');
                 this.setState({ cancellableAuth: undefined });
             })
-            .catch((err) => console.log('Component unmounted: ', err));
+            .catch((err) => console.log('Component unmounted.'));
 
         return cancellable;
     }
@@ -79,10 +79,10 @@ class LandingPage extends Component {
         
         cancellable.promise
             .then(() => {
-                console.log('Logged user out.');
+                console.log('@LandingPage: Logged user out.');
                 this.setState({ cancellableLogout: undefined });
             })
-            .catch((err) => console.log('Component unmounted: ', err));
+            .catch((err) => console.log('@LandingPage: Component unmounted.'));
 
         return cancellable;
     }
@@ -108,22 +108,23 @@ class LandingPage extends Component {
         };
 
         return (
-            <Paper style={style} zDepth={2} rounded={false} >
-                {
-                    /* eslint-disable indent */
-                    this.state.authenticationLoadingError
-                    ? <p> Error loading.</p>
-                    : this.state.authenticationIsLoading
-                    ? <p> Still loading.</p>
-                    : this.state.authenticated
-                    //? <CupboardPage handleAuthChange={this.handleAuthChange} />
-                    ? <ContainerPage logout={this.logout} />
-                    : <LoginForm onAuthChange={this.handleAuthChange} />
-                    /* eslint-enable indent */
-                }
-
+            <React.Fragment>
+                <Paper style={style} zDepth={2} rounded={false} >
+                    {
+                        /* eslint-disable indent */
+                        this.state.authenticationLoadingError
+                        ? <p> Error loading.</p>
+                        : this.state.authenticationIsLoading
+                        ? <p> Still loading.</p>
+                        : this.state.authenticated
+                        //? <CupboardPage handleAuthChange={this.handleAuthChange} />
+                        ? <ContainerPage logout={this.logout} />
+                        : <LoginForm onAuthChange={this.handleAuthChange} />
+                        /* eslint-enable indent */
+                    }
+                </Paper>
                 <ApiErrorSnackbar open={this.state.authenticationLoadingError} />
-            </Paper>
+            </React.Fragment>
         );
     }
 }

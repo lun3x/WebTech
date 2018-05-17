@@ -7,6 +7,7 @@ import PropTypes from 'prop-types';
 import IngredientBox from '../IngredientBox';
 import AddIngredientDialog from '../AddIngredientDialog';
 import ApiErrorSnackbar from '../ApiErrorSnackbar';
+import makeCancellable from '../../promiseWrapper';
 
 class SuggestPage extends Component {
 
@@ -19,6 +20,7 @@ class SuggestPage extends Component {
             id: PropTypes.number,
             name: PropTypes.string
         })),
+        logout: PropTypes.func.isRequired
     };
 
     constructor(props) {
@@ -32,53 +34,18 @@ class SuggestPage extends Component {
             createRecipeFail: false,
             recipeIngredients: [],
             name: '',
-            method: ''
-        };
-
-        this.handleChange = this.handleChange.bind(this);
-    }
-
-    handleChange(event) {
-        const target = event.target;
-
-        this.setState({
-            [target.name]: target.value
-        });
-    }
-
-    deleteIngredientFromRecipe = (id) => {
-        this.setState({ recipeIngredients: this.state.recipeIngredients.filter(e => e.id !== id) });
-    }
-
-    handleAddFood = (chosenRequest, index) => {
-        this.setState({ addFoodAwaitingResponse: true, addFoodFail: false, addFoodSuccess: false });
-
-        if (index === -1) {
-            // just ignore unless an item in list menu is selected
-        }
-        else {
-            // make an api call to add the selected ingredient to the current cupboard
-            let ingredient = this.props.allIngredients[index];
-            this.reloadList();
-            this.setState({ recipeIngredients: this.state.recipeIngredients.concat([ingredient]) });
-        }
-    }
-
-    reloadList = () => {
-        this.setState({ addFoodAwaitingResponse: false, addFoodSuccess: false, addFoodFail: false });
-    }
-
-    clearRecipe = () => {
-        this.setState({
-            name: '',
             method: '',
-            recipeIngredients: []
-        });
+
+            cancellableFetch: undefined
+        };
     }
 
-    createRecipe = () => {
-        this.setState({ createRecipeAwaitingResponse: true, createRecipeFail: false, createRecipeSuccess: false });
-        fetch('/api/recipes/create', {
+    componentWillUnmount = () => {
+        if (this.state.cancellableFetch) this.state.cancellableFetch.cancel();
+    }
+
+    getCancellableFetch = () => {
+        let cancellable = makeCancellable(fetch('/api/recipes/create', {
             method: 'POST',
             credentials: 'same-origin',
             headers: {
@@ -94,13 +61,83 @@ class SuggestPage extends Component {
             })
         }).then((res) => {
             this.setState({ createRecipeAwaitingResponse: false });
-            if (res.status === 200) {
+            if (res.status === 401) {
+                throw new Error('Access Denied.');
+            }
+            else if (!res.ok) {
+                this.setState({ createRecipeFail: true });
+            }
+            else {
                 this.clearRecipe();
                 this.setState({ createRecipeSuccess: true });
             }
-            else {
-                this.setState({ createRecipeFail: true });
-            }
+        }).catch(err => {
+            console.log('@SuggestPage: Logging out!');
+            this.props.logout();
+        }));
+
+        cancellable.promise
+            .then(() => {
+                console.log('@SuggestPage: Created new recipe.');
+                this.setState({ cancellableFetch: undefined });
+            })
+            .catch((err) => console.log('@SuggestPage: Component unmounted.'));
+
+        return cancellable;
+    }
+
+    handleChange = (event) => {
+        const target = event.target;
+
+        this.setState({
+            [target.name]: target.value
+        });
+    }
+
+    deleteIngredientFromRecipe = (id) => {
+        this.setState({ recipeIngredients: this.state.recipeIngredients.filter(e => e.id !== id) });
+    }
+
+    handleAddFood = (chosenRequest, index) => {
+        this.setState({
+            addFoodAwaitingResponse: true,
+            addFoodFail: false,
+            addFoodSuccess: false
+        });
+
+        if (index === -1) {
+            // just ignore unless an item in list menu is selected
+        }
+        else {
+            // make an api call to add the selected ingredient to the current cupboard
+            let ingredient = this.props.allIngredients[index];
+            this.reloadList();
+            this.setState({ recipeIngredients: this.state.recipeIngredients.concat([ingredient]) });
+        }
+    }
+
+    reloadList = () => {
+        this.setState({
+            addFoodAwaitingResponse: false,
+            addFoodSuccess: false,
+            addFoodFail: false
+        });
+    }
+
+    clearRecipe = () => {
+        this.setState({
+            name: '',
+            method: '',
+            recipeIngredients: []
+        });
+    }
+
+    createRecipe = () => {
+        this.setState({
+            createRecipeAwaitingResponse: true,
+            createRecipeFail: false,
+            createRecipeSuccess: false,
+            cancellableFetch: this.getCancellableFetch()
         });
     }
 

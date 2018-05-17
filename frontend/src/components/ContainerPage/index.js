@@ -45,27 +45,24 @@ class ContainerPage extends Component {
     }
 
     getCancellableFetch = () => {
-        let cancellable = makeCancellable(fetch('/api/ingredients')
+        let cancellable = makeCancellable(fetch('/api/ingredients'));
+
+        cancellable.promise
             .then(res => {
                 this.setState({ allIngredientsAreLoading: false });
                 if (!res.ok) {
-                    throw new Error('Failed to load all ingredients.');
+                    this.setState({ allIngredientsLoadingError: true });
                 }
                 return res.json();
             })
             .then(json => {
                 this.setState({ allIngredients: json.data.ingredients });
             })
-            .catch(err => {
-                this.setState({ allIngredientsLoadingError: true });
-            }));
-        
-        cancellable.promise
             .then(() => {
-                console.log('Got all ingredients.');
+                console.log('@ContainerPage: Got all ingredients.');
                 this.setState({ cancellableFetch: undefined });
             })
-            .catch((err) => console.log('Component unmounted: ', err));
+            .catch((err) => console.log('@ContainerPage: Component unmounted.'));
 
         return cancellable;
     }
@@ -89,12 +86,18 @@ class ContainerPage extends Component {
             break;
         case 1:
             page = (
-                <SettingsPage logout={this.props.logout} />
+                <SettingsPage
+                    logout={this.props.logout}
+                />
             );
             break;
         case 2:
             page = (
-                <RecipesPage goBack={() => this.selectPage(0)} ingredientIds={this.state.ingredientIds} />
+                <RecipesPage
+                    goBack={() => this.selectPage(0)}
+                    ingredientIds={this.state.ingredientIds}
+                    logout={this.props.logout}
+                />
             );
             break;
         case 3:
@@ -102,6 +105,7 @@ class ContainerPage extends Component {
                 <SuggestPage
                     allIngredients={this.state.allIngredients}
                     goBack={() => this.selectPage(0)}
+                    logout={this.props.logout}
                 />
             );
             break;

@@ -3,6 +3,7 @@ import Paper from 'material-ui/Paper';
 import PropTypes from 'prop-types';
 import IngredientBox from '../IngredientBox';
 import AddIngredientDialog from '../AddIngredientDialog';
+import makeCancellable from '../../promiseWrapper';
 
 class IngredientList extends Component {
 
@@ -20,7 +21,8 @@ class IngredientList extends Component {
             id: PropTypes.number,
             name: PropTypes.string
         })),
-        reload: PropTypes.func.isRequired
+        reload: PropTypes.func.isRequired,
+        logout: PropTypes.func.isRequired
     };
 
     constructor(props) {
@@ -29,16 +31,64 @@ class IngredientList extends Component {
             addFoodAwaitingResponse: false,
             addFoodSuccess: false,
             addFoodFail: false,
+
+            cancellableFetch: undefined
         };
     }
 
+    componentWillUnmount = () => {
+        if (this.state.cancellableFetch) this.state.cancellableFetch.cancel();
+    }
+
+    getCancellableFetch = (ingredientId) => {
+        let cancellable = makeCancellable(fetch(`/api/cupboard/add/${ingredientId}`, {
+            method: 'PUT',
+            credentials: 'same-origin'
+        }).then(res => {
+            this.setState({
+                addFoodAwaitingResponse: false,
+            });
+
+            if (res.status === 401) {
+                throw new Error('Access Denied.');
+            }
+            else if (!res.ok) {
+                this.setState({ addFoodFail: true });
+            }
+            else {
+                this.setState({ addFoodSuccess: true });
+                this.resetLoadState();
+            }
+        }).catch(err => {
+            this.props.logout();
+        }));
+
+        cancellable.promise
+            .then(() => {
+                console.log('Added ingredient to cupboard.');
+                this.setState({
+                    cancellableFetch: undefined
+                });
+            })
+            .catch((err) => console.log('Component unmounted.'));
+
+        return cancellable;
+    }
+
     resetLoadState = () => {
-        this.setState({ addFoodAwaitingResponse: false, addFoodSuccess: false, addFoodFail: false });
+        this.setState({
+            addFoodAwaitingResponse: false,
+            addFoodSuccess: false,
+            addFoodFail: false
+        });
         this.props.reload();
     }
 
     handleAddFood = (chosenRequest, index) => {
-        this.setState({ addFoodAwaitingResponse: true, addFoodFail: false, addFoodSuccess: false });
+        this.setState({
+            addFoodFail: false,
+            addFoodSuccess: false
+        });
 
         if (index === -1) {
             // just ignore unless an item in list menu is selected
@@ -46,19 +96,9 @@ class IngredientList extends Component {
         else {
             // make an api call to add the selected ingredient to the current cupboard
             let ingredientId = this.props.allIngredients[index].id;
-            fetch(`/api/cupboard/add/${ingredientId}`, {
-                method: 'PUT',
-                credentials: 'same-origin'
-            }).then(res => {
-                this.setState({ addFoodAwaitingResponse: false });
-
-                if (res.status === 201) {
-                    this.setState({ addFoodSuccess: true });
-                    this.resetLoadState();
-                }
-                else {
-                    this.setState({ addFoodFail: true });
-                }
+            this.setState({
+                addFoodAwaitingResponse: true,
+                cancellableFetch: this.getCancellableFetch(ingredientId)
             });
         }
     }
@@ -68,7 +108,7 @@ class IngredientList extends Component {
         let i = -1;
         const ingredientList = this.props.userIngredients.map((x) => {
             i++;
-            return <IngredientBox key={i} ingredientName={x.name} reload={this.resetLoadState} ingredientID={x.id} />;
+            return <IngredientBox key={i} ingredientName={x.name} reload={this.resetLoadState} ingredientID={x.id} logout={this.props.logout} />;
         });
 
         // add a IngredientPlusBox at the end
