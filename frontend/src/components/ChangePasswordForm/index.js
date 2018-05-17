@@ -29,12 +29,12 @@ class ChangePasswordForm extends Component {
             changeFailed: false,
             charsNotAllowed: false,
 
-            cancellable: undefined
+            cancellablePromise: undefined
         };
     }
 
     componentWillUnmount = () => {
-        if (this.state.cancellable) this.state.cancellable.cancel();
+        if (this.state.cancellablePromise) this.state.cancellablePromise.cancel();
     }
 
     getCancellableFetch = () => {
@@ -52,7 +52,7 @@ class ChangePasswordForm extends Component {
         cancellable
             .then(res => {
                 // Save intermediate cancellable
-                this.setState({ cancellable: makeCancellableVal(res) });
+                this.setState({ cancellablePromise: makeCancellableVal(res) });
                 
                 //== Self-unmounting calls ==//
                 if (res.status === 401) {
@@ -60,11 +60,13 @@ class ChangePasswordForm extends Component {
                     this.props.logout(); 
                 }
                 else if (res.ok) {
+                    // Successful change
                     this.props.onClose(true);
                 }
-                return this.state.cancellable;
+                
+                return this.state.cancellablePromise;
             })
-            .then((res) => {
+            .then(res => {
                 //== State-setting calls ==//
                 if (res.status === 422) {
                     this.setState({ charsNotAllowed: true });
@@ -74,7 +76,7 @@ class ChangePasswordForm extends Component {
                 }
 
                 // Reset cancellable
-                this.setState({ cancellable: undefined });
+                this.setState({ cancellablePromise: undefined });
             })
             .then(() => {
                 //== Confirmation ==//
@@ -102,7 +104,7 @@ class ChangePasswordForm extends Component {
 
         this.setState({
             changeFailed: false,
-            cancellable: this.getCancellableFetch()
+            cancellablePromise: this.getCancellableFetch()
         });
 
         event.preventDefault();

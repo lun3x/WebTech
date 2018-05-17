@@ -8,6 +8,9 @@ import UpvoteButton from '../UpvoteButton';
 import DownvoteButton from '../DownvoteButton';
 import voteStyle from './vote.css';
 import makeCancellable from '../../promiseWrapper';
+import ApiErrorSnackbar from '../ApiErrorSnackbar';
+import makeCancellableVal from '../../valueWrapper';
+
 
 class RecipeDetailsPage extends Component {
 
@@ -18,7 +21,8 @@ class RecipeDetailsPage extends Component {
             name: PropTypes.string.isRequired,
             method: PropTypes.string.isRequired,
             img_src: PropTypes.string.isRequired,
-        }).isRequired
+        }).isRequired,
+        logout: PropTypes.func.isRequired
     }
 
     constructor(props) {
@@ -35,13 +39,24 @@ class RecipeDetailsPage extends Component {
             cancellableIngredients: undefined,
             cancellableUpvote: undefined,
             cancellableDownvote: undefined,
+
+            ingredientsAreLoading: false,
+            ingredientsLoadFail: false,
+
+            recipeNotFound: false,
+
+            upvoteFail: false,
+            downvoteFail: false
         };
     }
 
     componentWillMount = () => {
-        // this.setState({ ingredientsAreLoading: true });
-        this.fetchIngredients();
-        this.fetchVoteStatus();
+        this.setState({ ingredientsAreLoading: true });
+
+        this.setState({
+            cancellableIngredients: this.getCancellableIngredients(),
+            cancellableVoteStatus: this.getCancellableVoteStatus()
+        });
     }
 
     componentWillUnmount = () => {
@@ -55,23 +70,31 @@ class RecipeDetailsPage extends Component {
         let cancellable = makeCancellable(fetch(`/api/recipes/${this.props.recipe.id}/votes`, {
             method: 'GET',
             credentials: 'same-origin'
-        }).then(res => {
-            // this.setState({ ingredientsAreLoading: false });
-            if (res.status !== 200) {
-                throw new Error('Bad status from server');
-            }
-            return res.json();
-        }).then(json => {
-            this.setState({ votes: json.votes, upvoted: json.upvoted, downvoted: json.downvoted });
-        }).catch(err => {
-            console.log('Ingredient loading err', err);
-            // this.setState({ ingredientsLoadFail: true });
         }));
+        
+        cancellable
+            .then(res => {
+                // Save intermediate cancellable
+                this.setState({
+                    cancellableVoteStatus: makeCancellable(res.json()),
+                });
 
-        cancellable.promise
+                if (res.status === 404) {
+                    this.setState({ recipeNotFound: true });
+                }
+
+                return this.state.cancellableVoteStatus;
+            })
+            .then(json => {
+                this.setState({
+                    votes: json.votes,
+                    upvoted: json.upvoted,
+                    downvoted: json.downvoted,
+                    cancellableVoteStatus: undefined
+                });
+            })
             .then(() => {
                 console.log('Got vote status.');
-                this.setState({ cancellableVoteStatus: undefined });
             })
             .catch((err) => console.log('Component unmounted.'));
 
@@ -82,29 +105,29 @@ class RecipeDetailsPage extends Component {
         let cancellable = makeCancellable(fetch(`/api/recipes/ingredients/${this.props.recipe.id}`, {
             method: 'GET',
             credentials: 'same-origin'
-        }).then(res => {
-            // this.setState({ ingredientsAreLoading: false });
-            if (res.status !== 200) {
-                throw new Error('Bad status from server');
-            }
-            return res.json();
-        }).then(json => {
-            // get image for each recipe and add as base64 encoded string
-            // to each recipe object
-            // let ingredients = json.data.ingredients;
-            console.log(json.data.ingredients);
-            this.setState({ ingredients: json.data.ingredients.map(i => i.name) });
-        }).catch(err => {
-            console.log('Ingredient loading err', err);
-            // this.setState({ ingredientsLoadFail: true });
         }));
 
-        cancellable.promise
-            .then(() => {
-                console.log('Got recipe ingredients.');
-                this.setState({ cancellableIngredients: undefined });
+        cancellable
+            .then(res => {
+                this.setState({
+                    ingredientsAreLoading: false,
+                    cancellableIngredients: makeCancellable(res.json()),
+                });
+
+                if (!res.ok) {
+                    this.setState({ ingredientsLoadFail: false });
+                }
+
+                return this.state.cancellableIngredients;
             })
-            .catch((err) => console.log('Component unmounted.'));
+            .then(json => {
+                this.setState({
+                    ingredients: json.data.ingredients.map(i => i.name),
+                    cancellableIngredients: undefined
+                });
+            })
+            .then(() => console.log('@RecipeDetailsPage: Got recipe ingredients.'))
+            .catch((err) => console.log('@RecipeDetailsPage: Component unmounted.'));
 
         return cancellable;
     }
@@ -113,27 +136,46 @@ class RecipeDetailsPage extends Component {
         let cancellable = makeCancellable(fetch(`/api/recipes/${this.props.recipe.id}/upvote`, {
             method: 'PUT',
             credentials: 'same-origin'
-        }).then(res => {
-            if (res.status !== 200) {
-                throw new Error('Failed to upvote.');
-            }
-            else {
-                return res.json();
-            }
-        }).then(json => {
-            if (this.state.upvoted)        this.setState({ votes: this.state.votes - 1 });
-            else if (this.state.downvoted) this.setState({ votes: this.state.votes + 2 });
-            else                           this.setState({ votes: this.state.votes + 1 });
-            this.setState({ upvoted: json.upvoted, downvoted: json.downvoted });
-        }).catch(err => {
-            console.log('Upvote error: ', err);
         }));
+        
+        cancellable
+            .then(res => {
+                this.setState({
+                    cancellableUpvote: makeCancellableVal(res),
+                });
 
-        cancellable.promise
-            .then(() => {
-                console.log('Upvoted.');
+                if (res.status === 401) {
+                    console.log('@RecipeDetailsPage: logging out');
+                    this.props.logout();
+                }
+
+                return this.state.cancellableUpvote;
+            })
+            .then(res => {
+                this.setState({
+                    cancellableUpvote: makeCancellable(res.json()),
+                });
+
+                if (!res.ok) {
+                    this.setState({ upvoteFail: true });
+                }
+                
+                return this.state.cancellableUpvote;
+            })
+            .then(json => {
+                if (!this.state.upvoteFail) {
+                    if (this.state.upvoted)          this.setState({ votes: this.state.votes - 1 });
+                    else if (this.state.downvoted)   this.setState({ votes: this.state.votes + 2 });
+                    else                             this.setState({ votes: this.state.votes + 1 });
+                    this.setState({
+                        upvoted: json.upvoted,
+                        downvoted: json.downvoted,
+                    });
+                }
+
                 this.setState({ cancellableUpvote: undefined });
             })
+            .then(() => console.log('Upvoted.'))
             .catch((err) => console.log('Component unmounted.'));
 
         return cancellable;
@@ -143,52 +185,62 @@ class RecipeDetailsPage extends Component {
         let cancellable = makeCancellable(fetch(`/api/recipes/${this.props.recipe.id}/downvote`, {
             method: 'PUT',
             credentials: 'same-origin'
-        }).then(res => {
-            if (res.status !== 200) {
-                throw new Error('Failed to upvote.');
-            }
-            else {
-                return res.json();
-            }
-        }).then(json => {
-            if (this.state.upvoted)        this.setState({ votes: this.state.votes - 2 });
-            else if (this.state.downvoted) this.setState({ votes: this.state.votes + 1 });
-            else                           this.setState({ votes: this.state.votes - 1 });
-            this.setState({ upvoted: json.upvoted, downvoted: json.downvoted });
-        }).catch(err => {
-            console.log('Upvote error: ', err);
         }));
+        
+        cancellable
+            .then(res => {
+                this.setState({
+                    cancellableDownvote: makeCancellableVal(res),
+                });
 
-        cancellable.promise
-            .then(() => {
-                console.log('Downvoted.');
+                if (res.status === 401) {
+                    console.log('@RecipeDetailsPage: logging out');
+                    this.props.logout();
+                }
+
+                return this.state.cancellableDownvote;
+            })
+            .then(res => {
+                this.setState({
+                    cancellableDownvote: makeCancellable(res.json()),
+                });
+
+                if (!res.ok) {
+                    this.setState({ downvoteFail: true });
+                }
+                
+                return this.state.cancellableDownvote;
+            })
+            .then(json => {
+                if (!this.state.downvoteFail) {
+                    if (this.state.upvoted)        this.setState({ votes: this.state.votes - 2 });
+                    else if (this.state.downvoted) this.setState({ votes: this.state.votes + 1 });
+                    else                           this.setState({ votes: this.state.votes - 1 });
+
+                    this.setState({
+                        upvoted: json.upvoted,
+                        downvoted: json.downvoted
+                    });
+                }
+
                 this.setState({ cancellableDownvote: undefined });
             })
+            .then(() => console.log('Downvoted.'))
             .catch((err) => console.log('Component unmounted.'));
 
         return cancellable;
     }
 
-    fetchVoteStatus = () => {
-        this.setState({
-            cancellableVoteStatus: this.getCancellableVoteStatus()
-        });
-    }
-
-    fetchIngredients = () => {
-        this.setState({
-            cancellableIngredients: this.getCancellableIngredients()
-        });
-    }
-
     handleUpvote = () => {
         this.setState({
+            upvoteFail: false,
             cancellableUpvote: this.getCancellableUpvote()
         });
     }
 
     handleDownvote = () => {
         this.setState({
+            downvoteFail: false,
             cancellableDownvote: this.getCancellableDownvote()
         });
     }
@@ -212,49 +264,66 @@ class RecipeDetailsPage extends Component {
         };
 
         return (
-            <Card>
-                <CardHeader
-                    title={<span><b>Go back</b></span>}
-                    avatar={<Avatar
-                        icon={<NavigationArrowBack />}
-                        onClick={this.props.goBack}
-                        style={styles.header.avatar}
-                    />}
-                />
-                <CardMedia
-                    overlay={<CardTitle title={this.props.recipe.name} /*subtitle="Overlay subtitle"*/ />}
-                >
-                    <img src={this.props.recipe.img_src} alt="failed to load" /*TODO: change to actual image*/ /> 
-                </CardMedia>
-                <CardActions>
-                    <RaisedButton
-                        label={this.state.votes}
-                        style={styles.buttons}
-                        disabled
+            <React.Fragment>
+                <Card>
+                    <CardHeader
+                        title={<span><b>Go back</b></span>}
+                        avatar={<Avatar
+                            icon={<NavigationArrowBack />}
+                            onClick={this.props.goBack}
+                            style={styles.header.avatar}
+                        />}
                     />
-                    <button
-                        onClick={this.handleUpvote}
-                        className={voteStyle.buttons}
+                    <CardMedia
+                        overlay={<CardTitle title={this.props.recipe.name} /*subtitle="Overlay subtitle"*/ />}
                     >
-                    Upvote
-                    </button>
-                    <button
-                        onClick={this.handleDownvote}
-                        style={voteStyle.disabled}
-                    >
-                    Downvote
-                    </button>
-                </CardActions>
-                { /* <CardTitle title="Card title" subtitle="Card subtitle" /> */ }
-                <CardText>
-                    <div style={styles.body}>
-                        <span> <b>Ingredients</b> </span>
-                        <p>{this.state.ingredients.join('\n')}</p>
-                        <span> <b>Method</b> </span>
-                        <p>{this.props.recipe.method}</p>
-                    </div>
-                </CardText>
-            </Card>
+                        <img src={this.props.recipe.img_src} alt="failed to load" /*TODO: change to actual image*/ /> 
+                    </CardMedia>
+                    <CardActions>
+                        <RaisedButton
+                            label={this.state.votes}
+                            style={styles.buttons}
+                            disabled
+                        />
+                        <button
+                            onClick={this.handleUpvote}
+                            className={voteStyle.buttons}
+                        >
+                        Upvote
+                        </button>
+                        <button
+                            onClick={this.handleDownvote}
+                            style={voteStyle.disabled}
+                        >
+                        Downvote
+                        </button>
+                    </CardActions>
+                    { /* <CardTitle title="Card title" subtitle="Card subtitle" /> */ }
+                    <CardText>
+                        <div style={styles.body}>
+                            <span> <b>Ingredients</b> </span>
+                            {
+                                this.state.ingredientsAreLoading ?
+                                    <p>Ingredients loading...</p>
+                                    :
+                                    this.state.ingredientsLoadFail ?
+                                        <p>Error loading ingredients.</p>
+                                        :
+                                        <p>{this.state.ingredients.join('\n')}</p>
+                            }
+                            <span> <b>Method</b> </span>
+                            <p>{this.props.recipe.method}</p>
+                        </div>
+                    </CardText>
+                    {this.state.recipeNotFound}
+                </Card>
+
+                <ApiErrorSnackbar
+                    open={this.state.upvoteFail || this.state.downvoteFail}
+                    message={this.state.upvoteFail ? 'Failed to upvote.' : 'Failed to downvote.'}
+                />
+
+            </React.Fragment>
         );
     }
 }

@@ -11,6 +11,7 @@ import IngredientList from '../IngredientsList';
 import ApiErrorSnackbar from '../ApiErrorSnackbar';
 import RegisterForm from '../RegisterForm';
 import makeCancellable from '../../promiseWrapper';
+import makeCancellableVal from '../../valueWrapper';
 
 class LoginForm extends Component {
     static propTypes = {
@@ -27,12 +28,12 @@ class LoginForm extends Component {
             loginFailed: false,
             registration: false,
 
-            cancellableFetch: undefined
+            cancellablePromise: undefined
         };
     }
 
     componentWillUnmount = () => {
-        if (this.state.cancellableFetch) this.state.cancellableFetch.cancel();
+        if (this.state.cancellablePromise) this.state.cancellablePromise.cancel();
     }
 
     getCancellableFetch = () => {
@@ -46,21 +47,37 @@ class LoginForm extends Component {
                 username: this.state.username,
                 password: this.state.password
             })
-        }).then((res) => {
-            this.setState({ loginLoading: false });
-            if      (res.status === 200) this.props.onAuthChange(true);
-            else if (res.status === 401) this.setState({ loginFailed: true });
-            else    throw new Error('Bad status from server');
-        }).catch((err) => {
-            this.setState({ loginError: true });
         }));
+        
+        cancellable
+            .then(res => {
+                // Save intermediate cancellable
+                this.setState({
+                    cancellablePromise: makeCancellableVal(res),
+                    loginLoading: false
+                });
 
-        cancellable.promise
-            .then(() => {
-                console.log('Logged in.');
-                this.setState({ cancellableFetch: undefined });
+                //== Self-unmounting calls ==//
+                if (res.ok) {
+                    this.props.onAuthChange(true);
+                }
+                else if (res.status === 401) {
+                    // OK to set state here as previous if must be false
+                    this.setState({ loginFailed: true });
+                }
+                else {
+                    // OK to set state here as previous if must be false
+                    this.setState({ loginError: true });
+                }
+
+                return this.state.cancellablePromise;
             })
-            .catch((err) => console.log('Component unmounted.'));
+            .then(res => {
+                //== State-setting calls ==//
+                this.setState({ cancellablePromise: undefined });
+            })
+            .then(() => console.log('@LoginForm: Logged in.'))
+            .catch((err) => console.log('@LoginForm: Component unmounted.'));
 
         return cancellable;
     }
@@ -79,7 +96,7 @@ class LoginForm extends Component {
 
         this.setState({
             loginLoading: true,
-            cancellableFetch: this.getCancellableFetch()
+            cancellablePromise: this.getCancellableFetch()
         });
         
         event.preventDefault();

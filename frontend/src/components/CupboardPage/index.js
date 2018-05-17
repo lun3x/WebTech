@@ -7,6 +7,7 @@ import IngredientList from '../IngredientsList';
 import ApiErrorSnackbar from '../ApiErrorSnackbar';
 import NavBar from '../NavBar';
 import makeCancellable from '../../promiseWrapper';
+import makeCancellableVal from '../../valueWrapper';
 
 class CupboardPage extends Component {
 
@@ -28,7 +29,7 @@ class CupboardPage extends Component {
             userIngredientsAreLoading: false,
             userIngredientsLoadingError: false,
 
-            cancellableFetch: undefined
+            cancellablePromise: undefined
         };
     }
 
@@ -37,7 +38,7 @@ class CupboardPage extends Component {
     }
 
     componentWillUnmount = () => {
-        if (this.state.cancellableFetch) this.state.cancellableFetch.cancel();
+        if (this.state.cancellablePromise) this.state.cancellablePromise.cancel();
     }
 
     getCancellableFetch = () => {
@@ -46,28 +47,41 @@ class CupboardPage extends Component {
             credentials: 'same-origin'
         }));
 
-        cancellable.promise
+        cancellable
             .then(res => {
-                this.setState({ userIngredientsAreLoading: false });
+                this.setState({
+                    userIngredientsAreLoading: false,
+                    cancellablePromise: makeCancellableVal(res)
+                });
+                
                 if (res.status === 401) {
                     console.log('@CupboardPage: logging out');
                     this.props.logout();
                 }
-                return res;
+
+                return this.state.cancellablePromise;
             })
             .then(res => {
+                this.setState({
+                    cancellablePromise: makeCancellable(res.json())
+                });
+
                 if (!res.ok) {
                     this.setState({ userIngredientsLoadingError: true });
                 }
-                return res.json();
+
+                return this.state.cancellablePromise;
             })
             .then(json => {
-                this.setState({ userIngredients: json.data.cupboard.food });
                 this.props.setUserIngredientIds(json.data.cupboard.food.map((x) => x.ingredient_id));
+
+                this.setState({
+                    userIngredients: json.data.cupboard.food,
+                    cancellablePromise: undefined
+                });
             })
             .then(() => {
                 console.log('@CupboardPage: Got cupboard ingredients.');
-                this.setState({ cancellableFetch: undefined });
             })
             .catch((err) => console.log('@CupboardPage: Component unmounted.'));
         
@@ -78,7 +92,7 @@ class CupboardPage extends Component {
         this.setState({
             userIngredientsAreLoading: true,
             userIngredientsLoadingError: false,
-            cancellableFetch: this.getCancellableFetch()
+            cancellablePromise: this.getCancellableFetch()
         });
     };
 

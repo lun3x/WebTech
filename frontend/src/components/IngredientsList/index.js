@@ -4,6 +4,7 @@ import PropTypes from 'prop-types';
 import IngredientBox from '../IngredientBox';
 import AddIngredientDialog from '../AddIngredientDialog';
 import makeCancellable from '../../promiseWrapper';
+import makeCancellableVal from '../../valueWrapper';
 
 class IngredientList extends Component {
 
@@ -32,43 +33,47 @@ class IngredientList extends Component {
             addFoodSuccess: false,
             addFoodFail: false,
 
-            cancellableFetch: undefined
+            cancellablePromise: undefined
         };
     }
 
     componentWillUnmount = () => {
-        if (this.state.cancellableFetch) this.state.cancellableFetch.cancel();
+        if (this.state.cancellablePromise) this.state.cancellablePromise.cancel();
     }
 
     getCancellableFetch = (ingredientId) => {
         let cancellable = makeCancellable(fetch(`/api/cupboard/add/${ingredientId}`, {
             method: 'PUT',
             credentials: 'same-origin'
-        }).then(res => {
-            this.setState({
-                addFoodAwaitingResponse: false,
-            });
-
-            if (res.status === 401) {
-                throw new Error('Access Denied.');
-            }
-            else if (!res.ok) {
-                this.setState({ addFoodFail: true });
-            }
-            else {
-                this.setState({ addFoodSuccess: true });
-                this.resetLoadState();
-            }
-        }).catch(err => {
-            this.props.logout();
         }));
-
-        cancellable.promise
-            .then(() => {
-                console.log('Added ingredient to cupboard.');
+        
+        cancellable
+            .then(res => {
                 this.setState({
-                    cancellableFetch: undefined
+                    addFoodAwaitingResponse: false,
+                    cancellablePromise: makeCancellableVal(res)
                 });
+
+                //== Self-unmounting calls ==//
+                if (res.status === 401) {
+                    console.log('@IngredientsList: logging out');
+                    this.props.logout();
+                }
+                else if (res.ok) {
+                    // Successful change
+                    // OK to set state here as previous if will have to be false
+                    this.setState({ addFoodSuccess: true });
+                    this.resetLoadState();
+                }
+
+                return this.state.cancellablePromise;
+            })
+            .then(res => {
+                if (!res.ok) {
+                    this.setState({ addFoodFail: true });
+                }
+
+                this.setState({ cancellablePromise: undefined });
             })
             .catch((err) => console.log('Component unmounted.'));
 
@@ -98,7 +103,7 @@ class IngredientList extends Component {
             let ingredientId = this.props.allIngredients[index].id;
             this.setState({
                 addFoodAwaitingResponse: true,
-                cancellableFetch: this.getCancellableFetch(ingredientId)
+                cancellablePromise: this.getCancellableFetch(ingredientId)
             });
         }
     }

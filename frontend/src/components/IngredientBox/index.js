@@ -5,6 +5,7 @@ import IconButton from 'material-ui/IconButton';
 import PropTypes from 'prop-types';
 import ApiErrorSnackbar from '../ApiErrorSnackbar';
 import makeCancellable from '../../promiseWrapper';
+import makeCancellableVal from '../../valueWrapper';
 
 class IngredientBox extends Component {
 
@@ -21,35 +22,44 @@ class IngredientBox extends Component {
             removeFoodAwaitingResponse: false,
             removeFoodError: false,
 
-            cancellableFetch: undefined
+            cancellablePromise: undefined
         };
     }
 
     componentWillUnmount = () => {
-        if (this.state.cancellableFetch) this.state.cancellableFetch.cancel();
+        if (this.state.cancellablePromise) this.state.cancellablePromise.cancel();
     }
 
     getCancellableFetch = () => {
         let cancellable = makeCancellable(fetch(`/api/cupboard/remove/${this.props.ingredientID}`, {
             method: 'DELETE',
             credentials: 'same-origin',
-        }).then((res) => {
-            this.setState({ removeFoodAwaitingResponse: false });
-            if (res.status === 401) {
-                throw new Error('Access Denied.');
-            }
-            else if (!res.ok) {
-                this.setState({ removeFoodError: true });
-            }
-            else {
-                this.props.reload(this.props.ingredientID);
-            }
-        }).catch(err => {
-            console.log('@IngredientBox: Loggin out.');
-            this.props.logout();
         }));
+        
+        cancellable
+            .then((res) => {
+                // Save intermediate cancellable
+                this.setState({
+                    removeFoodAwaitingResponse: false,
+                    cancellablePromise: makeCancellableVal(res)
+                });
 
-        cancellable.promise
+                //== Self-unmounting calls ==//
+                if (res.status === 401) {
+                    console.log('@IngredientBox: Logging out.');
+                    this.props.logout();
+                }
+                else if (res.ok) {
+                    // Successful deletion
+                    this.props.reload(this.props.ingredientID);
+                }
+
+                return this.state.cancellablePromise;
+            })
+            .then(res => {
+                //== State-setting calls ==//
+                this.setState({ removeFoodError: true });
+            })
             .then(() => console.log('@IngredientBox: Removed food.'))
             .catch(err => console.log('@IngredientBox: Component unmounted.'));
         
@@ -60,7 +70,7 @@ class IngredientBox extends Component {
         this.setState({
             removeFoodAwaitingResponse: true,
             removeFoodError: false,
-            cancellableFetch: this.getCancellableFetch()
+            cancellablePromise: this.getCancellableFetch()
         });
     }
 

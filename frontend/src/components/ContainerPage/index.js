@@ -29,19 +29,19 @@ class ContainerPage extends Component {
             allIngredientsAreLoading: false,
             allIngredientsLoadingError: false,
 
-            cancellableFetch: undefined
+            cancellablePromise: undefined
         };
     }
 
     componentWillMount = () => {
         this.setState({
             allIngredientsAreLoading: true,
-            cancellableFetch: this.getCancellableFetch()
+            cancellablePromise: this.getCancellableFetch()
         });
     }
 
     componentWillUnmount = () => {
-        if (this.state.cancellableFetch) this.state.cancellableFetch.cancel();
+        if (this.state.cancellablePromise) this.state.cancellablePromise.cancel();
     }
 
     getCancellableFetch = () => {
@@ -49,19 +49,29 @@ class ContainerPage extends Component {
             method: 'GET'
         }));
 
-        cancellable.promise
+        cancellable
             .then(res => {
+                // Save intermediate cancellable
+                this.setState({
+                    cancellablePromise: makeCancellable(res.json()),
+                    allIngredientsAreLoading: false
+                });
+
                 //== State-setting calls ==//
-                this.setState({ allIngredientsAreLoading: false });
                 if (!res.ok) {
                     this.setState({ allIngredientsLoadingError: true });
                 }
-                else {
-                    this.setState({ allIngredients: res.json().data.ingredients });
-                }
 
-                // Reset cancellable
-                this.setState({ cancellableFetch: undefined });
+                return this.state.cancellablePromise;
+            })
+            .then((json) => {
+                //== Intermediate data calls ==//
+
+                // Set data and reset cancellable
+                this.setState({
+                    allIngredients: json.data.ingredients,
+                    cancellablePromise: undefined
+                });
             })
             .then(() => {
                 //== Confirmation ==//

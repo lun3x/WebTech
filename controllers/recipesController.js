@@ -43,19 +43,19 @@ exports.createRecipe = (req, res) => {
     });
 };
 
-exports.findIngredientNamesOfRecipe = (req, res) => {
-    db.findIngredientNamesOfRecipe(req.params.id, (err, dbResult) => {
+exports.findIngredientsOfRecipe = (req, res) => {
+    db.findIngredientsOfRecipe(req.params.id, (err, dbResult) => {
         if (err) res.status(500).send('Error! Failed to find ingredients for recipe.');
         else {
-            let ingredientNames = [];
+            let ingredients = [];
             for (let i = 0; i < dbResult.length; i++) {
-                ingredientNames.push(dbResult[i]);
+                ingredients.push(dbResult[i]);
             }
 
             res.setHeader('Content-Type', 'application/json');
             res.status(200).json({
                 data: {
-                    ingredients: ingredientNames
+                    ingredients: ingredients
                 }
             });
         }

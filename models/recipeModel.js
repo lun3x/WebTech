@@ -9,8 +9,8 @@ exports.getAllRecipes = (controllerCallback) => {
     db.con.query(sql, controllerCallback);
 };
 
-exports.findIngredientNamesOfRecipe = (recipe_id, controllerCallback) => {
-    let sql = 'SELECT Ingredients.name FROM RecipeIngredients \
+exports.findIngredientsOfRecipe = (recipe_id, controllerCallback) => {
+    let sql = 'SELECT Ingredients.id, Ingredients.name FROM RecipeIngredients \
                INNER JOIN Ingredients ON RecipeIngredients.ingredient_id = Ingredients.id \
                WHERE RecipeIngredients.recipe_id = ?;';
     

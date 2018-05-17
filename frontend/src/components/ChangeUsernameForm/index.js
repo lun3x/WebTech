@@ -9,6 +9,7 @@ import FindRecipesButton from '../FindRecipesButton';
 import IngredientList from '../IngredientsList';
 import ApiErrorSnackbar from '../ApiErrorSnackbar';
 import makeCancellable from '../../promiseWrapper';
+import makeCancellableVal from '../../valueWrapper';
 
 function isValid(text) {
     return /^[\x00-\x7F]*$/.test(text);
@@ -16,7 +17,8 @@ function isValid(text) {
 
 class ChangeUsernameForm extends Component {
     static propTypes = {
-        onClose: PropTypes.func.isRequired
+        onClose: PropTypes.func.isRequired,
+        logout: PropTypes.func.isRequired
     };
 
     constructor(props) {
@@ -25,13 +27,14 @@ class ChangeUsernameForm extends Component {
             username: '',
             changeFailed: false,
             usernameTaken: false,
+            charsNotAllowed: false,
 
-            cancellableFetch: undefined
+            cancellablePromise: undefined
         };
     }
 
     componentWillUnmount = () => {
-        if (this.state.cancellableFetch) this.state.cancellableFetch.cancel();
+        if (this.state.cancellablePromise) this.state.cancellablePromise.cancel();
     }
 
     getCancellableFetch = () => {
@@ -44,31 +47,43 @@ class ChangeUsernameForm extends Component {
             body: JSON.stringify({
                 username: this.state.username
             })
-        }).then((res) => {
-            // this.setState({ changeLoading: false });
-            if (res.status === 200) {
-                // Successful registration
-                this.props.onClose(true);
-            }
-            else if (res.status === 409) {
-                this.setState({ usernameTaken: true });
-            }
-            else if (res.status === 422) {
-                throw new Error('Character(s) not allowed in username!');
-            }
-            else {
-                throw new Error('Server error');
-            }
-        }).catch((err) => {
-            this.setState({ changeFailed: true });
         }));
+        
+        cancellable
+            .then(res => {
+                // this.setState({ changeLoading: false });
+                this.setState({ cancellablePromise: makeCancellableVal(res) });
 
-        cancellable.promise
+                //== Self-unmounting calls ==//
+                if (res.status === 401) {
+                    console.log('@ChangeUsernameForm: logging out');
+                    this.props.logout(); 
+                }
+                else if (res.ok) {
+                    // Successful change
+                    this.props.onClose(true);
+                }
+
+                return this.state.cancellablePromise;
+            })
+            .then(res => {
+                //== State-setting calls ==//
+                if (res.status === 409) {
+                    this.setState({ usernameTaken: true });
+                }
+                else if (res.status === 422) {
+                    this.setState({ charsNotAllowed: true });
+                }
+                else {
+                    this.setState({ changeFailed: true });
+                }
+
+                // Reset cancellable
+                this.setState({ cancellablePromise: undefined });
+            })
             .then(() => {
+                //== Confirmation ==//
                 console.log('@ChangeUsernameForm: Changed username.');
-                this.setState({
-                    cancellableFetch: undefined
-                });
             })
             .catch((err) => console.log('@ChangeUsernameForm: Component unmounted.'));
 
@@ -79,7 +94,8 @@ class ChangeUsernameForm extends Component {
         const target = event.target;
 
         this.setState({
-            [target.name]: target.value
+            [target.name]: target.value,
+            charsNotAllowed: false
         });
     }
 
@@ -91,7 +107,7 @@ class ChangeUsernameForm extends Component {
 
         this.setState({
             changeFailed: false,
-            cancellableFetch: this.getCancellableFetch()
+            cancellablePromise: this.getCancellableFetch()
         });
 
         event.preventDefault();
@@ -104,7 +120,7 @@ class ChangeUsernameForm extends Component {
     }
 
     usernameErrorText = () => {
-        if (!isValid(this.state.username)) return 'Character(s) not allowed';
+        if (!isValid(this.state.username) || this.state.charsNotAllowed) return 'Character(s) not allowed';
         if (this.state.usernameTaken) return 'Username already taken';
         return '';
     }

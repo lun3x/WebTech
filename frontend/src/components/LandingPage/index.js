@@ -40,25 +40,34 @@ class LandingPage extends Component {
         }));
 
         cancellable
-            .then((res) => {
-                //== State-setting calls ==//
-                this.setState({ authenticationIsLoading: false });
+            .then(res => {
+                // Save intermediate cancellable
+                this.setState({
+                    cancellableAuth: makeCancellable(res.json()),
+                    authenticationIsLoading: false
+                });
 
+                //== State-setting calls ==//
                 if (!res.ok) {
                     this.setState({ authenticationLoadingError: true });
                 }
-                else {
-                    this.setState({ authenticated: res.json().authenticated });
-                }
 
-                // Reset cancellable
-                this.setState({ cancellableAuth: undefined });
+                return this.state.cancellableAuth;
+            })
+            .then(json => {
+                //== Intermediate data calls ==//
+
+                // Set data and reset cancellable
+                this.setState({
+                    authenticated: json.authenticated,
+                    cancellableAuth: undefined
+                });
             })
             .then(() => {
                 //== Confirmation ==//
                 console.log('@LandingPage: Got authentication state.');
             })
-            .catch((err) => console.log('@LandingPage: Component unmounted.'));
+            .catch(err => console.log('@LandingPage: Component unmounted.'));
 
         return cancellable;
     }
@@ -88,7 +97,7 @@ class LandingPage extends Component {
                 //== Confirmation ==//
                 console.log('@LandingPage: Logged user out.');
             })
-            .catch((err) => console.log('@LandingPage: Component unmounted.'));
+            .catch(err => console.log('@LandingPage: Component unmounted.'));
 
         return cancellable;
     }
