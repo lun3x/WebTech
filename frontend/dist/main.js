@@ -4795,7 +4795,7 @@ eval("\n\nObject.defineProperty(exports, \"__esModule\", {\n    value: true\n});
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-eval("// extracted by mini-css-extract-plugin\nmodule.exports = {\"disabled\":\"_1DRNRkKYmk8mMvywUiRwhy\"};\n\n//# sourceURL=webpack:///./src/components/RecipeDetailsPage/vote.css?");
+eval("// extracted by mini-css-extract-plugin\nmodule.exports = {\"buttons\":\"bGKmvdcnaic-r-YjMtuRn\",\"disabled\":\"_1DRNRkKYmk8mMvywUiRwhy\"};\n\n//# sourceURL=webpack:///./src/components/RecipeDetailsPage/vote.css?");
 
 /***/ }),
 

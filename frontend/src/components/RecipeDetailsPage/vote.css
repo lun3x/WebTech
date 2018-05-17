@@ -29,7 +29,7 @@
 }
 
   
-.buttons {
+:local(.buttons) {
   margin: 15;
   animation-name: rubberBand;
   animation-duration: 5s;

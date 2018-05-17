@@ -204,7 +204,7 @@ class RecipeDetailsPage extends Component {
                 this.setState({
                     cancellableDownvote: makeCancellable(res.json()),
                 });
-
+                
                 if (!res.ok) {
                     this.setState({ downvoteFail: true });
                 }
