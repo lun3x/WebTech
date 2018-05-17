@@ -136,7 +136,7 @@ class SuggestPage extends Component {
         };
 
         return (
-            <div>
+            <div style={{ padding: '1em' }}>
                 <div style={outerStyle} >
                     { ingredientList }
                 </div>

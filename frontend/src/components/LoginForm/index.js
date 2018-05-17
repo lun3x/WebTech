@@ -66,11 +66,23 @@ class LoginForm extends Component {
 
     render() {
         const style = {
-            margin: 15,
+            root: {
+                position: 'relative',
+                height: '100%',
+            },
+            form: {
+                position: 'absolute',
+                top: '50%',
+                left: '50%',
+                transform: 'translate(-50%, -50%)',
+            },
+            button: {
+                margin: 15,
+            },
         };
 
         return (
-            <div>
+            <div style={style.root} >
                 {
                     this.state.registration ?
                         <div>
@@ -84,7 +96,7 @@ class LoginForm extends Component {
                             />
                         </div>
                         :
-                        <form onSubmit={this.handleSubmit}>
+                        <form style={style.form} onSubmit={this.handleSubmit}>
                             <TextField
                                 name="username"
                                 hintText="Enter your username"
@@ -109,14 +121,14 @@ class LoginForm extends Component {
                                 label="Login"
                                 primary
                                 disabled={this.state.username.length === 0 || this.state.password.length === 0}
-                                style={style}
+                                style={style.button}
                                 onClick={this.handleSubmit}
                             />  
                             <RaisedButton
                                 label="Register"
                                 primary
                                 disabled={this.state.username.length === 0 || this.state.password.length === 0}
-                                style={style}
+                                style={style.button}
                                 onClick={(e) => { this.setState({ registration: true }); }}
                             />
                             <br />

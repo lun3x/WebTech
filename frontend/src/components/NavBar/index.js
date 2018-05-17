@@ -34,8 +34,13 @@ class NavBar extends Component {
     render() {
         const style = {
             navBar: {
-                margin: 'auto',
-                paddingTop: 80,
+                //margin: 'auto',
+                //position: 'absolute',
+                bottom: 0,
+                textAlign: 'center',
+                width: '100%', // fill up ContainerPage
+                paddingBottom: '5px',
+                alignSelf: 'flex-end',
             }
         };
 

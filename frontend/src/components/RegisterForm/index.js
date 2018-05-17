@@ -105,11 +105,19 @@ class RegisterForm extends Component {
 
     render() {
         const style = {
-            margin: 15,
+            button: {
+                margin: 15,
+            },
+            form: {
+                position: 'absolute',
+                top: '50%',
+                left: '50%',
+                transform: 'translate(-50%, -50%)',
+            },
         };
 
         return (
-            <div>
+            <div style={style.form} >
                 <TextField
                     name="username"
                     hintText="Enter your username"
@@ -153,14 +161,14 @@ class RegisterForm extends Component {
                 <RaisedButton
                     label="Back"
                     primary
-                    style={style}
+                    style={style.button}
                     onClick={this.props.doneRegister}
                 />
                 <RaisedButton
                     label="Register"
                     primary
                     disabled={!this.validateForm()}
-                    style={style}
+                    style={style.button}
                     onClick={this.handleSubmit}
                 />
 

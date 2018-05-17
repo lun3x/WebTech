@@ -118,14 +118,20 @@ class ContainerPage extends Component {
         }
 
         const pageStyle = {
-            width: '100%',
+            //width: '100%',
             height: '100%',
             minHeight: '200',
+            position: 'relative',
+            overflow: 'auto',
+            display: 'flex',
+            flexDirection: 'column',
+            justifyContent: 'space-between',
         };
 
         return (
             <div style={pageStyle} >
-                { page }
+
+                <div style={{ overflow: 'auto' }} >{ page }</div>
 
                 <NavBar selectPageHandler={this.selectPage} />
 

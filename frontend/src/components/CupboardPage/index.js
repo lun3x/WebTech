@@ -82,8 +82,16 @@ class CupboardPage extends Component {
     };
 
     render() {
+        const styles = {
+            top: {
+                height: '100%',
+                padding: '1em',
+            },
+        };
+
+
         return (
-            <div>
+            <div style={styles.top} >
                 {
                     /* eslint-disable indent */
                     this.state.userIngredientsLoadingError
