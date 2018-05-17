@@ -71,9 +71,11 @@ class SettingsPage extends Component {
                         <React.Fragment>
                             <ChangePasswordForm
                                 onClose={this.handlePassClose}
+                                logout={this.props.logout}
                             />
                             <ChangeUsernameForm
                                 onClose={this.handleUserClose}
+                                logout={this.props.logout}
                             />
                         </React.Fragment>
                         :

@@ -5,6 +5,7 @@ import ContainerPage from '../ContainerPage';
 import LoginForm from '../LoginForm';
 import ApiErrorSnackbar from '../ApiErrorSnackbar';
 import makeCancellable from '../../promiseWrapper';
+import makeCancellableVal from '../../valueWrapper';
 
 class LandingPage extends Component {
     constructor(props) {
@@ -36,27 +37,28 @@ class LandingPage extends Component {
         let cancellable = makeCancellable(fetch(`/auth/isAuthenticated`, {
             method: 'GET',
             credentials: 'same-origin'
-        })
-            .then((res) => {
-                this.setState({ authenticationIsLoading: false });
-                if (!res.ok) {
-                    throw new Error('Bad status from server');
-                }
-                return res.json();
-            })
-            .then((json) => {
-                this.setState({ authenticated: json.authenticated });
-            })
-            .catch((err) => {
-                this.setState({ authenticationLoadingError: true });
-            }));
+        }));
 
-        cancellable.promise
-            .then(() => {
-                console.log('Got authentication state.');
+        cancellable
+            .then((res) => {
+                //== State-setting calls ==//
+                this.setState({ authenticationIsLoading: false });
+
+                if (!res.ok) {
+                    this.setState({ authenticationLoadingError: true });
+                }
+                else {
+                    this.setState({ authenticated: res.json.authenticated });
+                }
+
+                // Reset cancellable
                 this.setState({ cancellableAuth: undefined });
             })
-            .catch((err) => console.log('Component unmounted.'));
+            .then(() => {
+                //== Confirmation ==//
+                console.log('@LandingPage: Got authentication state.');
+            })
+            .catch((err) => console.log('@LandingPage: Component unmounted.'));
 
         return cancellable;
     }
@@ -65,22 +67,26 @@ class LandingPage extends Component {
         let cancellable = makeCancellable(fetch('/auth/logout', {
             method: 'GET',
             credentials: 'same-origin'
-        })
+        }));
+
+        cancellable
             .then(res => {
+                //== State-setting calls ==//
                 this.setState({ authenticationIsLoading: false });
+
                 if (!res.ok) {
-                    throw new Error('Failed to logout.');
+                    this.setState({ authenticationLoadingError: true });
                 }
-                this.setState({ authenticated: false });
-            })
-            .catch((err) => {
-                this.setState({ authenticationLoadingError: true });
-            }));
-        
-        cancellable.promise
-            .then(() => {
-                console.log('@LandingPage: Logged user out.');
+                else {
+                    this.setState({ authenticated: false });
+                }
+
+                // Reset cancellable
                 this.setState({ cancellableLogout: undefined });
+            })
+            .then(() => {
+                //== Confirmation ==//
+                console.log('@LandingPage: Logged user out.');
             })
             .catch((err) => console.log('@LandingPage: Component unmounted.'));
 

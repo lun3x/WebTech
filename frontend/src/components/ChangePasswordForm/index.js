@@ -9,6 +9,7 @@ import FindRecipesButton from '../FindRecipesButton';
 import IngredientList from '../IngredientsList';
 import ApiErrorSnackbar from '../ApiErrorSnackbar';
 import makeCancellable from '../../promiseWrapper';
+import makeCancellableVal from '../../valueWrapper';
 
 function isValid(text) {
     return /^[\x00-\xFF]*$/.test(text);
@@ -16,7 +17,8 @@ function isValid(text) {
 
 class ChangePasswordForm extends Component {
     static propTypes = {
-        onClose: PropTypes.func.isRequired
+        onClose: PropTypes.func.isRequired,
+        logout: PropTypes.func.isRequired
     };
 
     constructor(props) {
@@ -25,17 +27,18 @@ class ChangePasswordForm extends Component {
             password: '',
             password2: '',
             changeFailed: false,
+            charsNotAllowed: false,
 
-            cancellableFetch: undefined
+            cancellable: undefined
         };
     }
 
     componentWillUnmount = () => {
-        if (this.state.cancellableFetch) this.state.cancellableFetch.cancel();
+        if (this.state.cancellable) this.state.cancellable.cancel();
     }
 
     getCancellableFetch = () => {
-        let cancellable = makeCancellable(fetch(`/auth/changePassword`, {
+        let cancellable =  makeCancellable(fetch(`/auth/changePassword`, {
             method: 'PUT',
             headers: {
                 Accept: 'application/json',
@@ -44,31 +47,41 @@ class ChangePasswordForm extends Component {
             body: JSON.stringify({
                 password: this.state.password
             })
-        }).then((res) => {
-            // this.setState({ changeLoading: false });
-            if (res.status === 200) {
-                // Successful registration
-                this.props.onClose(true);
-            }
-            else if (res.status === 422) {
-                throw new Error('Character(s) not allowed in password!');
-            }
-            else {
-                throw new Error('Server error');
-            }
-        }).catch((err) => {
-            this.setState({ changeFailed: true });
         }));
 
-        cancellable.promise
+        cancellable
+            .then(res => {
+                // Save intermediate cancellable
+                this.setState({ cancellable: makeCancellableVal(res) });
+                
+                //== Self-unmounting calls ==//
+                if (res.status === 401) {
+                    console.log('@ChangePasswordForm: logging out');
+                    this.props.logout(); 
+                }
+                else if (res.ok) {
+                    this.props.onClose(true);
+                }
+                return this.state.cancellable;
+            })
+            .then((res) => {
+                //== State-setting calls ==//
+                if (res.status === 422) {
+                    this.setState({ charsNotAllowed: true });
+                }
+                else {
+                    this.setState({ changeFailed: true });
+                }
+
+                // Reset cancellable
+                this.setState({ cancellable: undefined });
+            })
             .then(() => {
+                //== Confirmation ==//
                 console.log('@ChangePasswordForm: Changed password.');
-                this.setState({
-                    cancellableFetch: undefined
-                });
             })
             .catch((err) => console.log('@ChangePasswordForm: Component unmounted.'));
-        
+
         return cancellable;
     }
 
@@ -76,7 +89,8 @@ class ChangePasswordForm extends Component {
         const target = event.target;
 
         this.setState({
-            [target.name]: target.value
+            [target.name]: target.value,
+            charsNotAllowed: false
         });
     }
 
@@ -88,7 +102,7 @@ class ChangePasswordForm extends Component {
 
         this.setState({
             changeFailed: false,
-            cancellableFetch: this.getCancellableFetch()
+            cancellable: this.getCancellableFetch()
         });
 
         event.preventDefault();
@@ -103,7 +117,7 @@ class ChangePasswordForm extends Component {
     }
 
     passwordErrorText = () => {
-        if (!isValid(this.state.password)) return 'Character(s) not allowed';
+        if (!isValid(this.state.password) || this.state.charsNotAllowed) return 'Character(s) not allowed';
         return '';
     }
 

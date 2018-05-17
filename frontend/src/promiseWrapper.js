@@ -10,6 +10,9 @@ const makeCancellable = (promise) => {
   
     return {
         promise: wrappedPromise,
+        then(resolve, reject) {
+            return wrappedPromise.then(resolve, reject);
+        },
         cancel() {
             hasCancelled = true;
         }
