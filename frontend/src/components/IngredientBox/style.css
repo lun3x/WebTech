@@ -1,0 +1,30 @@
+:local(.ingredient_box) {
+    height: 120px;
+    width: 120px;
+    text-align: center;
+    line-height: 1em;
+    vertical-align: top;
+    flex: 0 1 auto;
+    overflow: visible;
+    padding-left: 5px;
+    padding-right: 5px;
+    padding-bottom: 2px;
+    margin: 10px;
+    position: relative;
+}
+
+:local(.remove_button) {
+    height: 10px;
+    width: 10px;
+    position: absolute;
+    top: -20px;
+    left: -20px;
+}
+
+:local(.ingredient_img) {
+    height: 70%;
+    width: 70%;
+    overflow: hidden;
+    text-align: center;
+    padding: 5%;
+}

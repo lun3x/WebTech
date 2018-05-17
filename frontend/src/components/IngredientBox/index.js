@@ -4,6 +4,8 @@ import CloseIcon from 'material-ui/svg-icons/navigation/cancel';
 import IconButton from 'material-ui/IconButton';
 import PropTypes from 'prop-types';
 import ApiErrorSnackbar from '../ApiErrorSnackbar';
+import style from './style.css';
+import carrotsPng from './carrots.png';
 
 class IngredientBox extends Component {
 
@@ -18,9 +20,18 @@ class IngredientBox extends Component {
         this.state = {
             removeFoodAwaitingResponse: false,
             removeFoodError: false,
+            mouseHover: false,
         };
 
         this.handleClick = this.handleClick.bind(this);
+    }
+
+    onMouseEnter = () => {
+        this.setState({ mouseHover: true });
+    }
+
+    onMouseLeave = () => {
+        this.setState({ mouseHover: false });
     }
 
     handleClick = (event) => {
@@ -39,35 +50,46 @@ class IngredientBox extends Component {
     }
 
     render() {
-        const boxStyle = {
-            height: 80,
-            width: 80,
-            textAlign: 'center',
-            flex: '0 1 auto',
-            overflow: 'hidden',
-            paddingLeft: 5,
-            paddingRight: 5,
-            margin: 2,
+        const paperStyle = {
+            borderRadius: '10px', // we have to override material-ui inline
         };
 
-        const removeButtonStyle = {
-            height: 10,
-            width: 10,
+        const iconStyle = {
+            position: 'absolute', // we have to override material-ui inline
         };
+
+        let iconButton = null;
+        if (this.state.mouseHover) {
+            iconButton = (
+                <IconButton
+                    className={style.remove_button} 
+                    tooltip="Remove"
+                    onClick={this.handleClick}
+                    disabled={this.state.removeFoodAwaitingResponse}
+                    style={iconStyle}
+                    tooltipPosition="bottom-right"
+                    touch
+                >
+                    <CloseIcon />
+                </IconButton>
+            );
+        }
 
         return (
             <div>
-                <Paper style={boxStyle} zDepth={3} >
+                <Paper
+                    className={style.ingredient_box}
+                    style={paperStyle}
+                    zDepth={2}
+                    rounded
+                    onMouseEnter={this.onMouseEnter}
+                    onMouseLeave={this.onMouseLeave}
+                >
+                    { iconButton }
+                    <br />
                     {this.props.ingredientName}
                     <br />
-                    <IconButton
-                        style={removeButtonStyle} 
-                        tooltip="Remove"
-                        onClick={this.handleClick}
-                        disabled={this.state.removeFoodAwaitingResponse}
-                    >
-                        <CloseIcon />
-                    </IconButton>
+                    <img src={carrotsPng} alt={this.props.ingredientName} className={style.ingredient_img} />
                 </Paper>
                 
                 <ApiErrorSnackbar

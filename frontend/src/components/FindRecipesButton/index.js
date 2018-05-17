@@ -14,6 +14,7 @@ class FindRecipesButton extends Component {
         const label = 'Find Recipes';
         const style = {
             marginTop: 20,
+            marginLeft: 10,
         };
 
         return (
