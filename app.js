@@ -115,8 +115,23 @@ function banUpperCase(root, folder) {
     }
 }
 
+function enforceHTTPS(req, res, next) {
+    if (req.secure) {
+        next();
+    }
+    else {
+        console.log(req.headers.host.split(':'));
+        let urlArray = req.headers.host.split(':');
+        res.redirect('https://' + urlArray[0] + ':8081' + req.url);
+    }
+}
+
 
 //=== Middleware Chain ===//
+
+if (app.get('env') === 'development') {
+    app.use(enforceHTTPS);
+}
 
 // helmet (set common headers to avoid security vulnerabilites)
 app.use(helmet());

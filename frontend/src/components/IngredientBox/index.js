@@ -23,6 +23,7 @@ import chicken from './ingredients/chicken.svg';
 import lemon from './ingredients/lemon.svg';
 import lime from './ingredients/lime.svg';
 import milk from './ingredients/milk.svg';
+import banana from './ingredients/banana.svg';
 
 class IngredientBox extends Component {
 
@@ -41,7 +42,7 @@ class IngredientBox extends Component {
             removeFoodError: false,
             mouseHover: false,
             cancellablePromise: undefined,
-            images: [ tomato, cheese, potato, onion, pepper, flour, chocolate, kidneybeans, tuna, pasta, steak, chicken, lemon, lime, milk ]
+            images: [ tomato, cheese, potato, onion, pepper, flour, chocolate, kidneybeans, tuna, pasta, steak, chicken, lemon, lime, milk, banana ]
         };
     }
 

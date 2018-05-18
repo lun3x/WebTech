@@ -1,6 +1,17 @@
 const http = require('http');
+const https = require('https');
+const fs = require('fs');
 const express = require('express');
+const path = require('path');
 const app = require('../app');
+
+const key = fs.readFileSync(path.resolve(__dirname, './keys/private.key'));
+const cert = fs.readFileSync(path.resolve(__dirname, './keys/domain.crt'));
+
+const options = {
+    key,
+    cert,
+};
 
 /**
  * Simple logger function.
@@ -29,13 +40,16 @@ function normalizePort(val) {
 /**
  * Get port from environment and store in Express.
  */
-const port = normalizePort(process.env.PORT || 8080);
+const port = normalizePort(process.env.PORT || 8081);
 app.set('port', port);
 
+http.createServer(app).listen(8080);
+
 /**
- * Create HTTP server.
+ * Create HTTPS server.
  */
-const server = http.createServer(app);
+
+const server = https.createServer(options, app);
 let availablePort = port;
 
 /**
@@ -78,7 +92,7 @@ function onError(error) {
 }
 
 /**
- * Event listener for HTTP server "listening" event.
+ * Event listener for HTTPS server "listening" event.
  */
 function onListening() {
     const addr = server.address();
@@ -88,7 +102,7 @@ function onListening() {
         typeof addr === 'string' ? addr : addr.port
     }`;
     log(`Server is listening on ${bind}`);
-    log(`Visit: http://localhost:${addr.port}`);
+    log(`Visit: https://localhost:${addr.port}`);
 }
 
 /**
