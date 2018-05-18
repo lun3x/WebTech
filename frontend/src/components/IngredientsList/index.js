@@ -88,6 +88,7 @@ class IngredientList extends Component {
         const outerStyle = {
             display: 'flex',
             flexFlow: 'row wrap',
+            justifyContent: 'center',
         };
 
         return (
