@@ -1,14 +1,13 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import { GridList, GridTile } from 'material-ui/GridList';
 import RecipeDetailsPage from '../RecipeDetailsPage';
 import makeCancellable from '../../promiseWrapper';
 import makeCancellableVal from '../../valueWrapper';
+import ImageGrid from '../ImageGrid';
 
 class RecipesPage extends Component {
 
     static propTypes = {
-        // goBack: PropTypes.func.isRequired, // TODO: goBack handler (but we might not need it here)
         ingredientIds: PropTypes.arrayOf(PropTypes.number).isRequired,
         logout: PropTypes.func.isRequired
     }
@@ -146,13 +145,13 @@ class RecipesPage extends Component {
     render() {
         const styles = {
             root: {
-                display: 'flex',
-                flexWrap: 'wrap',
-                justifyContent: 'space-around',
+                height: '100%',
+                padding: '1em',
+
             },
             gridList: {
-                width: 500,
-                height: 450,
+                width: '100%',
+                height: '100%',
                 overflowY: 'auto',
             },
             gridTile: {
@@ -182,35 +181,7 @@ class RecipesPage extends Component {
         ) : this.state.recipes.length === 0 ? (
             <p>No recipes found!</p>
         ) : (
-            <div style={styles.root} >
-                <GridList
-                    cols={2}
-                    cellHeight={200}
-                    padding={1}
-                    style={styles.gridList}
-                >
-                    {this.state.recipes.map((recipe, index) => (
-                        <GridTile
-                            key={recipe.id}
-                            title={recipe.name}
-                            onClick={() => this.loadRecipePage(recipe)}
-                            //actionIcon={<IconButton><StarBorder color="white" /></IconButton>}TODO:actionIcon etc
-                            //actionPosition="left"
-                            titleStyle={styles.titleStyle}
-                            subtitleStyle={styles.titleStyle}
-                            style={styles.gridTile}
-                            titlePosition="bottom"
-                            // eslint-disable-next-line max-len
-                            titleBackground="linear-gradient(to top, rgba(0,0,0,0.7) 0%,rgba(0,0,0,0.3) 70%,rgba(0,0,0,0) 100%)"
-                            cols={index === 0 ? 2 : 1}
-                            rows={index === 0 ? 2 : 1}
-                            // subtitle={`You have ${recipe.ingredients.join(', ')}`}
-                        >
-                            <img src={recipe.img_src} alt={recipe.name} />
-                        </GridTile>
-                    ))}
-                </GridList>
-            </div>
+            <ImageGrid recipes={this.state.recipes} loadRecipePage={this.loadRecipePage} />
         );
         
         return (

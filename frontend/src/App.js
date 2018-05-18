@@ -10,8 +10,11 @@ import LandingPage from './components/LandingPage';
 injectTapEventPlugin();
 
 const App = () => (
-    <MuiThemeProvider style={{ height: '100%', width: '100%' }}>
-        <LandingPage style={{ height: '100%', width: '65%', margin: 'auto' }} />
+    <MuiThemeProvider style={{ height: '100%' }} >
+        <LandingPage style={{
+            height: '100%', margin: 'auto', fontSize: '100%',
+        }}
+        />
     </MuiThemeProvider>
 );
 

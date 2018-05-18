@@ -105,12 +105,39 @@ class LoginForm extends Component {
 
     render() {
         const style = {
-            margin: 15,
+            container: {
+            },
+            img: {
+                maxHeight: '50%',
+                width: '50%',
+                display: 'block',
+                marginBottom: '3%',
+                marginLeft: 'auto',
+                marginRight: 'auto',
+                // position: 'absolute',
+                // top: '50%',
+                // left: '50%',
+                // transform: 'translate(-50%, -50%)',
+            },
+            root: {
+                position: 'relative',
+                height: '100%',
+                display: 'block',
+            },
+            form: {
+                position: 'absolute',
+                top: '50%',
+                left: '50%',
+                transform: 'translate(-50%, -50%)',
+                textAlign: 'center',
+            },
+            button: {
+                margin: 15,
+            },
         };
 
         return (
-            <React.Fragment>
-                <img src={logo} alt="Logo" />
+            <div style={style.root} >
                 {
                     this.state.registration ?
                         <div>
@@ -124,7 +151,8 @@ class LoginForm extends Component {
                             />
                         </div>
                         :
-                        <form onSubmit={this.handleSubmit}>
+                        <form style={style.form} onSubmit={this.handleSubmit}>
+                            <img src={logo} alt="Logo" style={style.img} />
                             <TextField
                                 name="username"
                                 hintText="Enter your username"
@@ -145,20 +173,22 @@ class LoginForm extends Component {
                                 onChange={this.handleChange}
                             />
                             <br />
-                            <RaisedButton
-                                label="Login"
-                                primary
-                                disabled={this.state.username.length === 0 || this.state.password.length === 0}
-                                style={style}
-                                onClick={this.handleSubmit}
-                            />  
-                            <RaisedButton
-                                label="Register"
-                                primary
-                                disabled={this.state.username.length === 0 || this.state.password.length === 0}
-                                style={style}
-                                onClick={(e) => { this.setState({ registration: true }); }}
-                            />
+                            <div style={{ margin: 'auto' }} >
+                                <RaisedButton
+                                    label="Login"
+                                    primary
+                                    disabled={this.state.username.length === 0 || this.state.password.length === 0}
+                                    style={style.button}
+                                    onClick={this.handleSubmit}
+                                />  
+                                <RaisedButton
+                                    label="Register"
+                                    primary
+                                    disabled={this.state.username.length === 0 || this.state.password.length === 0}
+                                    style={style.button}
+                                    onClick={(e) => { this.setState({ registration: true }); }}
+                                />
+                            </div>
                             <br />
                             {
                                 this.state.loginLoading ?
@@ -173,7 +203,7 @@ class LoginForm extends Component {
                     open={this.state.loginError}
                     message="Error connecting to server!"
                 />
-            </React.Fragment>
+            </div>
         );
     }
 }

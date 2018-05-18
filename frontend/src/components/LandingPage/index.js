@@ -116,9 +116,8 @@ class LandingPage extends Component {
     render() {
         const style = {
             height: '100%',
-            width: '65%',
             textAlign: 'centre',
-            padding: 10,
+            padding: '0px',
             margin: 'auto'
         };
 

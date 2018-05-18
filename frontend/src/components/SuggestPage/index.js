@@ -152,7 +152,15 @@ class SuggestPage extends Component {
         let i = -1;
         const ingredientList = this.state.recipeIngredients.map((x) => {
             i++;
-            return <IngredientBox key={i} ingredientName={x.name} reload={this.deleteIngredientFromRecipe} ingredientID={x.id} logout={this.props.logout} />;
+            return (
+                <IngredientBox
+                    key={i}
+                    ingredientName={x.name}
+                    reload={this.deleteIngredientFromRecipe}
+                    ingredientID={x.id}
+                    logout={this.props.logout}
+                />
+            );
         });
 
         // add a IngredientPlusBox at the end
@@ -179,7 +187,7 @@ class SuggestPage extends Component {
         };
 
         return (
-            <div>
+            <div style={{ padding: '1em' }}>
                 <div style={outerStyle} >
                     { ingredientList }
                 </div>

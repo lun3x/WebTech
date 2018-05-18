@@ -97,8 +97,16 @@ class CupboardPage extends Component {
     };
 
     render() {
+        const styles = {
+            top: {
+                height: '100%',
+                padding: '1em',
+            },
+        };
+
+
         return (
-            <React.Fragment>
+            <div style={styles.top} >
                 {
                     /* eslint-disable indent */
                     this.state.userIngredientsLoadingError
@@ -125,7 +133,7 @@ class CupboardPage extends Component {
                     open={this.state.userIngredientsLoadingError}
                     message={'Error loading ingredients in your cupboard'}
                 />
-            </React.Fragment>
+            </div>
         );
     }
 }
