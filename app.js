@@ -14,6 +14,8 @@ const bodyParser = require('body-parser');
 const fs = require('fs');
 const mysql = require('mysql');
 const logger = require('morgan');
+const compression = require('compression');
+const helmet = require('helmet');
 
 //=== Setup Db Connections ===//
 const redisClient = redis.createClient();
@@ -115,6 +117,9 @@ function banUpperCase(root, folder) {
 
 //=== Middleware Chain ===//
 
+// helmet (set common headers to avoid security vulnerabilites)
+app.use(helmet());
+
 // logger
 app.use(logger('combined'));
 
@@ -141,6 +146,9 @@ app.use(session({
         client: redisClient
     })
 }));
+
+// compress responses, if supported by client
+app.use(compression());
 
 // user login
 app.use('/auth', auth);
