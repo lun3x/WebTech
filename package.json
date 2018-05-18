@@ -1,17 +1,24 @@
 {
-  "name": "mycupboard",
+  "name": "MyCupboard",
   "version": "1.0.0",
-  "description": "WebTech coursework",
+  "engines": {
+    "node": "9.7.1"
+  },
+  "private": true,
+  "description": "WebTech coursework. MyCupboard is the best app ever.",
   "main": "server.js",
   "dependencies": {
     "bcrypt": "^1.0.3",
     "body-parser": "^1.18.2",
+    "compression": "^1.7.2",
     "connect-redis": "^3.3.3",
     "db-migrate": "^0.10.7",
     "db-migrate-mysql": "^1.1.10",
     "express": "^4.16.3",
     "express-handlebars": "^3.0.0",
     "express-session": "^1.15.6",
+    "helmet": "^3.12.1",
+    "morgan": "^1.9.0",
     "mysql": "^2.15.0",
     "npm": "^5.8.0",
     "redis": "^2.8.0",
@@ -27,7 +34,7 @@
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node server.js"
+    "start": "node ./server/index.js"
   },
   "author": "",
   "license": "ISC"
