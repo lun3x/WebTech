@@ -12,6 +12,7 @@ class ImageGrid extends Component {
             method: PropTypes.string.isRequired,
             img_src: PropTypes.string.isRequired,
         })).isRequired,
+        loadRecipePage: PropTypes.func.isRequired,
     }
 
     render() {
@@ -24,11 +25,24 @@ class ImageGrid extends Component {
 
         // map recipes to an image to display
         let recipe_imgs = recipes.map((recipe) => (
-            <img
+            <div
                 key={recipe.id}
-                alt={recipe.name}
-                src={recipe.img_src}
-            />
+                tabIndex={recipe.id}
+                className={style.container}
+                onClick={() => this.props.loadRecipePage(recipe)}
+                onKeyPress={() => this.props.loadRecipePage(recipe)}
+                role="button"
+            >
+                <img
+                    alt={recipe.name}
+                    src={recipe.img_src}
+                />
+                <div className={style.overlay} >
+                    <div className={style.overlay_text} >
+                        { recipe.name }
+                    </div>
+                </div>
+            </div>
         ));
 
         return (

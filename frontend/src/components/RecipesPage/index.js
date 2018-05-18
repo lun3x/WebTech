@@ -163,7 +163,7 @@ class RecipesPage extends Component {
             //         ))}
             //     </GridList>
             // </div>
-            <ImageGrid recipes={this.state.recipes} />
+            <ImageGrid recipes={this.state.recipes} loadRecipePage={this.loadRecipePage} />
         );
         
         return (
