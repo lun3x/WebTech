@@ -13,13 +13,14 @@ const RedisStore = require('connect-redis')(session);
 const bodyParser = require('body-parser');
 const fs = require('fs');
 const mysql = require('mysql');
+const logger = require('morgan');
 
 //=== Setup Db Connections ===//
 const redisClient = redis.createClient();
 
-//=== Banned URLs ===//
+//=== Ban uppercase letters in static files ===//
 let banned = [];
-banUpperCase('./public/', ''); // eslint-disable-line no-use-before-define
+banUpperCase('./static/', ''); // eslint-disable-line no-use-before-define
 
 
 //=== db ===//
@@ -37,13 +38,11 @@ let ajax = require('./routes/ajax');
 
 // Error handler
 function error(err, req, res, next) {
-    console.log(err);
-    res.status(500).send('Something broke!');
-}
-
-// Example middleware, just inserts a new field into the request with a random num
-function chance(req, res, next) {
-    req.chance = Math.random();
+    res.status(err.status || 500);
+    res.render('error', {
+        message: err.message,
+        error: app.get('env') === 'development' ? err : {},
+    });
     next();
 }
 
@@ -54,7 +53,9 @@ function lower(req, res, next) {
 }
 
 // Forbid access to the URLs in the banned list.
+// And enforce URLs contain protocol at the start
 function ban(req, res, next) {
+    // ensure we don't serve banned resource
     for (let i = 0; i < banned.length; i++) {
         let b = banned[i];
         if (req.url.startsWith(b)) {
@@ -62,6 +63,13 @@ function ban(req, res, next) {
             return;
         }
     }
+
+    // ensure valid protocol
+    if (!(req.protocol.toString().startsWith('http') || req.protocol.toString().startsWith('https'))) {
+        res.status(400).send('Must include protocol with URL.');
+        return;
+    }
+
     next();
 }
 
@@ -94,7 +102,10 @@ function banUpperCase(root, folder) {
     for (let i = 0; i < names.length; i++) {
         let name = names[i];
         let file = folder + '/' + name;
-        if (name != name.toLowerCase()) banned.push(file.toLowerCase());
+        if (name != name.toLowerCase()) {
+            banned.push(file.toLowerCase());
+            process.stdout.write(`banned file. ${name}\n`);
+        }
         let mode = fs.statSync(root + file).mode;
         if ((mode & folderBit) == 0) continue;
         banUpperCase(root, file);
@@ -103,6 +114,9 @@ function banUpperCase(root, folder) {
 
 
 //=== Middleware Chain ===//
+
+// logger
+app.use(logger('combined'));
 
 // ensure everything is lowercase
 app.use(lower);
@@ -134,14 +148,7 @@ app.use('/api', api);
 
 // serve frontend
 let options = { setHeaders: deliverXHTML };
-app.use(express.static(path.join(__dirname, 'frontend/dist'), options));
-
-// a middleware that doesn't do much (we made it for testing)
-app.use(chance);
-
-// other handlers
-app.use('/test', test);
-app.use('/ajax', ajax);
+app.use(express.static(path.join(__dirname, 'frontend/dist'), options)); 
 
 // home page
 app.use('/', (req, res) => {
@@ -158,6 +165,5 @@ app.use((req, res, next) => {
 // handle errors
 app.use(error);
 
-//=== Run the app ===//
-app.listen(8080, 'localhost');
-console.log('Visit http://localhost:8080/');
+//=== Export the set up app ===//
+module.exports = app;
