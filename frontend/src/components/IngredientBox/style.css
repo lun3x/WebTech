@@ -1,0 +1,68 @@
+/* flip in animation */
+
+@keyframes flipInX {
+    from {
+        transform: perspective(400px) rotate3d(1, 0, 0, 90deg);
+        animation-timing-function: ease-in;
+        opacity: 0;
+    }
+  
+    40% {
+        transform: perspective(400px) rotate3d(1, 0, 0, -20deg);
+        animation-timing-function: ease-in;
+    }
+  
+    60% {
+        transform: perspective(400px) rotate3d(1, 0, 0, 10deg);
+        opacity: 1;
+    }
+  
+    80% {
+        transform: perspective(400px) rotate3d(1, 0, 0, -5deg);
+    }
+  
+    to {
+        transform: perspective(400px);
+    }
+}
+
+
+
+/* ingredient box's in flex box, with images, and remove button on hover */
+
+:local(.ingredient_box) {
+    height: 120px;
+    width: 120px;
+    text-align: center;
+    line-height: 1em;
+    vertical-align: top;
+    flex: 0 1 auto;
+    overflow: visible;
+    padding-left: 5px;
+    padding-right: 5px;
+    padding-bottom: 2px;
+    margin: 10px;
+    position: relative;
+
+    /* animate */
+    backface-visibility: visible !important;
+    animation-name: flipInX;
+    animation-duration: 1s;
+}
+
+:local(.remove_button) {
+    height: 10px;
+    width: 10px;
+    position: absolute;
+    top: -20px;
+    left: -20px;
+}
+
+:local(.ingredient_img) {
+    height: 70%;
+    width: 70%;
+    overflow: hidden;
+    text-align: center;
+    padding: 5%;
+}
+

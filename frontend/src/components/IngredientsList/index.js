@@ -16,7 +16,8 @@ class IngredientList extends Component {
     static propTypes = {
         userIngredients: PropTypes.arrayOf(PropTypes.shape({
             id: PropTypes.number,
-            name: PropTypes.string
+            name: PropTypes.string,
+            ingredient_id: PropTypes.number
         })),
         allIngredients:  PropTypes.arrayOf(PropTypes.shape({
             id: PropTypes.number,
@@ -113,7 +114,16 @@ class IngredientList extends Component {
         let i = -1;
         const ingredientList = this.props.userIngredients.map((x) => {
             i++;
-            return <IngredientBox key={i} ingredientName={x.name} reload={this.resetLoadState} ingredientID={x.id} logout={this.props.logout} />;
+            return (
+                <IngredientBox
+                    key={i}
+                    ingredientName={x.name}
+                    reload={this.resetLoadState}
+                    ingredientID={x.ingredient_id}
+                    cupboardIngredientID={x.id}
+                    logout={this.props.logout}
+                />
+            );
         });
 
         // add a IngredientPlusBox at the end
@@ -133,6 +143,7 @@ class IngredientList extends Component {
         const outerStyle = {
             display: 'flex',
             flexFlow: 'row wrap',
+            justifyContent: 'center',
         };
 
         return (

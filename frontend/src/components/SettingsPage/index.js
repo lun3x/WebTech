@@ -61,7 +61,11 @@ class SettingsPage extends Component {
                             :
                             <ListItem
                                 primaryText={'Change username or password'}
-                                onClick={e => this.setState({ changeOpen: true, changeUserSuccess: false, changePassSuccess: false })}
+                                onClick={e => this.setState({
+                                    changeOpen: true,
+                                    changeUserSuccess: false,
+                                    changePassSuccess: false
+                                })}
                             />
                     }
                 </List>

@@ -13,7 +13,14 @@ class FindRecipesButton extends Component {
     render() {
         const label = 'Find Recipes';
         const style = {
-            marginTop: 20,
+            //marginTop: 20,
+            //marginLeft: 10,
+            marginLeft: 'auto',
+            marginRight: 'auto',
+            marginTop: 30,
+            display: 'block',
+            width: '30%',
+            minWidth: '15em',
         };
 
         return (

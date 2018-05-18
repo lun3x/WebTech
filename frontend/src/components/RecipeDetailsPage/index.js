@@ -4,13 +4,10 @@ import { Card, CardActions, CardHeader, CardMedia, CardTitle, CardText } from 'm
 import Avatar from 'material-ui/Avatar';
 import NavigationArrowBack from 'material-ui/svg-icons/navigation/arrow-back';
 import { RaisedButton } from 'material-ui';
-import UpvoteButton from '../UpvoteButton';
-import DownvoteButton from '../DownvoteButton';
-import voteStyle from './vote.css';
 import makeCancellable from '../../promiseWrapper';
 import ApiErrorSnackbar from '../ApiErrorSnackbar';
 import makeCancellableVal from '../../valueWrapper';
-
+import RecipeVoteButtons from '../RecipeVoteButtons';
 
 class RecipeDetailsPage extends Component {
 
@@ -260,69 +257,56 @@ class RecipeDetailsPage extends Component {
             },
             buttons: {
                 margin: 15
-            }
+            },
         };
 
         return (
             <React.Fragment>
-                <Card>
-                    <CardHeader
-                        title={<span><b>Go back</b></span>}
-                        avatar={<Avatar
-                            icon={<NavigationArrowBack />}
-                            onClick={this.props.goBack}
-                            style={styles.header.avatar}
-                        />}
-                    />
-                    <CardMedia
-                        overlay={<CardTitle title={this.props.recipe.name} /*subtitle="Overlay subtitle"*/ />}
-                    >
-                        <img src={this.props.recipe.img_src} alt="failed to load" /*TODO: change to actual image*/ /> 
-                    </CardMedia>
-                    <CardActions>
-                        <RaisedButton
-                            label={this.state.votes}
-                            style={styles.buttons}
-                            disabled
-                        />
-                        <button
-                            onClick={this.handleUpvote}
-                            className={voteStyle.buttons}
-                        >
-                        Upvote
-                        </button>
-                        <button
-                            onClick={this.handleDownvote}
-                            style={voteStyle.disabled}
-                        >
-                        Downvote
-                        </button>
-                    </CardActions>
-                    { /* <CardTitle title="Card title" subtitle="Card subtitle" /> */ }
-                    <CardText>
-                        <div style={styles.body}>
-                            <span> <b>Ingredients</b> </span>
-                            {
-                                this.state.ingredientsAreLoading ?
-                                    <p>Ingredients loading...</p>
-                                    :
-                                    this.state.ingredientsLoadFail ?
-                                        <p>Error loading ingredients.</p>
-                                        :
-                                        <p>{this.state.ingredients.join('\n')}</p>
-                            }
-                            <span> <b>Method</b> </span>
-                            <p>{this.props.recipe.method}</p>
-                        </div>
-                    </CardText>
-                    {this.state.recipeNotFound}
-                </Card>
-
-                <ApiErrorSnackbar
-                    open={this.state.upvoteFail || this.state.downvoteFail}
-                    message={this.state.upvoteFail ? 'Failed to upvote.' : 'Failed to downvote.'}
-                />
-
+                {
+                    this.state.recipeNotFound ? (<p>Recipe not found.</p>) : (
+                        <Card>
+                            <CardHeader
+                                title={<span><b>Go back</b></span>}
+                                avatar={<Avatar
+                                    icon={<NavigationArrowBack />}
+                                    onClick={this.props.goBack}
+                                    style={styles.header.avatar}
+                                />}
+                            />
+                            <CardMedia
+                                overlay={<CardTitle title={this.props.recipe.name} />}
+                            >
+                                <img src={this.props.recipe.img_src} alt="failed to load" /> 
+                            </CardMedia>
+                            <CardActions>
+                                <RecipeVoteButtons
+                                    nvotes={this.state.votes}
+                                    handleUpvote={this.handleUpvote}
+                                    handleDownvote={this.handleDownvote}
+                                    upvoted={this.state.upvoted}
+                                    downvoted={this.state.downvoted}
+                                />
+                            </CardActions>
+                            { /* <CardTitle title="Card title" subtitle="Card subtitle" /> */ }
+                            <CardText>
+                                <div style={styles.body}>
+                                    <span> <b>Ingredients</b> </span>
+                                    {
+                                        this.state.ingredientsAreLoading ?
+                                            <p>Ingredients loading...</p>
+                                            :
+                                            this.state.ingredientsLoadFail ?
+                                                <p>Error loading ingredients.</p>
+                                                :
+                                                <p>{this.state.ingredients.join('\n')}</p>
+                                    }
+                                    <span> <b>Method</b> </span>
+                                    <p>{this.props.recipe.method}</p>
+                                </div>
+                            </CardText>
+                        </Card>
+                    )
+                }
             </React.Fragment>
         );
     }

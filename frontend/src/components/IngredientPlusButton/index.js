@@ -5,6 +5,7 @@ import Paper from 'material-ui/Paper';
 import IconButton from 'material-ui/IconButton';
 import SvgIcon from 'material-ui/SvgIcon';
 import { lightGreenA200, grey400 } from 'material-ui/styles/colors';
+import animation from './style.css';
 
 class IngredientPlusButton extends Component {
 
@@ -17,28 +18,37 @@ class IngredientPlusButton extends Component {
         onClick: PropTypes.func.isRequired,
     };
 
+
+
     render() {
         const style = {
             paper: {
-                height: 80,
-                width: 80,
+                height: 120,
+                width: 120,
                 textAlign: 'center',
                 //flex: '0 1 auto',
                 //overflow: 'hidden', <- hide to allow tooltip
-                paddingLeft: 2,
-                paddingRight: 2,
-                margin: 2,
+                paddingLeft: 10,
+                paddingRight: 10,
+                margin: 10,
+                position: 'relative',
+                borderRadius: '10px',
             },
             iconButton: {
-                position: 'relative'
+                position: 'absolute',
+                top: '50%',
+                left: '50%',
+                transform: 'translate(-50%, -50%)',
+                height: '70%',
+                width: '70%',
             },
             svgIcon: {
-                position: 'absolute',
-                top: '37%',
-                transform: 'translateX(-50%)',
+                // position: 'absolute',
+                // top: '37%',
+                // transform: 'translateX(-50%)',
                 height: '100%',
                 width: '100%',
-                overflow: 'hidden',
+                overflow: 'visible',
             }
         };
 
@@ -56,7 +66,7 @@ class IngredientPlusButton extends Component {
         };
 
         return (
-            <Paper style={style.paper} zDepth={3} >
+            <Paper style={style.paper} className={animation.flipInX} zDepth={2} rounded >
                 <IconButton 
                     {...props.iconButton}
                     style={style.iconButton}

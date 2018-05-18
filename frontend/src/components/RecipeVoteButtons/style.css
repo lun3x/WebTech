@@ -1,0 +1,18 @@
+:local(.vote_count) {
+    display: inline-block;
+    font-size: 2em;
+    margin-left: 1em;
+    margin-right: 1em;
+}
+
+:local(.upvote), :local(.downvote) {
+    display: inline-block;
+    height: 2em;
+    width: 2em;
+    enable-background: new 0 0 444.819 444.819;
+}
+
+:local(.vote_container) {
+    display: inline-block;
+    cursor: pointer;
+}

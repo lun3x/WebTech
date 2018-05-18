@@ -64,6 +64,7 @@ class AddIngredientDialog extends Component {
                     modal={false}
                     open={this.state.open}
                     onRequestClose={this.handleClose}
+                    style={{ borderRadius: 10 }}
                 >
                     Search for an ingredient below.
                     <FindIngredientAutoComplete

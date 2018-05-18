@@ -13,4 +13,5 @@ INSERT INTO Ingredients (name) VALUES
 ('Chicken'),
 ('Lemon'),
 ('Lime'),
-('Milk');
+('Milk'),
+('Banana');

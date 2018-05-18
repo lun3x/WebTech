@@ -4,3 +4,11 @@ body {
     line-height: 2;
 }
 
+html, body, #app, #app>div {
+    height: 100%;
+    overflow: hidden;
+}
+
+* {
+    box-sizing: border-box;
+}
