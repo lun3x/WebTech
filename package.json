@@ -33,7 +33,8 @@
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node ./server/index.js"
+    "start": "node ./server/index.js",
+    "postinstall": "cd frontend && npm install && npm run build"
   },
   "author": "",
   "license": "ISC"

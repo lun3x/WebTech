@@ -1,3 +1,3 @@
-release: cd frontend && npm run build && cd ..
+release: echo "release command (empty right now)"
 web: redis-server /usr/local/etc/redis.conf& npm start
 
