@@ -136,7 +136,7 @@ class RecipeDetailsPage extends Component {
             },
             buttons: {
                 margin: 15
-            }
+            },
         };
 
         return (
@@ -150,9 +150,9 @@ class RecipeDetailsPage extends Component {
                     />}
                 />
                 <CardMedia
-                    overlay={<CardTitle title={this.props.recipe.name} /*subtitle="Overlay subtitle"*/ />}
+                    overlay={<CardTitle title={this.props.recipe.name} />}
                 >
-                    <img src={this.props.recipe.img_src} alt="failed to load" /*TODO: change to actual image*/ /> 
+                    <img src={this.props.recipe.img_src} alt="failed to load" /> 
                 </CardMedia>
                 <CardActions>
                     {/* <RaisedButton
