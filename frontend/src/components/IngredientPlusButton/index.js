@@ -5,6 +5,7 @@ import Paper from 'material-ui/Paper';
 import IconButton from 'material-ui/IconButton';
 import SvgIcon from 'material-ui/SvgIcon';
 import { lightGreenA200, grey400 } from 'material-ui/styles/colors';
+import animation from './style.css';
 
 class IngredientPlusButton extends Component {
 
@@ -16,6 +17,8 @@ class IngredientPlusButton extends Component {
         // allIngredients:  PropTypes.arrayOf(PropTypes.shape({ name: PropTypes.string })),
         onClick: PropTypes.func.isRequired,
     };
+
+
 
     render() {
         const style = {
@@ -63,7 +66,7 @@ class IngredientPlusButton extends Component {
         };
 
         return (
-            <Paper style={style.paper} zDepth={2} rounded >
+            <Paper style={style.paper} className={animation.flipInX} zDepth={2} rounded >
                 <IconButton 
                     {...props.iconButton}
                     style={style.iconButton}
