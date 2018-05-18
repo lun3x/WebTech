@@ -1,6 +1,9 @@
 # Webpack build
 frontend/dist/
 /frontend/dist/*
+/frontend/dist/main.js/
+/frontend/dist/main.css/
+/frontend/dist/index.html/
 site.zip
 
 # Logs
