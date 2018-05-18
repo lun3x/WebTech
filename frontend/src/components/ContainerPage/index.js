@@ -93,7 +93,7 @@ class ContainerPage extends Component {
             page = (
                 <CupboardPage
                     allIngredients={this.state.allIngredients}
-                    gotoFindRecipesPage={() => this.selectPage(2)}
+                    gotoFindRecipesPage={() => this.selectPage(3)}
                     setUserIngredientIds={this.setIngredientIds}
                     logout={this.props.logout}
                 />
@@ -108,18 +108,17 @@ class ContainerPage extends Component {
             break;
         case 2:
             page = (
-                <RecipesPage
-                    goBack={() => this.selectPage(0)}
-                    ingredientIds={this.state.ingredientIds}
+                <SuggestPage
+                    allIngredients={this.state.allIngredients}
                     logout={this.props.logout}
                 />
             );
             break;
         case 3:
             page = (
-                <SuggestPage
-                    allIngredients={this.state.allIngredients}
+                <RecipesPage
                     goBack={() => this.selectPage(0)}
+                    ingredientIds={this.state.ingredientIds}
                     logout={this.props.logout}
                 />
             );
@@ -128,7 +127,7 @@ class ContainerPage extends Component {
             page = (
                 <CupboardPage
                     allIngredients={this.state.allIngredients}
-                    gotoFindRecipesPage={() => this.selectPage(2)}
+                    gotoFindRecipesPage={() => this.selectPage(3)}
                     setUserIngredientIds={this.setIngredientIds}
                     logout={this.props.logout}
                 />

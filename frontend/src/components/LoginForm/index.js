@@ -12,6 +12,7 @@ import ApiErrorSnackbar from '../ApiErrorSnackbar';
 import RegisterForm from '../RegisterForm';
 import makeCancellable from '../../promiseWrapper';
 import makeCancellableVal from '../../valueWrapper';
+import logo from './logo.svg';
 
 class LoginForm extends Component {
     static propTypes = {
@@ -109,6 +110,7 @@ class LoginForm extends Component {
 
         return (
             <React.Fragment>
+                <img src={logo} alt="Logo" />
                 {
                     this.state.registration ?
                         <div>

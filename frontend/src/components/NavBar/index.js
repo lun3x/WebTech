@@ -5,12 +5,14 @@ import PropTypes from 'prop-types';
 import { BottomNavigation, BottomNavigationItem } from 'material-ui/BottomNavigation';
 import ActionHome from 'material-ui/svg-icons/action/home';
 import ActionBuild from 'material-ui/svg-icons/action/build';
+import SvgIcon from 'material-ui/SvgIcon';
 import ApiErrorSnackbar from '../ApiErrorSnackbar';
 import CupboardPage from '../CupboardPage';
 import SettingsPage from '../SettingsPage';
 
 const homeIcon = <ActionHome />;
 const settingsIcon = <ActionBuild />;
+const suggestIcon = <SvgIcon><path d={'M24 10h-10v-10h-4v10h-10v4h10v10h4v-10h10z'} /></SvgIcon>;
 
 class NavBar extends Component {
     
@@ -54,8 +56,8 @@ class NavBar extends Component {
                     />
                     <BottomNavigationItem
                         label={'Suggest Recipes'}
-                        icon={settingsIcon}
-                        onClick={() => this.selectIndex(3)}
+                        icon={suggestIcon}
+                        onClick={() => this.selectIndex(2)}
                     />
                 </BottomNavigation>
             </Paper>           
