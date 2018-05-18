@@ -19,9 +19,7 @@
     "prop-types": "^15.6.1",
     "react": "^16.3.1",
     "react-dom": "^16.3.1",
-    "react-tap-event-plugin": "^3.0.2"
-  },
-  "devDependencies": {
+    "react-tap-event-plugin": "^3.0.2",
     "babel-core": "^6.26.0",
     "babel-eslint": "^8.2.2",
     "babel-loader": "^7.1.4",
@@ -42,6 +40,8 @@
     "webpack": "^4.5.0",
     "webpack-cli": "^2.0.14",
     "webpack-dev-server": "^3.1.1"
+  },
+  "devDependencies": {
   },
   "eslintConfig": {
     "env": {
