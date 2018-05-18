@@ -4,9 +4,10 @@ import { Card, CardActions, CardHeader, CardMedia, CardTitle, CardText } from 'm
 import Avatar from 'material-ui/Avatar';
 import NavigationArrowBack from 'material-ui/svg-icons/navigation/arrow-back';
 import { RaisedButton } from 'material-ui';
-import UpvoteButton from '../UpvoteButton';
-import DownvoteButton from '../DownvoteButton';
-import voteStyle from './vote.css';
+//import UpvoteButton from '../UpvoteButton';
+//import DownvoteButton from '../DownvoteButton';
+import RecipeVoteButtons from '../RecipeVoteButtons';
+//import voteStyle from './vote.css';
 
 class RecipeDetailsPage extends Component {
 
@@ -154,7 +155,7 @@ class RecipeDetailsPage extends Component {
                     <img src={this.props.recipe.img_src} alt="failed to load" /*TODO: change to actual image*/ /> 
                 </CardMedia>
                 <CardActions>
-                    <RaisedButton
+                    {/* <RaisedButton
                         label={this.state.votes}
                         style={styles.buttons}
                         disabled
@@ -171,7 +172,14 @@ class RecipeDetailsPage extends Component {
                         className={voteStyle.button}
                     >
                     Downvote
-                    </button>
+                    </button> */}
+                    <RecipeVoteButtons
+                        nvotes={this.state.votes}
+                        handleUpvote={this.handleUpvote}
+                        handleDownvote={this.handleDownvote}
+                        upvoted={this.state.upvoted}
+                        downvoted={this.state.downvoted}
+                    />
                 </CardActions>
                 { /* <CardTitle title="Card title" subtitle="Card subtitle" /> */ }
                 <CardText>
