@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="137.45258mm"
+   height="139.81059mm"
+   viewBox="0 0 487.03669 495.39186"
+   id="svg2"
+   version="1.1"
+   inkscape:version="0.91 r13725"
+   sodipodi:docname="kidneybean.svg">
+  <defs
+     id="defs4" />
+  <sodipodi:namedview
+     id="base"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageopacity="0.0"
+     inkscape:pageshadow="2"
+     inkscape:zoom="0.49497475"
+     inkscape:cx="79.067961"
+     inkscape:cy="-4.431674"
+     inkscape:document-units="px"
+     inkscape:current-layer="layer1"
+     showgrid="false"
+     inkscape:window-width="1112"
+     inkscape:window-height="957"
+     inkscape:window-x="0"
+     inkscape:window-y="1"
+     inkscape:window-maximized="0"
+     fit-margin-top="0"
+     fit-margin-left="0"
+     fit-margin-right="0"
+     fit-margin-bottom="0" />
+  <metadata
+     id="metadata7">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title></dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     inkscape:label="Layer 1"
+     inkscape:groupmode="layer"
+     id="layer1"
+     transform="translate(-103.92568,-210.29873)">
+    <g
+       id="g4169"
+       transform="matrix(0.61639564,0.78743662,-0.78743662,0.61639564,488.88921,-177.12672)">
+      <path
+         style="opacity:1;fill:#b61600;fill-opacity:1;stroke:#000000;stroke-width:15;stroke-linecap:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+         d="m 622.85714,459.50506 c 25.57141,90.339 -136.49448,181.42856 -241.42858,181.42856 -104.9341,0 -292.628884,-117.59577 -232.85714,-189.99999 65.71429,-79.6027 125.0659,-15.71429 230,-15.71429 104.93411,0 212.85714,-86.74555 244.28572,24.28572 z"
+         id="path4171"
+         inkscape:connector-curvature="0"
+         sodipodi:nodetypes="sssss" />
+      <path
+         style="opacity:1;fill:#ffffd1;fill-opacity:1;stroke:#000000;stroke-width:15;stroke-linecap:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+         d="m 434.28572,436.29076 c 10e-6,15.58232 -27.24689,41.78572 -58.21429,41.78572 -30.9674,0 -48.92858,-20.48911 -48.92857,-36.07143 0,-15.58232 25.10404,-1.78571 56.07143,-1.78571 30.96739,0 51.07142,-19.51089 51.07143,-3.92858 z"
+         id="path4173"
+         inkscape:connector-curvature="0"
+         sodipodi:nodetypes="sssss" />
+    </g>
+    <g
+       id="g4165"
+       transform="matrix(0.95253199,0.30443851,-0.30443851,0.95253199,129.98083,-39.71776)">
+      <path
+         sodipodi:nodetypes="sssss"
+         inkscape:connector-curvature="0"
+         id="path4136"
+         d="m 622.85714,459.50506 c 25.57141,90.339 -136.49448,181.42856 -241.42858,181.42856 -104.9341,0 -292.628884,-117.59577 -232.85714,-189.99999 65.71429,-79.6027 125.0659,-15.71429 230,-15.71429 104.93411,0 212.85714,-86.74555 244.28572,24.28572 z"
+         style="opacity:1;fill:#b61600;fill-opacity:1;stroke:#000000;stroke-width:15;stroke-linecap:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
+      <path
+         sodipodi:nodetypes="sssss"
+         inkscape:connector-curvature="0"
+         id="path4139"
+         d="m 434.28572,436.29076 c 10e-6,15.58232 -27.24689,41.78572 -58.21429,41.78572 -30.9674,0 -48.92858,-20.48911 -48.92857,-36.07143 0,-15.58232 25.10404,-1.78571 56.07143,-1.78571 30.96739,0 51.07142,-19.51089 51.07143,-3.92858 z"
+         style="opacity:1;fill:#ffffd1;fill-opacity:1;stroke:#000000;stroke-width:15;stroke-linecap:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
+    </g>
+  </g>
+</svg>

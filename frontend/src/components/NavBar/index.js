@@ -9,6 +9,7 @@ import SvgIcon from 'material-ui/SvgIcon';
 import ApiErrorSnackbar from '../ApiErrorSnackbar';
 import CupboardPage from '../CupboardPage';
 import SettingsPage from '../SettingsPage';
+import home from './home.svg';
 
 const homeIcon = <ActionHome />;
 const settingsIcon = <ActionBuild />;
