@@ -37,19 +37,28 @@ function normalizePort(val) {
     return false;
 }
 
+
 /**
  * Get port from environment and store in Express.
  */
-const port = normalizePort(process.env.PORT || 8081);
+const port = normalizePort(process.env.PORT || 8080);
 app.set('port', port);
-
-http.createServer(app).listen(8080);
 
 /**
  * Create HTTPS server.
  */
 
-const server = https.createServer(options, app);
+// If we're in dev run http server to redirect to https
+// else heroku handles this for us
+let server;
+if (app.get('env') === 'development') {
+    http.createServer(app).listen(8080);
+    server = https.createServer(options, app);
+}
+else {
+    server = http.createServer(app);
+}
+
 let availablePort = port;
 
 /**
