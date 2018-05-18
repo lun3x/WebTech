@@ -18,7 +18,8 @@ const compression = require('compression');
 const helmet = require('helmet');
 
 //=== Setup Db Connections ===//
-const redisClient = redis.createClient();
+//const redisClient = redis.createClient();
+const redisClient = redis.createClient(process.env.REDIS_URL);
 
 //=== Ban uppercase letters in static files ===//
 let banned = [];
