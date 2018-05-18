@@ -1,0 +1,43 @@
+:local(img) {
+    width: 100%;
+}
+
+/* responsive layout */
+/* start with mobile layout. increase number of columns as we increase window width */
+
+:local(.row) {
+    display: flex;
+    flex-wrap: wrap;
+    padding: 0 0.5em;
+}
+
+/* create one column */
+
+:local(.column) {
+    flex: 100%;
+    max-width: 100%;
+    padding: 0 0.5em;
+}
+
+:local(.column) :local(img) {
+    margin-top: 1em;
+    vertical-align: middle;
+}
+
+/* responsive layout: increase to two column */
+
+@media screen and (min-width: 600px) {
+    :local(.column) {
+        flex: 50%;
+        max-width: 50%;
+    }
+}
+
+/* responsive layout: increase to four column */
+
+@media screen and (min-width: 800px) {
+    :local(.column) {
+        flex: 25%;
+        max-width: 25%;
+    }
+}
