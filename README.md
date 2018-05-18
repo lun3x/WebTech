@@ -124,3 +124,25 @@ npx db-migrate create addSomethingNew
 ```
 
 The documentation for db-migrate is found [here](https://db-migrate.readthedocs.io/en/latest/).
+
+
+## Deployment
+
+Deployment with Heroku.
+
+Redis-heroku setup on free tier.
+JawsDb for heroku set up on free tier (mysql).
+
+In Procfile, release command is run after any release/build/change config vars etc.
+It runs database migrations.
+It also triggeres npm run postinstall, which is setup to cd into
+
+In Procfile, web command is run to start server etc. 
+
+To seed db, following command used:
+
+```bash
+$ mysql -h wm63be5w8m7gs25a.cbetxkdyhwsb.us-east-1.rds.amazonaws.com -u nivrls3b3u5iqjb4 -psyg4yuf4659btevu asgpae26zrg1lmby < seed.sql
+```
+
+See database.json for connection details for prod database.
