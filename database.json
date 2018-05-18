@@ -6,5 +6,13 @@
         "database": "mydb2",
         "driver": "mysql",
         "multipleStatements": true
+    },
+    "prod": {
+        "host": "wm63be5w8m7gs25a.cbetxkdyhwsb.us-east-1.rds.amazonaws.com",
+        "user": "nivrls3b3u5iqjb4",
+        "password": "syg4yuf4659btevu",
+        "database": "asgpae26zrg1lmby",
+        "driver": "mysql",
+        "multipleStatements": true
     }
 }
