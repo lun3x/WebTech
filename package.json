@@ -1,7 +1,11 @@
 {
-  "name": "mycupboard",
+  "name": "MyCupboard",
   "version": "1.0.0",
-  "description": "WebTech coursework",
+  "engines": {
+    "node": "9.7.1"
+  },
+  "private": true,
+  "description": "WebTech coursework. MyCupboard is the best app ever.",
   "main": "server.js",
   "dependencies": {
     "bcrypt": "^1.0.3",
