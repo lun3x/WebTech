@@ -39,13 +39,10 @@ let ajax = require('./routes/ajax');
 //=== Middleware functions ===//
 
 // Error handler
-function error(err, req, res, next) {
-    res.status(err.status || 500);
-    res.render('error', {
-        message: err.message,
-        error: app.get('env') === 'development' ? err : {},
-    });
-    next();
+function error(req, res) {
+    if (req.url.length > 0) {
+        res.status(404).send('404 Error! Page not found.');
+    }
 }
 
 // Make the URL lower case.
@@ -210,20 +207,13 @@ app.use(negotiate);
 //let options = { setHeaders: deliverXHTML };
 app.use(express.static(path.join(__dirname, 'frontend/dist')));//, options)); 
 
+// catch 404 and forward to error handler
+app.use('/', error);
+
 // home page
 app.use('/', (req, res) => {
     res.sendFile(path.resolve(__dirname, 'frontend/dist/index.html'));
 });
-
-// catch 404 and forward to error handler
-app.use((req, res, next) => {
-    let err = new Error('Not Found');
-    err.status = 404;
-    next(err);
-});
-
-// handle errors
-app.use(error);
 
 //=== Export the set up app ===//
 module.exports = app;
