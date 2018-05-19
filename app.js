@@ -139,7 +139,8 @@ function enforceHTTPS(req, res, next) {
     // else check req.secure
     else if (!req.secure) {
         let urlArray = req.headers.host.split(':');
-        res.redirect(`https://${urlArray[0]}:5000${req.url}`);
+        let port = (process.env.PORT || 5000);
+        res.redirect(`https://${urlArray[0]}:${port}${req.url}`);
     }
     else {
         next();
