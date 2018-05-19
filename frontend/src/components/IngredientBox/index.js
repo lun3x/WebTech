@@ -27,12 +27,18 @@ import banana from './ingredients/banana.svg';
 
 class IngredientBox extends Component {
 
+    static defaultProps = {
+        cupboardIngredientID: 0,
+        isLocal: false
+    };
+
     static propTypes = {
         ingredientName: PropTypes.string.isRequired,
         ingredientID: PropTypes.number.isRequired,
         reload: PropTypes.func.isRequired,
         logout: PropTypes.func.isRequired,
-        cupboardIngredientID: PropTypes.number.isRequired,
+        cupboardIngredientID: PropTypes.number,
+        isLocal: PropTypes.bool
     };
 
     constructor(props) {
@@ -44,13 +50,6 @@ class IngredientBox extends Component {
             cancellablePromise: undefined,
             images: [ tomato, cheese, potato, onion, pepper, flour, chocolate, kidneybeans, tuna, pasta, steak, chicken, lemon, lime, milk, banana ]
         };
-    }
-
-    componentWillMount = () => {
-        console.dir(this.props.ingredientID);
-        console.dir(this.props.cupboardIngredientID);
-        console.dir(this.props.ingredientName);
-        console.dir(this.state.images);
     }
 
     componentWillUnmount = () => {
@@ -86,7 +85,7 @@ class IngredientBox extends Component {
                 }
                 else if (res.ok) {
                     // Successful deletion
-                    this.props.reload(this.props.cupboardIngredientID);
+                    this.props.reload(this.props.ingredientID);
                 }
 
                 return this.state.cancellablePromise;
@@ -102,11 +101,14 @@ class IngredientBox extends Component {
     }
 
     handleClick = (event) => {
-        this.setState({
-            removeFoodAwaitingResponse: true,
-            removeFoodError: false,
-            cancellablePromise: this.getCancellableFetch()
-        });
+        if (this.props.isLocal) this.props.reload(this.props.ingredientID);
+        else {
+            this.setState({
+                removeFoodAwaitingResponse: true,
+                removeFoodError: false,
+                cancellablePromise: this.getCancellableFetch()
+            });
+        }
     }
 
     render() {

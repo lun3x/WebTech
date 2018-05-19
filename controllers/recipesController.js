@@ -55,7 +55,7 @@ exports.findIngredientsOfRecipe = (req, res) => {
             res.setHeader('Content-Type', 'application/json');
             res.status(200).json({
                 data: {
-                    ingredients: ingredients
+                    ingredients
                 }
             });
         }
@@ -148,11 +148,11 @@ exports.recipeImage = (req, res) => {
         return;
     }
 
-    //========REMOVE FROM FINAL THIS IS SILLY ERROR HANDLING FOR DEBUGGING========//
-    req.params.id %= 3;
+    //=== Loop around through default images ===//
+    req.params.id %= 4;
     //=======//
 
-    let img_path = path.join(__dirname, '../static/images/recipe_images', req.params.id + '.png');
+    let img_path = path.join(__dirname, '../static/images/recipe_images/', req.params.id + '.png');
 
     if (!fs.existsSync(img_path)) {
         res.status(422).send('Error! Image is not found');

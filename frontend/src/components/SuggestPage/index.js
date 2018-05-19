@@ -159,6 +159,7 @@ class SuggestPage extends Component {
                     reload={this.deleteIngredientFromRecipe}
                     ingredientID={x.id}
                     logout={this.props.logout}
+                    isLocal
                 />
             );
         });
