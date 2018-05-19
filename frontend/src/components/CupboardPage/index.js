@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { Paper } from 'material-ui';
 import fetch from 'cross-fetch';
 import PropTypes from 'prop-types';
+import CircularProgress from 'material-ui/CircularProgress';
 import FindRecipesButton from '../FindRecipesButton';
 import IngredientList from '../IngredientsList';
 import ApiErrorSnackbar from '../ApiErrorSnackbar';
@@ -112,7 +113,7 @@ class CupboardPage extends Component {
                     this.state.userIngredientsLoadingError
                     ? <p>Error loading.</p>
                     : this.state.userIngredientsAreLoading
-                    ? <p>Still loading.</p>
+                    ? <CircularProgress />
                     : <IngredientList
                         userIngredients={this.state.userIngredients}
                         allIngredients={this.props.allIngredients}

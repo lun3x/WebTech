@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { Card, CardActions, CardHeader, CardMedia, CardTitle, CardText } from 'material-ui/Card';
+import CircularProgress from 'material-ui/CircularProgress';
 import Avatar from 'material-ui/Avatar';
 import NavigationArrowBack from 'material-ui/svg-icons/navigation/arrow-back';
 import { RaisedButton } from 'material-ui';
@@ -112,7 +113,8 @@ class RecipeDetailsPage extends Component {
                 });
 
                 if (!res.ok) {
-                    this.setState({ ingredientsLoadFail: false });
+                    console.log('LOAD FAIL');
+                    this.setState({ ingredientsLoadFail: true });
                 }
 
                 return this.state.cancellableIngredients;
@@ -293,7 +295,7 @@ class RecipeDetailsPage extends Component {
                                     <span> <b>Ingredients</b> </span>
                                     {
                                         this.state.ingredientsAreLoading ?
-                                            <p>Ingredients loading...</p>
+                                            <CircularProgress />
                                             :
                                             this.state.ingredientsLoadFail ?
                                                 <p>Error loading ingredients.</p>

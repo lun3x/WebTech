@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
+import CircularProgress from 'material-ui/CircularProgress';
 import RecipeDetailsPage from '../RecipeDetailsPage';
 import makeCancellable from '../../promiseWrapper';
 import makeCancellableVal from '../../valueWrapper';
@@ -54,7 +55,6 @@ class RecipesPage extends Component {
         cancellable
             .then(res => {
                 this.setState({
-                    recipesAreLoading: false,
                     cancellableRecipes: makeCancellable(res.json())
                 });
 
@@ -75,7 +75,7 @@ class RecipesPage extends Component {
 
                 this.setState({
                     cancellableRecipeImages: this.getCancellableRecipeImages(fetchImagePromises),
-                    cancellableRecipes: undefined
+                    cancellableRecipes: undefined,
                 });
             })
             .then(() => console.log('@RecipesPage|Recipes: Got recipes.'))
@@ -99,9 +99,12 @@ class RecipesPage extends Component {
 
                 return this.state.cancellableRecipeImages;
             })
-            .then((err) => {
+            .then(err => {
                 console.log('@RecipesPage|RecipeImages: Got recipes.');
-                this.setState({ cancellableRecipeImages: undefined });
+                this.setState({
+                    cancellableRecipeImages: undefined,
+                    recipesAreLoading: false
+                });
             })
             .catch((err) => console.log('@RecipesPage|RecipeImages: Component unmounted.'));
             
@@ -121,7 +124,7 @@ class RecipesPage extends Component {
             if (res.status === 401) {
                 throw new Error('Access Denied.');
             }
-            if (res.status !== 200) {
+            if (!res.ok) {
                 console.log(`recipe id=${recipe.id} load img err`);
                 this.setState({ recipesLoadFail: true });
             }
@@ -175,7 +178,7 @@ class RecipesPage extends Component {
         let toRender = this.state.recipesLoadFail ? (
             <p>Error loading.</p>
         ) : this.state.recipesAreLoading || !this.state.recipes ? (
-            <p>Still loading.</p>
+            <CircularProgress />
         ) : this.state.selectedRecipe ? (
             <RecipeDetailsPage recipe={this.state.selectedRecipe} goBack={this.goBack} logout={this.props.logout} />
         ) : this.state.recipes.length === 0 ? (
