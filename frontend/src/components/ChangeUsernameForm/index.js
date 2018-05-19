@@ -132,7 +132,7 @@ class ChangeUsernameForm extends Component {
 
         return (
             <React.Fragment>
-                <form onSubmit={this.handleSubmit}>
+                <form onSubmit={this.handleSubmit} style={{ marginLeft: '2em' }} >
                     <TextField
                         name="username"
                         hintText="Enter new username"
