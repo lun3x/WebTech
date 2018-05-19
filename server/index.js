@@ -65,6 +65,7 @@ let availablePort = port;
  * Listen on provided port, on all network interfaces.
  */
 function startServer(serverPort) {
+    if (app.get('env') === 'development') process.env.PORT = serverPort;
     server.listen(serverPort);
 }
 
