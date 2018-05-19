@@ -14,12 +14,12 @@ class CupboardPage extends Component {
 
     static propTypes = {
         gotoFindRecipesPage: PropTypes.func.isRequired,
-        setUserIngredientIds: PropTypes.func.isRequired, // eslint-disable-line react/no-unused-prop-types
+        setUserIngredientIds: PropTypes.func.isRequired,
         allIngredients:  PropTypes.arrayOf(PropTypes.shape({
             id: PropTypes.number,
             name: PropTypes.string
         })).isRequired,
-        logout: PropTypes.func.isRequired // eslint-disable-line react/no-unused-prop-types
+        logout: PropTypes.func.isRequired
     }
 
     constructor(props) {

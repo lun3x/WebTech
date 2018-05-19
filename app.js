@@ -130,25 +130,44 @@ function banUpperCase(root, folder) {
 }
 
 function enforceHTTPS(req, res, next) {
-    if (req.secure) {
-        next();
+    // If we are in production on heroku check the header
+    if (app.get('env') !== 'development') {
+        if (req.header('x-forwarded-proto') !== 'https') {
+            res.redirect(`https://${req.header('host')}${req.url}`);
+        }
+        else {
+            next();
+        }
+    }
+    // else check req.secure
+    else if (!req.secure) {
+        let urlArray = req.headers.host.split(':');
+        res.redirect(`https://${urlArray[0]}:5000${req.url}`);
     }
     else {
-        console.log(req.headers.host.split(':'));
-        let urlArray = req.headers.host.split(':');
-        res.redirect('https://' + urlArray[0] + ':8081' + req.url);
+        next();
     }
 }
 
+function favicon(req, res, next) {
+    if (req.url === '/favicon.ico') {
+        res.sendFile(path.join(__dirname, 'static/images/logo.ico'));
+    }
+    else {
+        next();
+    }
+}
 
 //=== Middleware Chain ===//
 
-if (app.get('env') === 'development') {
-    app.use(enforceHTTPS);
-}
+// enforce HTTPS use
+app.use(enforceHTTPS);
 
 // helmet (set common headers to avoid security vulnerabilites)
 app.use(helmet());
+
+// serve favicon, before logger to avoid unnecessary logging
+app.use(favicon);
 
 // logger
 app.use(logger('combined'));
