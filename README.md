@@ -50,8 +50,36 @@ mysql -u root -p mydb2 < seed.sql
 
 We use redis for session storage. Install redis with Homebrew.
 
+#### Run the application using Heroku (reccomended)
 
-#### Run the application
+Make sure Herkou-cli is installed. This can be done easily on mac using brew
+
+```bash
+$ brew install heroku
+```
+
+To launch mysql server:
+
+```bash
+$ mysql.server start
+```
+
+To launch the server, execute
+
+```bash
+$ npm install
+$ heroku local
+```
+
+To compile and bundle frontend in development mode instead:
+
+```bash
+$ cd frontend && npm install && npm run devbuild && cd ..
+```
+
+Then, navigate to `https://localhost:PORT` in the browser, where `PORT` is the port given in the console output. Or, see redirection in action, navigate to `http://localhost:8080`.
+
+#### Run the application using Node
 
 To launch mysql server:
 
@@ -62,24 +90,24 @@ $ mysql.server start
 To launch redis (for session storage)
 
 ```bash
-$ /usr/local/etc/redis.conf
+$ redis-server /usr/local/etc/redis.conf
 ```
 
 To run the server:
 
 ```bash
-$ cd site && npm install && npm start
+$ npm install && npm start
 ```
 
-To compile and bundle frontend:
+To compile and bundle frontend in development mode instead:
 
 ```bash
-$ cd site/frontend && npm install && npm run build
+$ cd frontend && npm install && npm run devbuild && cd ..
 ```
 
 ## API
 
-Html is delivered as `application/xhtml+xml`.
+Html is delivered as `application/xhtml+xml` or `text/html` by setting the `Content-Type` header, depending on what the client browser includes in the request `Accepts` header.
 
 Xhr resources are delivered as `application/json`.
 
@@ -139,10 +167,13 @@ It also triggeres npm run postinstall, which is setup to cd into
 
 In Procfile, web command is run to start server etc. 
 
-To seed db, following command used:
+To seed the production db with initial ingredients, the following command was used:
 
 ```bash
-$ mysql -h wm63be5w8m7gs25a.cbetxkdyhwsb.us-east-1.rds.amazonaws.com -u nivrls3b3u5iqjb4 -psyg4yuf4659btevu asgpae26zrg1lmby < seed.sql
+$ mysql -h HOST -u USER -pPASS DB < seed.sql
 ```
+
+Create new seed files, do a release to run migrations, then run the new seed file, to add
+more seeds to the db.
 
 See database.json for connection details for prod database.
