@@ -130,7 +130,7 @@ class ChangePasswordForm extends Component {
 
         return (
             <React.Fragment>
-                <form onSubmit={this.handleSubmit}>
+                <form onSubmit={this.handleSubmit} style={{ marginLeft: '2em' }} >
                     <TextField
                         name="password"
                         type="password"

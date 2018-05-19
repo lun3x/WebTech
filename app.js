@@ -18,7 +18,6 @@ const compression = require('compression');
 const helmet = require('helmet');
 
 //=== Setup Db Connections ===//
-//const redisClient = redis.createClient();
 const redisClient = redis.createClient(process.env.REDIS_URL);
 
 //=== Ban uppercase letters in static files ===//
@@ -76,15 +75,30 @@ function ban(req, res, next) {
     next();
 }
 
-// Redirect the browser to the login page.
-// function auth(req, res, next) {
-//     res.redirect("/login.html");
-// }
-
 // Called by express.static.  Deliver response as XHTML.
 function deliverXHTML(res, _path, _stat) {
     if (_path.endsWith('.html')) {
         res.header('Content-Type', 'application/xhtml+xml');
+    }
+}
+
+// negotiate content
+function negotiate(req, res, next) {
+    if (req.path === '/') {
+        if (req.accepts('application/xhtml+xml')) {
+            res.header('Content-Type', 'application/xhtml+xml');
+            next();
+        }
+        else if (req.accepts('html') || req.accepts('text/html')) {
+            res.header('Content-Type', 'text/html');
+            next();
+        }
+        else {
+            res.status(406).send('Not acceptable content type. Html/xhtml for root path only.');
+        }
+    }
+    else {
+        next();
     }
 }
 
@@ -170,9 +184,12 @@ app.use(compression());
 app.use('/auth', auth);
 app.use('/api', api);
 
+// content negotiation (html vs xhtml)
+app.use(negotiate);
+
 // serve frontend
-let options = { setHeaders: deliverXHTML };
-app.use(express.static(path.join(__dirname, 'frontend/dist'), options)); 
+//let options = { setHeaders: deliverXHTML };
+app.use(express.static(path.join(__dirname, 'frontend/dist')));//, options)); 
 
 // home page
 app.use('/', (req, res) => {

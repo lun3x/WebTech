@@ -178,6 +178,14 @@ class SuggestPage extends Component {
             />
         );
 
+        const containerStyle = {
+            padding: '1em',
+            display: 'flex',
+            justifyContent: 'center',
+            flexDirection: 'column',
+            alignItems: 'center',
+        };
+
         const outerStyle = {
             display: 'flex',
             flexFlow: 'row wrap',
@@ -185,10 +193,13 @@ class SuggestPage extends Component {
 
         const buttonStyle = {
             marginTop: 20,
+            position: 'absolute',
+            left: '50%',
+            transform: 'translate(-50%, 0)',
         };
 
         return (
-            <div style={{ padding: '1em' }}>
+            <div style={containerStyle}>
                 <div style={outerStyle} >
                     { ingredientList }
                 </div>
